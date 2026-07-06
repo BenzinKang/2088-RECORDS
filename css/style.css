@@ -228,7 +228,16 @@ main { position: relative; z-index: 1; }
   padding: var(--space-lg) var(--space-md) var(--space-md);
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3));
 }
-
+.loader-mark{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loader-mark img{
+    width: 180px;      /* 根据效果调整 */
+    height: auto;
+    display: block;
+}
 .footer-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
