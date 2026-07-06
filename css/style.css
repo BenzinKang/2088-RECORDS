@@ -92,6 +92,12 @@ body::before {
   z-index: 0;
 }
 
+/* Navigation Logo */
+.logo img{
+    height:32px;
+    width:auto;
+    display:block;
+}
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
