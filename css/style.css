@@ -72,11 +72,6 @@ html {
   }
 }
 
-.logo img{
-    height:45px;
-    width:auto;
-    display:block;
-}
 
 body {
   background: var(--c-primary);
@@ -225,6 +220,31 @@ p { color: var(--c-text-secondary); }
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent);
   pointer-events: none;
+}
+
+/* ==========================
+   Navigation Logo
+   ========================== */
+
+.logo{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.logo img{
+    display: block;
+    height: 24px;      /* 推荐22~26px */
+    width: auto;
+    object-fit: contain;
+    transition: opacity .3s ease,
+                transform .3s ease;
+}
+
+.logo:hover img{
+    opacity: 0.9;
+    transform: scale(1.03);
 }
 
 main { position: relative; z-index: 1; }
