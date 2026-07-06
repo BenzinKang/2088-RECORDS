@@ -72,6 +72,12 @@ html {
   }
 }
 
+.logo img{
+    height:45px;
+    width:auto;
+    display:block;
+}
+
 body {
   background: var(--c-primary);
   color: var(--c-white);
