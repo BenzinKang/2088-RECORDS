@@ -235,7 +235,7 @@ p { color: var(--c-text-secondary); }
 
 .logo img{
     display: block;
-    height: 46px;      /* 推荐22~26px */
+    height: 43px;      /* 推荐22~26px */
     width: auto;
     object-fit: contain;
     transition: opacity .3s ease,
