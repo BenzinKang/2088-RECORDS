@@ -44,22 +44,56 @@ const Main = (() => {
     });
   }
 
-  function initContactForm() {
-    const form = document.querySelector('[data-contact-form]');
-    if (!form) return;
-    const note = form.querySelector('[data-form-note]');
+function initContactForm() {
+  const form = document.querySelector('[data-contact-form]');
+  if (!form) return;
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-      note.textContent = 'Message transmitted. Expect a reply within 48 hours.';
-      note.classList.add('is-success');
-      form.reset();
-    });
-  }
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const name = document.getElementById('contact-name').value;
+    const email = document.getElementById('contact-email').value;
+    const subject = document.getElementById('contact-subject').value;
+    const message = document.getElementById('contact-message').value;
+
+    // 根据选择决定收件邮箱
+    let recipient = "";
+
+    if (subject === "demo") {
+      recipient = "CYBERPUNK2088_DEMO@163.com";
+    } else if (subject === "website") {
+      recipient = "3579386804@qq.com";
+    }
+
+    // 邮件主题
+    const mailSubject =
+      subject === "demo"
+        ? "Demo Submission"
+        : "Website Related Question";
+
+    // 邮件正文
+    const body =
+`Name: ${name}
+
+Email: ${email}
+
+Message:
+
+${message}`;
+
+    // 打开默认邮箱
+    window.location.href =
+      `mailto:${recipient}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
+
+    // 清空表单
+    form.reset();
+  });
+}
 
   function initYear() {
     document.querySelectorAll('[data-year]').forEach((el) => {
