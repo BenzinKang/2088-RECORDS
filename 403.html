@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>403 | 2088 RECORDS</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="stylesheet" href="css/components.css">
+
+<link rel="stylesheet" href="css/animations.css">
+
+<link rel="stylesheet" href="css/responsive.css">
+
+<link rel="icon" href="Images/favicon.png">
+
+<style>
+
+html,body{
+    margin:0;
+    height:100%;
+}
+
+body{
+
+    background:
+        radial-gradient(circle at top,#08192f,#050A18 70%);
+    color:#DDEEFF;
+
+    font-family:"Sora",sans-serif;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+}
+
+.terminal{
+
+    width:min(900px,92vw);
+
+    border:1px solid rgba(0,200,255,.18);
+
+    background:rgba(6,14,28,.78);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 0 80px rgba(0,200,255,.08);
+}
+
+.header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:16px 22px;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+.dot{
+
+    width:12px;
+
+    height:12px;
+
+    border-radius:50%;
+
+    background:#335577;
+
+}
+
+.window-title{
+
+    margin-left:auto;
+
+    font-size:.8rem;
+
+    opacity:.5;
+
+    letter-spacing:.15em;
+
+}
+
+.screen{
+
+    padding:40px;
+
+    min-height:430px;
+
+    white-space:pre-wrap;
+
+    font-family:"JetBrains Mono",monospace;
+
+    font-size:17px;
+
+    line-height:1.85;
+}
+
+.cursor{
+
+    display:inline-block;
+
+    width:9px;
+
+    background:#00C8FF;
+
+    animation:blink .9s infinite;
+
+}
+
+@keyframes blink{
+
+50%{
+
+opacity:0;
+
+}
+
+}
+
+.error{
+
+    color:#FF5B6E;
+
+    text-shadow:0 0 15px rgba(255,90,110,.4);
+
+}
+
+.success{
+
+    color:#00C8FF;
+
+}
+
+.buttons{
+
+    display:flex;
+
+    gap:18px;
+
+    padding:0 40px 40px;
+
+}
+
+.btn{
+
+    padding:14px 24px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(0,200,255,.25);
+
+    text-decoration:none;
+
+    color:white;
+
+    transition:.3s;
+
+}
+
+.btn:hover{
+
+    background:#00C8FF;
+
+    color:#081018;
+
+    box-shadow:0 0 24px rgba(0,200,255,.4);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="terminal">
+
+<div class="header">
+
+<div class="dot"></div>
+
+<div class="dot"></div>
+
+<div class="dot"></div>
+
+<div class="window-title">
+
+2088 TERMINAL
+
+</div>
+
+</div>
+
+<div class="screen">
+
+<span id="output"></span><span class="cursor"></span>
+
+</div>
+
+<div class="buttons">
+
+<a href="index.html" class="btn">
+
+Return Home
+
+</a>
+
+<a href="contact.html" class="btn">
+
+Submit Demo
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+const text=`> release --without-review
+
+Initializing...
+
+Checking permissions...
+
+Checking A&R status...
+
+ERROR 403
+Unauthorized Release Request
+
+────────────────────────────────────
+
+Every official release published by
+2088 RECORDS requires A&R approval.
+
+No shortcuts.
+No exceptions.
+
+Process terminated.
+
+`;
+
+const output=document.getElementById("output");
+
+let i=0;
+
+function type(){
+
+    if(i<text.length){
+
+        if(text.substr(i,9)==="ERROR 403"){
+
+            output.innerHTML+=`<span class="error">ERROR 403</span>`;
+
+            i+=9;
+
+        }else{
+
+            output.innerHTML+=text[i];
+
+            i++;
+
+        }
+
+        setTimeout(type,26);
+
+    }
+
+}
+
+type();
+
+</script>
+
+</body>
+</html>
