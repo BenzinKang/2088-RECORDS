@@ -227,24 +227,25 @@ p { color: var(--c-text-secondary); }
    ========================== */
 
 .logo{
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    flex-shrink: 0;
+    display:flex;
+    align-items:center;
+    flex-shrink:0;
 }
 
 .logo img{
-    display: block;
-    height: 43px;      /* 推荐22~26px */
-    width: auto;
-    object-fit: contain;
-    transition: opacity .3s ease,
-                transform .3s ease;
+    height:44px;
+    width:auto;
+    display:block;
+    object-fit:contain;
+    transition:
+        transform .3s ease,
+        filter .3s ease,
+        opacity .3s ease;
 }
 
 .logo:hover img{
-    opacity: 0.9;
-    transform: scale(1.03);
+    transform:scale(1.03);
+    filter:drop-shadow(0 0 12px rgba(0,200,255,.35));
 }
 
 .info-grid{
