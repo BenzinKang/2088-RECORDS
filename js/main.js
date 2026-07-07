@@ -68,13 +68,19 @@ function initContactForm() {
       recipient = "CYBERPUNK2088_DEMO@163.com";
     } else if (subject === "website") {
       recipient = "3579386804@qq.com";
+    } else if (subject === "business") {
+      recipient = "CYBERPUNK2088@126.COM"
     }
 
     // 邮件主题
-    const mailSubject =
-      subject === "demo"
-        ? "Demo Submission"
-        : "Website Related Question";
+   const mailSubject =
+     subject === "demo"
+       ? "Demo Submission"
+       : subject === "website"
+         ? "Website Related Question"
+         : subject === "business"
+           ? "Business Inquiry"
+           : "Contact";
 
     // 邮件正文
     const body =
