@@ -335,20 +335,59 @@ main { position: relative; z-index: 1; }
   color: var(--c-text-faint);
 }
 
+html,
+body{
+    height:100%;
+    margin:0;
+}
+
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:radial-gradient(circle at top,#08192f,#050A18 70%);
+    overflow:hidden;
+}
+
 .terminal{
-    width: min(900px, 92vw);
-    max-height: 85vh;   /* 最大高度 */
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    width:min(900px,92vw);
+
+    height:min(700px,85vh);   /* ← 固定终端高度 */
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+
+    border-radius:18px;
+    background:rgba(6,14,28,.78);
+    border:1px solid rgba(0,200,255,.18);
 }
 
 .screen{
-    flex: 1;
-    overflow-y: auto;   /* 内容超出后滚动 */
-    padding: 40px;
-    white-space: pre-wrap;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 17px;
-    line-height: 1.85;
+    flex:1;                  /* 自动占满剩余空间 */
+
+    overflow-y:auto;         /* 超出滚动 */
+
+    padding:40px;
+
+    white-space:pre-wrap;
+
+    font-family:"JetBrains Mono",monospace;
+
+    line-height:1.8;
+}
+
+.buttons{
+    flex-shrink:0;           /* 永远不缩 */
+
+    display:flex;
+
+    gap:18px;
+
+    padding:28px 40px;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    background:rgba(8,18,34,.95);
 }
