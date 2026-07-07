@@ -334,3 +334,21 @@ main { position: relative; z-index: 1; }
   font-size: 0.85rem;
   color: var(--c-text-faint);
 }
+
+.terminal{
+    width: min(900px, 92vw);
+    max-height: 85vh;   /* 最大高度 */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.screen{
+    flex: 1;
+    overflow-y: auto;   /* 内容超出后滚动 */
+    padding: 40px;
+    white-space: pre-wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 17px;
+    line-height: 1.85;
+}
