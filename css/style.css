@@ -77,9 +77,9 @@ html {
 body {
   background: var(--c-primary);
   color: var(--c-white);
-  font-family: var(--font-body);   
+  font-family: var(--font-body); 
   font-optical-sizing: auto;
-  font-weight: <weight>;
+  font-weight: 200;
   font-style: normal;
   line-height: 1.6;
   overflow-x: hidden;
