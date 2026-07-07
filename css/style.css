@@ -247,6 +247,24 @@ p { color: var(--c-text-secondary); }
     transform: scale(1.03);
 }
 
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:var(--space-xl);
+    align-items:start;
+}
+
+.values-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:var(--space-lg);
+}
+
+.info-grid > *,
+.values-grid > *{
+    min-width:0;
+}
+
 main { position: relative; z-index: 1; }
 
 /* ---- Footer ---- */
