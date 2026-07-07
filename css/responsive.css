@@ -59,3 +59,10 @@
     }
 
 }
+@media (max-width: 768px){
+
+    .about-preview-grid{
+        grid-template-columns: 1fr;
+    }
+
+}
