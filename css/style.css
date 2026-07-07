@@ -298,6 +298,14 @@ main { position: relative; z-index: 1; }
   border-bottom: 1px solid var(--c-glass-border);
 }
 
+.about-preview-grid{
+    padding: var(--space-lg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    align-items: center;
+}
+
 .footer-brand .logo { margin-bottom: var(--space-sm); }
 .footer-brand p { max-width: 34ch; }
 
