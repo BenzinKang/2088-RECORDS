@@ -182,3 +182,34 @@ if(reviewText){
     });
 
 }
+document.addEventListener("DOMContentLoaded",()=>{
+
+    const select=document.getElementById("contact-subject");
+
+    if(!select) return;
+
+    const group=select.closest(".form-group");
+
+    select.addEventListener("mousedown",()=>{
+
+        group.classList.toggle("select-open");
+
+    });
+
+    select.addEventListener("change",()=>{
+
+        group.classList.remove("select-open");
+
+    });
+
+    window.addEventListener("click",(e)=>{
+
+        if(!group.contains(e.target)){
+
+            group.classList.remove("select-open");
+
+        }
+
+    });
+
+});
