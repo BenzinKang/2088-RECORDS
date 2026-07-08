@@ -399,8 +399,8 @@ main { position: relative; z-index: 1; }
 
     position: absolute;
 
-    right: 1rem;
-    top: 52%;
+    right: 24px;
+    top: 50%;
 
     width: 8px;
     height: 8px;
@@ -408,6 +408,8 @@ main { position: relative; z-index: 1; }
     border-right: 1.5px solid rgba(255,255,255,.9);
     border-bottom: 1.5px solid rgba(255,255,255,.9);
 
+    /* 真正居中 */
+    transform-origin: center center;
     transform: translateY(-50%) rotate(45deg);
 
     transition: transform .25s ease;
