@@ -402,11 +402,11 @@ main { position: relative; z-index: 1; }
     right: 1rem;
     top: 52%;
 
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
 
-    border-right: 2px solid var(--c-accent);
-    border-bottom: 2px solid var(--c-accent);
+    border-right: 1.5px solid rgba(255,255,255,.9);
+    border-bottom: 1.5px solid rgba(255,255,255,.9);
 
     transform: translateY(-50%) rotate(45deg);
 
