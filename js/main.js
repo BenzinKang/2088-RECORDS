@@ -140,4 +140,19 @@ reviewText.addEventListener("click", () => {
         clickCount = 0;
     }
 });
+document.querySelectorAll(".contact-form select").forEach(select => {
+
+    const parent = select.closest(".form-group");
+
+
+    select.addEventListener("focus", () => {
+        parent.classList.add("select-open");
+    });
+
+
+    select.addEventListener("blur", () => {
+        parent.classList.remove("select-open");
+    });
+
+});
 
