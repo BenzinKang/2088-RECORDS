@@ -386,32 +386,32 @@ main { position: relative; z-index: 1; }
 }
 
 
-.contact-form .form-group:has(select)::after{
-    content:"";
-    position:absolute;
-
-    width:8px;
-    height:8px;
-
-    right:1.2rem;
-    top:50%;
-
-    border-right:2px solid #00C8FF;
-    border-bottom:2px solid #00C8FF;
-
-    transform:
-        translateY(-65%)
-        rotate(45deg);
-
-    pointer-events:none;
-
-    transition:
-        transform .25s ease;
+/* Select arrow */
+.contact-form .form-group:has(select){
+    position: relative;
 }
+
+.contact-form .form-group:has(select)::after{
+    content: "";
+
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+
+    width: 8px;
+    height: 8px;
+
+    border-right: 2px solid var(--c-accent);
+    border-bottom: 2px solid var(--c-accent);
+
+    transform: translateY(-70%) rotate(45deg);
+
+    transition: transform .25s ease;
+
+    pointer-events: none;
+}
+
+/* Arrow Up */
 .contact-form .form-group.select-open::after{
-
-    transform:
-        translateY(-20%)
-        rotate(225deg);
-
+    transform: translateY(-35%) rotate(-135deg);
 }
