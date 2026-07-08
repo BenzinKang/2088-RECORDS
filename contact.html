@@ -104,14 +104,45 @@
                 <input type="email" id="contact-email" name="email" required autocomplete="email" />
               </div>
             </div>
-            <div class="form-group">
-              <label for="contact-subject">Subject</label>
-              <select id="contact-subject" name="subject" required>
-                <option value="">Select a subject</option>
-                <option value="business">Business</option>
-                <option value="website">Website Related Problems</option>
-                <option value="demo">Demo Submission</option>
-              </select>
+            <div class="form-group custom-select" id="subjectSelect">
+
+              <label>Subject</label>
+
+              <button type="button" class="select-btn">
+
+                <span class="selected-text">
+                  Select a subject
+                </span>
+
+                <span class="select-arrow"></span>
+
+              </button>
+
+              <div class="select-menu">
+
+                <div class="select-option"
+                 data-value="business">
+                   Business
+                </div>
+
+                <div class="select-option"
+                 data-value="website">
+                   Website Related Problems
+                </div>
+
+                <div class="select-option"
+                 data-value="demo">
+                   Demo Submission
+                </div>
+
+              </div>
+
+              <input
+                type="hidden"
+                name="subject"
+                id="contact-subject"
+              required>
+
             </div>
             <div class="form-group">
               <label for="contact-message">Message</label>
