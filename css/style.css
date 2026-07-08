@@ -408,3 +408,10 @@ main { position: relative; z-index: 1; }
     transition:
         transform .25s ease;
 }
+.contact-form .form-group.select-open::after{
+
+    transform:
+        translateY(-20%)
+        rotate(225deg);
+
+}
