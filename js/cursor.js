@@ -22,7 +22,7 @@ const CursorGlow = (() => {
       y = e.clientY;
     });
 
-    const interactive = 'a, button, .btn, .filter-tab, input, textarea, .release-card, .nav-toggle';
+    const interactive = 'a, button, .btn, .filter-tab, input, textarea, .release-card, .nav-toggle, .without-review';
     document.addEventListener('mouseover', (e) => {
       if (e.target.closest(interactive)) cursor.classList.add('is-active');
     });
