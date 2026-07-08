@@ -58,7 +58,14 @@ const TextScramble = (() => {
 })();
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    TextScramble.init
-);
+document.addEventListener('loaderFinished', () => {
+
+  const texts = document.querySelectorAll('.scramble-text');
+
+  texts.forEach((text, i) => {
+    setTimeout(() => {
+      scramble(text);
+    }, i * 300);
+  });
+
+});
