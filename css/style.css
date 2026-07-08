@@ -390,34 +390,39 @@ main { position: relative; z-index: 1; }
    Custom Select Arrow
    ========================== */
 
-.contact-form .form-group:has(select){
-    position: relative;
+/* Subject 下拉框 */
+.contact-form .form-group{
+    position:relative;
 }
 
-.contact-form .form-group:has(select)::after{
-    content: "";
-
-    position: absolute;
-
-    right: 24px;
-    top: 50%;
-
-    width: 8px;
-    height: 8px;
-
-    border-right: 1.5px solid rgba(255,255,255,.9);
-    border-bottom: 1.5px solid rgba(255,255,255,.9);
-
-    /* 真正居中 */
-    transform-origin: center center;
-    transform: translateY(-50%) rotate(45deg);
-
-    transition: transform .25s ease;
-
-    pointer-events: none;
+.contact-form #contact-subject{
+    padding-right:3rem;
 }
 
-/* Arrow Up */
+/* 箭头 */
+.contact-form .form-group::after{
+    content:"";
+
+    position:absolute;
+
+    right:18px;
+
+    /* 重点！！ */
+    top:calc(50% + 18px);
+
+    width:8px;
+    height:8px;
+
+    border-right:1.5px solid rgba(255,255,255,.9);
+    border-bottom:1.5px solid rgba(255,255,255,.9);
+
+    transform:translateY(-50%) rotate(45deg);
+
+    transition:.25s ease;
+
+    pointer-events:none;
+}
+
 .contact-form .form-group.select-open::after{
-    transform: translateY(-50%) rotate(-135deg);
+    transform:translateY(-50%) rotate(-135deg);
 }
