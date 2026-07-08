@@ -381,3 +381,30 @@ main { position: relative; z-index: 1; }
     background:#091526;
     color:var(--c-white);
 }
+.contact-form .form-group:has(select){
+    position:relative;
+}
+
+
+.contact-form .form-group:has(select)::after{
+    content:"";
+    position:absolute;
+
+    width:8px;
+    height:8px;
+
+    right:1.2rem;
+    top:50%;
+
+    border-right:2px solid #00C8FF;
+    border-bottom:2px solid #00C8FF;
+
+    transform:
+        translateY(-65%)
+        rotate(45deg);
+
+    pointer-events:none;
+
+    transition:
+        transform .25s ease;
+}
