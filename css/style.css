@@ -785,8 +785,11 @@ main { position: relative; z-index: 1; }
     border:1px solid rgba(255,255,255,.12);
     border-radius:12px;
 
-    appearance:auto;
-    -webkit-appearance:menulist;
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    cursor:pointer;
 }
 
 .contact-form select:hover{
