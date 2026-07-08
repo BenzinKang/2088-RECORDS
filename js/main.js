@@ -140,19 +140,31 @@ reviewText.addEventListener("click", () => {
         clickCount = 0;
     }
 });
-document.querySelectorAll(".contact-form select").forEach(select => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    const parent = select.closest(".form-group");
+    document.querySelectorAll(".contact-form select").forEach(select => {
 
+        const group = select.closest(".form-group");
 
-    select.addEventListener("focus", () => {
-        parent.classList.add("select-open");
-    });
+        let opened = false;
 
+        select.addEventListener("click", () => {
 
-    select.addEventListener("blur", () => {
-        parent.classList.remove("select-open");
+            opened = !opened;
+
+            group.classList.toggle("select-open", opened);
+
+        });
+
+        // 选择一个选项后恢复默认状态
+        select.addEventListener("change", () => {
+
+            opened = false;
+
+            group.classList.remove("select-open");
+
+        });
+
     });
 
 });
-
