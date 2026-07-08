@@ -356,3 +356,20 @@ main { position: relative; z-index: 1; }
     color:#00C8FF;
     pointer-events:none;
 }
+.contact-form select {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    color: var(--c-white);
+    border: 1px solid var(--c-glass-border);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+
+.contact-form select option {
+    background: #050A18;
+    color: #F7FAFF;
+}
