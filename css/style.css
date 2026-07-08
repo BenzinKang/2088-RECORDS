@@ -344,3 +344,15 @@ main { position: relative; z-index: 1; }
     color:#fff;
     text-shadow:0 0 8px rgba(0,200,255,.6);
 }
+.contact-form .form-group:has(select){
+    position:relative;
+}
+
+.contact-form .form-group:has(select)::after{
+    content:"⌄";
+    position:absolute;
+    right:1rem;
+    bottom:0.8rem;
+    color:#00C8FF;
+    pointer-events:none;
+}
