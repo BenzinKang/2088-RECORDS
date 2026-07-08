@@ -27,11 +27,14 @@ const Loader = (() => {
     }, 420);
 
     const finish = () => {
-      loader.classList.add('is-hidden');
-      document.body.classList.add('is-loaded');
+     loader.classList.add('is-hidden');
+     document.body.classList.add('is-loaded');
+
+  // Trigger hero text animation after loader finishes
+     document.dispatchEvent(new Event('loaderFinished'));
+
       setTimeout(() => loader.remove(), 900);
     };
-
     // Hide once assets/paint are ready, with a minimum show time for the effect.
     const minTime = new Promise((resolve) => setTimeout(resolve, 1700));
     const pageReady = new Promise((resolve) => {
