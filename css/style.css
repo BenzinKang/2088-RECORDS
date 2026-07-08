@@ -357,19 +357,38 @@ main { position: relative; z-index: 1; }
     pointer-events:none;
 }
 .contact-form select {
-    width: 100%;
-    background: rgba(255,255,255,0.06);
+    width:100%;
+    background: var(--c-glass);
     color: var(--c-white);
-    border: 1px solid var(--c-glass-border);
-    border-radius: var(--radius-sm);
-    padding: 0.9rem 1rem;
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
+    border:1px solid var(--c-glass-border);
+    border-radius:var(--radius-sm);
+    padding:.9rem 1rem;
+    appearance:none;
+    -webkit-appearance:none;
+    color-scheme:dark;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+}
+
+
+.contact-form select:hover {
+    background:rgba(255,255,255,.09);
+}
+
+
+.contact-form select:focus {
+    border-color:var(--c-accent);
+    box-shadow:0 0 20px rgba(0,200,255,.2);
 }
 
 
 .contact-form select option {
-    background: #050A18;
-    color: #F7FAFF;
+    background:#091526;
+    color:var(--c-white);
 }
