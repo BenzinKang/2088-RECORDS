@@ -133,32 +133,7 @@ ${message}`;
   // Custom Select Arrow
   // ==========================
 
-  function initCustomSelect(){
 
-    const select=document.getElementById("contact-subject");
-    if(!select) return;
-
-    const group=select.closest(".form-group");
-
-    select.addEventListener("click",()=>{
-
-      group.classList.toggle("select-open");
-
-    });
-
-    select.addEventListener("blur",()=>{
-
-      group.classList.remove("select-open");
-
-    });
-
-    select.addEventListener("change",()=>{
-
-      group.classList.remove("select-open");
-
-    });
-
-  }
 
   function init(){
 
@@ -166,7 +141,6 @@ ${message}`;
     initNewsletterForm();
     initContactForm();
     initYear();
-    initCustomSelect();
 
   }
 
