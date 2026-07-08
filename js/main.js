@@ -118,3 +118,26 @@ ${message}`;
 })();
 
 document.addEventListener('DOMContentLoaded', Main.init);
+const reviewText = document.getElementById("withoutReview");
+
+const sounds = [
+    "audio/without-review1.mp3",
+    "audio/without-review2.mp3",
+    "audio/without-review3.mp3",
+    "audio/without-review4.mp3"
+];
+
+let clickCount = 0;
+
+reviewText.addEventListener("click", () => {
+    const audio = new Audio(sounds[clickCount]);
+
+    audio.play();
+
+    clickCount++;
+
+    if (clickCount >= sounds.length) {
+        clickCount = 0;
+    }
+});
+
