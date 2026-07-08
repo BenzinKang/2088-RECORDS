@@ -386,7 +386,10 @@ main { position: relative; z-index: 1; }
 }
 
 
-/* Select arrow */
+/* ==========================
+   Custom Select Arrow
+   ========================== */
+
 .contact-form .form-group:has(select){
     position: relative;
 }
@@ -395,16 +398,17 @@ main { position: relative; z-index: 1; }
     content: "";
 
     position: absolute;
-    right: 1rem;
-    top: 50%;
 
-    width: 8px;
-    height: 8px;
+    right: 1rem;
+    top: 52%;
+
+    width: 10px;
+    height: 10px;
 
     border-right: 2px solid var(--c-accent);
     border-bottom: 2px solid var(--c-accent);
 
-    transform: translateY(-70%) rotate(45deg);
+    transform: translateY(-50%) rotate(45deg);
 
     transition: transform .25s ease;
 
@@ -413,5 +417,5 @@ main { position: relative; z-index: 1; }
 
 /* Arrow Up */
 .contact-form .form-group.select-open::after{
-    transform: translateY(-35%) rotate(-135deg);
+    transform: translateY(-50%) rotate(-135deg);
 }
