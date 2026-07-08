@@ -4,86 +4,104 @@
    ========================================================================== */
 
 const Main = (() => {
+
   function initFilterTabs() {
-    const tabs = document.querySelectorAll('[data-filter-tab]');
-    const cards = document.querySelectorAll('[data-release-card]');
+    const tabs = document.querySelectorAll("[data-filter-tab]");
+    const cards = document.querySelectorAll("[data-release-card]");
+
     if (!tabs.length || !cards.length) return;
 
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        tabs.forEach((t) => t.classList.remove('is-active'));
-        tab.classList.add('is-active');
-        tabs.forEach((t) => t.setAttribute('aria-pressed', 'false'));
-        tab.setAttribute('aria-pressed', 'true');
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+
+        tabs.forEach(t => {
+          t.classList.remove("is-active");
+          t.setAttribute("aria-pressed","false");
+        });
+
+        tab.classList.add("is-active");
+        tab.setAttribute("aria-pressed","true");
 
         const filter = tab.dataset.filterTab;
-        cards.forEach((card) => {
-          const match = filter === 'all' || card.dataset.releaseCard === filter;
-          card.style.display = match ? '' : 'none';
+
+        cards.forEach(card => {
+          const match =
+            filter === "all" ||
+            card.dataset.releaseCard === filter;
+
+          card.style.display = match ? "" : "none";
         });
+
       });
     });
   }
 
   function initNewsletterForm() {
-    const form = document.querySelector('[data-newsletter-form]');
-    if (!form) return;
-    const note = form.querySelector('[data-form-note]');
 
-    form.addEventListener('submit', (e) => {
+    const form = document.querySelector("[data-newsletter-form]");
+    if (!form) return;
+
+    const note = form.querySelector("[data-form-note]");
+
+    form.addEventListener("submit",e=>{
+
       e.preventDefault();
-      const input = form.querySelector('input[type="email"]');
-      if (!input.value || !input.checkValidity()) {
-        note.textContent = 'Enter a valid email to continue transmission.';
-        note.classList.remove('is-success');
+
+      const input=form.querySelector("input[type=email]");
+
+      if(!input.value || !input.checkValidity()){
+
+        note.textContent="Enter a valid email to continue transmission.";
+        note.classList.remove("is-success");
         return;
+
       }
-      note.textContent = `Signal received — ${input.value} is now on the frequency.`;
-      note.classList.add('is-success');
+
+      note.textContent=`Signal received — ${input.value} is now on the frequency.`;
+      note.classList.add("is-success");
+
       form.reset();
+
     });
+
   }
 
-function initContactForm() {
-  const form = document.querySelector('[data-contact-form]');
-  if (!form) return;
+  function initContactForm(){
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+    const form=document.querySelector("[data-contact-form]");
+    if(!form) return;
 
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
+    form.addEventListener("submit",e=>{
 
-    const name = document.getElementById('contact-name').value;
-    const email = document.getElementById('contact-email').value;
-    const subject = document.getElementById('contact-subject').value;
-    const message = document.getElementById('contact-message').value;
+      e.preventDefault();
 
-    // 根据选择决定收件邮箱
-    let recipient = "";
+      if(!form.checkValidity()){
+        form.reportValidity();
+        return;
+      }
 
-    if (subject === "demo") {
-      recipient = "CYBERPUNK2088_DEMO@163.com";
-    } else if (subject === "website") {
-      recipient = "3579386804@qq.com";
-    } else if (subject === "business") {
-      recipient = "CYBERPUNK2088@126.COM"
-    }
+      const name=document.getElementById("contact-name").value;
+      const email=document.getElementById("contact-email").value;
+      const subject=document.getElementById("contact-subject").value;
+      const message=document.getElementById("contact-message").value;
 
-    // 邮件主题
-   const mailSubject =
-     subject === "demo"
-       ? "Demo Submission"
-       : subject === "website"
-         ? "Website Related Question"
-         : subject === "business"
-           ? "Business Inquiry"
-           : "Contact";
+      let recipient="";
 
-    // 邮件正文
-    const body =
+      if(subject==="demo")
+        recipient="CYBERPUNK2088_DEMO@163.com";
+      else if(subject==="website")
+        recipient="3579386804@qq.com";
+      else
+        recipient="CYBERPUNK2088@126.COM";
+
+      const mailSubject=
+        subject==="demo"
+        ? "Demo Submission"
+        : subject==="website"
+        ? "Website Related Question"
+        : "Business Inquiry";
+
+      const body=
 `Name: ${name}
 
 Email: ${email}
@@ -92,79 +110,101 @@ Message:
 
 ${message}`;
 
-    // 打开默认邮箱
-    window.location.href =
-      `mailto:${recipient}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
+      window.location.href=
+`mailto:${recipient}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
 
-    // 清空表单
-    form.reset();
-  });
-}
+      form.reset();
 
-  function initYear() {
-    document.querySelectorAll('[data-year]').forEach((el) => {
-      el.textContent = new Date().getFullYear();
     });
+
   }
 
-  function init() {
+  function initYear(){
+
+    document.querySelectorAll("[data-year]").forEach(el=>{
+
+      el.textContent=new Date().getFullYear();
+
+    });
+
+  }
+
+  // ==========================
+  // Custom Select Arrow
+  // ==========================
+
+  function initCustomSelect(){
+
+    const select=document.getElementById("contact-subject");
+    if(!select) return;
+
+    const group=select.closest(".form-group");
+
+    select.addEventListener("click",()=>{
+
+      group.classList.toggle("select-open");
+
+    });
+
+    select.addEventListener("blur",()=>{
+
+      group.classList.remove("select-open");
+
+    });
+
+    select.addEventListener("change",()=>{
+
+      group.classList.remove("select-open");
+
+    });
+
+  }
+
+  function init(){
+
     initFilterTabs();
     initNewsletterForm();
     initContactForm();
     initYear();
+    initCustomSelect();
+
   }
 
-  return { init };
+  return {init};
+
 })();
 
-document.addEventListener('DOMContentLoaded', Main.init);
-const reviewText = document.getElementById("withoutReview");
+document.addEventListener("DOMContentLoaded",Main.init);
 
-const sounds = [
-    "audio/without-review1.wav",
-    "audio/without-review2.wav",
-    "audio/without-review3.wav",
-    "audio/without-review4.wav"
-];
 
-let clickCount = 0;
+// ==========================
+// Easter Egg
+// ==========================
 
-reviewText.addEventListener("click", () => {
-    const audio = new Audio(sounds[clickCount]);
+const reviewText=document.getElementById("withoutReview");
 
-    audio.play();
+if(reviewText){
 
-    clickCount++;
+    const sounds=[
+        "audio/without-review1.wav",
+        "audio/without-review2.wav",
+        "audio/without-review3.wav",
+        "audio/without-review4.wav"
+    ];
 
-    if (clickCount >= sounds.length) {
-        clickCount = 0;
-    }
-});
-document.addEventListener("DOMContentLoaded", () => {
+    let clickCount=0;
 
-    document.querySelectorAll(".contact-form select").forEach(select => {
+    reviewText.addEventListener("click",()=>{
 
-        const group = select.closest(".form-group");
+        const audio=new Audio(sounds[clickCount]);
+        audio.play();
 
-        let opened = false;
+        clickCount++;
 
-        select.addEventListener("click", () => {
-
-            opened = !opened;
-
-            group.classList.toggle("select-open", opened);
-
-        });
-
-        // 选择一个选项后恢复默认状态
-        select.addEventListener("change", () => {
-
-            opened = false;
-
-            group.classList.remove("select-open");
-
-        });
+        if(clickCount>=sounds.length){
+            clickCount=0;
+        }
 
     });
 
-});
+}
