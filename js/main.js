@@ -182,33 +182,46 @@ if(reviewText){
     });
 
 }
-document.addEventListener("DOMContentLoaded",()=>{
+// ==========================
+// Custom Select Arrow
+// ==========================
 
-    const select=document.getElementById("contact-subject");
+document.addEventListener("DOMContentLoaded", () => {
 
-    if(!select) return;
+    const select = document.getElementById("contact-subject");
 
-    const group=select.closest(".form-group");
+    if (!select) return;
 
-    select.addEventListener("mousedown",()=>{
+    const group = select.closest(".form-group");
 
-        group.classList.toggle("select-open");
+    let opened = false;
+
+    // 点击一次翻转一次箭头
+    select.addEventListener("click", () => {
+
+        opened = !opened;
+
+        if (opened) {
+            group.classList.add("select-open");
+        } else {
+            group.classList.remove("select-open");
+        }
 
     });
 
-    select.addEventListener("change",()=>{
+    // 选中之后恢复
+    select.addEventListener("change", () => {
 
+        opened = false;
         group.classList.remove("select-open");
 
     });
 
-    window.addEventListener("click",(e)=>{
+    // 失去焦点恢复
+    select.addEventListener("blur", () => {
 
-        if(!group.contains(e.target)){
-
-            group.classList.remove("select-open");
-
-        }
+        opened = false;
+        group.classList.remove("select-open");
 
     });
 
