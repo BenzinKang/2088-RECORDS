@@ -121,10 +121,10 @@ document.addEventListener('DOMContentLoaded', Main.init);
 const reviewText = document.getElementById("withoutReview");
 
 const sounds = [
-    "audio/without-review1.mp3",
-    "audio/without-review2.mp3",
-    "audio/without-review3.mp3",
-    "audio/without-review4.mp3"
+    "audio/without-review1.wav",
+    "audio/without-review2.wav",
+    "audio/without-review3.wav",
+    "audio/without-review4.wav"
 ];
 
 let clickCount = 0;
