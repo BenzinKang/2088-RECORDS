@@ -385,23 +385,24 @@ main { position: relative; z-index: 1; }
     position:relative;
 }
 
-/*==========================
-Custom Select
-==========================*/
+/* ==========================
+   CONTACT SELECT
+   ========================== */
 
-/* Select */
-
-.contact-form .form-group{
+.contact-form .form-group:has(select){
     position:relative;
 }
 
 .contact-form select{
+
     width:100%;
-    padding:0.9rem 3rem 0.9rem 1rem;
+    height:56px;
+
+    padding:0 54px 0 18px;
 
     background:rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.12);
-    border-radius:12px;
+    border-radius:14px;
 
     color:#fff;
     font-size:15px;
@@ -412,7 +413,7 @@ Custom Select
 
     cursor:pointer;
 
-    transition:.3s;
+    transition:.25s;
 }
 
 .contact-form select:hover{
@@ -421,41 +422,43 @@ Custom Select
 
 .contact-form select:focus{
     outline:none;
-    border-color:#00C8FF;
-    box-shadow:0 0 20px rgba(0,200,255,.2);
+    border-color:#38E0FF;
+    box-shadow:0 0 18px rgba(0,200,255,.25);
 }
 
-.contact-form option{
+.contact-form select option{
     background:#091526;
     color:#fff;
 }
 
 /* Arrow */
 
-.contact-form .form-group::after{
+.contact-form .form-group:has(select)::after{
 
     content:"";
 
     position:absolute;
 
+    right:22px;
     top:50%;
-    right:20px;
 
-    width:8px;
-    height:8px;
+    width:9px;
+    height:9px;
 
-    border-right:1.6px solid #fff;
-    border-bottom:1.6px solid #fff;
+    border-right:2px solid #fff;
+    border-bottom:2px solid #fff;
 
-    transform:translateY(-65%) rotate(45deg);
+    transform:translateY(-60%) rotate(45deg);
+
+    transform-origin:center;
 
     pointer-events:none;
 
-    transition:.25s;
+    transition:transform .25s ease;
 }
 
 .contact-form .form-group.select-open::after{
 
-    transform:translateY(-35%) rotate(-135deg);
+    transform:translateY(-40%) rotate(-135deg);
 
 }
