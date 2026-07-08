@@ -93,3 +93,7 @@
   50% { transform: translateY(0%); }
   100% { transform: translateY(-100%); }
 }
+.scramble-text {
+    display: inline-block;
+    min-width: max-content;
+}
