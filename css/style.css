@@ -811,9 +811,14 @@ main { position: relative; z-index: 1; }
 }
 
 
+.scramble-text {
+    transition: 0.2s ease;
+}
+
+
 .scramble-finished {
 
-    animation: textLock 0.35s ease-out;
+    animation: textLock 0.45s ease-out;
 
 }
 
@@ -824,25 +829,28 @@ main { position: relative; z-index: 1; }
 
     0% {
 
-        opacity:0.5;
+        opacity:0.4;
 
-        filter:blur(3px);
+        transform:scale(0.98);
 
-        text-shadow:none;
+        filter:
+        blur(3px)
+        drop-shadow(0 0 0 transparent);
 
     }
 
 
 
-    35% {
+    40% {
 
         opacity:1;
 
-        filter:blur(0);
+        transform:scale(1.03);
 
-        text-shadow:
-        0 0 8px rgba(0,200,255,0.9),
-        0 0 20px rgba(0,200,255,0.5);
+        filter:
+        blur(0)
+        drop-shadow(0 0 12px #00c8ff)
+        drop-shadow(0 0 35px rgba(0,200,255,0.7));
 
     }
 
@@ -852,7 +860,11 @@ main { position: relative; z-index: 1; }
 
         opacity:1;
 
-        text-shadow:none;
+        transform:scale(1);
+
+        filter:
+        blur(0)
+        drop-shadow(0 0 0 transparent);
 
     }
 
