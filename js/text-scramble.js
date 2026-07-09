@@ -1,6 +1,6 @@
 const TextScramble = (() => {
 
-    const chars = "!<>-_\\/[]{}—=+*^?#∆ΞØΣЖΛΩ∇∴≈≠¤▒░█";
+    const chars = "!<>-_\\/[]{}—=+*^?#∆ΞØΣЖΛΩ∇∴≈≠¤▒░█∫Δδ";
 
 
     function scramble(element) {
