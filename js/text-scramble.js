@@ -2,12 +2,15 @@ const TextScramble = (() => {
 
     const chars = "!<>-_\\/[]{}—=+*^?#________";
 
+
     function scramble(element) {
 
         const original = element.innerText;
         let iteration = 0;
 
+
         const interval = setInterval(() => {
+
 
             element.innerText = original
                 .split("")
@@ -24,48 +27,68 @@ const TextScramble = (() => {
                 })
                 .join("");
 
+
             iteration += 0.35;
 
+
             if (iteration >= original.length) {
+
                 clearInterval(interval);
+
                 element.innerText = original;
+
+
+                // 完成闪光效果
+                element.classList.add("scramble-finished");
+
+
+                setTimeout(() => {
+                    element.classList.remove("scramble-finished");
+                }, 400);
+
             }
 
-        }, 45);
+
+        },45);
 
     }
+
 
 
     function init(){
 
         const texts = document.querySelectorAll(".scramble-text");
 
+
         setTimeout(() => {
 
             texts.forEach((text, i)=>{
+
                 setTimeout(()=>{
+
                     scramble(text);
+
                 }, i * 250);
+
             });
 
-        }, 800);
+
+        },800);
 
     }
 
 
-    return {init};
+    return {
+        init
+    };
+
 
 })();
 
 
+
 document.addEventListener('loaderFinished', () => {
 
-  const texts = document.querySelectorAll('.scramble-text');
-
-  texts.forEach((text, i) => {
-    setTimeout(() => {
-      scramble(text);
-    }, i * 300);
-  });
+    TextScramble.init();
 
 });
