@@ -1,19 +1,19 @@
 const TextScramble = (() => {
 
-    const chars = "!<>-_\\/[]{}—=+*^?#∆ΞØΣЖΛΩ∇∴≈≠¤▒░█∫Δδ";
+    const chars = "!<>-_\\/[]{}—=+*^?#∆ΞØΣЖΛΩ∇∴≈≠¤▒░█";
 
 
     function scramble(element) {
 
         const original = element.innerText.trim();
 
-        const fakeText = "2Ø88 RΞCØRD$";
+        const fakeText = "2Ø88 ΛΞCØRD$";
 
         let iteration = 0;
 
 
-        // Phase 1:
-        // random code -> fake text
+
+        // 第一阶段：乱码 → fake text
 
         const phase1 = setInterval(() => {
 
@@ -25,7 +25,7 @@ const TextScramble = (() => {
 
                     if (index < iteration) {
 
-                        return fakeText[index] || char;
+                        return fakeText[index] || original[index];
 
                     }
 
@@ -40,7 +40,7 @@ const TextScramble = (() => {
 
 
 
-            iteration += 0.35;
+            iteration += 0.45;
 
 
 
@@ -51,8 +51,7 @@ const TextScramble = (() => {
 
 
 
-                // Phase 2:
-                // fake text -> real text
+                // 第二阶段：fake text → 正文
 
                 let recover = 0;
 
@@ -73,7 +72,7 @@ const TextScramble = (() => {
                             }
 
 
-                            return fakeText[index] || char;
+                            return fakeText[index] || original[index];
 
 
                         })
@@ -81,7 +80,7 @@ const TextScramble = (() => {
 
 
 
-                    recover += 0.25;
+                    recover += 0.5;
 
 
 
@@ -95,32 +94,35 @@ const TextScramble = (() => {
 
 
 
-                        // finish flash
+                        // RGB glitch
 
                         element.classList.add(
-                            "scramble-finished"
+                            "rgb-glitch"
                         );
 
 
                         setTimeout(() => {
 
                             element.classList.remove(
-                                "scramble-finished"
+                                "rgb-glitch"
                             );
 
-                        }, 700);
+                        }, 500);
 
 
                     }
 
 
-                }, 60);
+                },60);
+
 
 
             }
 
 
-        }, 45);
+        },45);
+
+
 
     }
 
@@ -129,8 +131,9 @@ const TextScramble = (() => {
     function init() {
 
 
-        const texts = document.querySelectorAll(".scramble-text");
-
+        const texts = document.querySelectorAll(
+            ".scramble-text"
+        );
 
 
         setTimeout(() => {
@@ -141,9 +144,7 @@ const TextScramble = (() => {
 
                 setTimeout(() => {
 
-
                     scramble(text);
-
 
                 }, i * 250);
 
@@ -151,7 +152,7 @@ const TextScramble = (() => {
             });
 
 
-        }, 800);
+        },800);
 
 
     }
