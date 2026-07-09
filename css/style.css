@@ -870,3 +870,137 @@ main { position: relative; z-index: 1; }
 
 
 }
+.rgb-glitch {
+
+    position:relative;
+
+    animation:rgbFlash .45s ease-out;
+
+}
+
+
+.rgb-glitch::before,
+.rgb-glitch::after {
+
+    content:attr(data-text);
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    height:100%;
+
+    pointer-events:none;
+
+}
+
+
+
+.rgb-glitch::before {
+
+    color:#ff003c;
+
+    transform:translateX(-2px);
+
+    mix-blend-mode:screen;
+
+    animation:rgbRed .25s steps(2);
+
+}
+
+
+
+.rgb-glitch::after {
+
+    color:#00eaff;
+
+    transform:translateX(2px);
+
+    mix-blend-mode:screen;
+
+    animation:rgbBlue .25s steps(2);
+
+}
+
+
+
+@keyframes rgbFlash {
+
+
+    0% {
+
+        transform:scale(1);
+
+    }
+
+
+    40% {
+
+        transform:scale(1.03);
+
+    }
+
+
+    100% {
+
+        transform:scale(1);
+
+    }
+
+}
+
+
+
+@keyframes rgbRed {
+
+
+    0% {
+
+        transform:translateX(-3px);
+
+    }
+
+
+    50% {
+
+        transform:translateX(3px);
+
+    }
+
+
+    100% {
+
+        transform:translateX(0);
+
+    }
+
+}
+
+
+
+@keyframes rgbBlue {
+
+
+    0% {
+
+        transform:translateX(3px);
+
+    }
+
+
+    50% {
+
+        transform:translateX(-3px);
+
+    }
+
+
+    100% {
+
+        transform:translateX(0);
+
+    }
+
+}
