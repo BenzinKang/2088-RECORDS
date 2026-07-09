@@ -92,3 +92,50 @@ document.addEventListener('loaderFinished', () => {
     TextScramble.init();
 
 });
+.scramble-finished {
+    position:relative;
+}
+
+
+.scramble-finished::after {
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    bottom:-5px;
+
+    width:100%;
+    height:1px;
+
+    background:#00c8ff;
+
+    box-shadow:
+    0 0 10px #00c8ff;
+
+
+    animation:scan 0.35s ease;
+
+}
+
+
+
+@keyframes scan {
+
+    from{
+        transform:scaleX(0);
+        opacity:0;
+    }
+
+    50%{
+        transform:scaleX(1);
+        opacity:1;
+    }
+
+    to{
+        transform:scaleX(0);
+        opacity:0;
+    }
+
+}
