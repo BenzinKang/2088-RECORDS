@@ -40,12 +40,14 @@ const Loader = (() => {
         function scramble(element) {
 
 
-            const original =
-                element.innerText.trim();
+            const original = element.textContent.trim();
 
+            const fakeTextMap = {
+                "2088": "2Ø88",
+                "RECORDS": "RΞCØR∂$"
+            };
 
-            const fakeText =
-                "2Ø88 ΛΞCØR∂$";
+            const fakeText = fakeTextMap[original] || original;
 
 
             let iteration = 0;
