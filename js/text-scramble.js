@@ -44,7 +44,7 @@ const TextScramble = (() => {
 
                 setTimeout(() => {
                     element.classList.remove("scramble-finished");
-                }, 400);
+                }, 700);
 
             }
 
