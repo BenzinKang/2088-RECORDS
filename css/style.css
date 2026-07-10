@@ -622,3 +622,12 @@ main { position: relative; z-index: 1; }
 .glitch-char{
     display:inline-block;
 }
+.contact-page{
+    background:
+        linear-gradient(rgba(5,10,24,.55),rgba(5,10,24,.85)),
+        url("backgrounds/5.png");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+}
