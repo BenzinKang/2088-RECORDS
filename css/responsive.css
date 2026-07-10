@@ -66,26 +66,7 @@
     }
 
 }
-@media (max-width: 768px) {
 
-    /* 首页隐藏背景视频 */
-    .home-page .bg-video{
-        display: none;
-    }
-
-    /* 手机首页改用背景图片 */
-    .home-page{
-        background:
-            linear-gradient(rgba(5,10,24,.35), rgba(5,10,24,.75)),
-            url("../backgrounds/4.png");
-
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: scroll;
-    }
-
-}
 @media (max-width:768px){
 
     .contact-page,
