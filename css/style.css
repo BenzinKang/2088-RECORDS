@@ -653,32 +653,40 @@ main { position: relative; z-index: 1; }
 
 /* 各页面背景 */
 
-/* =========================
-   Page Backgrounds
-========================= */
-
-
-/* 通用设置 */
-
 .contact-page,
 .releases-page,
 .information-page{
+    position: relative;
+    isolation: isolate;
+}
+
+
+/* 背景层 */
+.contact-page::before,
+.releases-page::before,
+.information-page::before{
+
+    content:"";
+
+    position: fixed;
+
+    inset:0;
+
+    z-index:-1;
+
 
     background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-position:center;
+    background-repeat:no-repeat;
 
 }
 
 
-/* =========================
-   Desktop Background
-========================= */
+/* 各页面背景 */
 
+.contact-page::before{
 
-.contact-page{
-
-    background-image:
+    background:
     linear-gradient(
         rgba(5,10,24,.55),
         rgba(5,10,24,.85)
@@ -688,10 +696,9 @@ main { position: relative; z-index: 1; }
 }
 
 
+.releases-page::before{
 
-.releases-page{
-
-    background-image:
+    background:
     linear-gradient(
         rgba(5,10,24,.55),
         rgba(5,10,24,.85)
@@ -701,10 +708,9 @@ main { position: relative; z-index: 1; }
 }
 
 
+.information-page::before{
 
-.information-page{
-
-    background-image:
+    background:
     linear-gradient(
         rgba(5,10,24,.55),
         rgba(5,10,24,.85)
@@ -712,64 +718,44 @@ main { position: relative; z-index: 1; }
     url("../backgrounds/3.png");
 
 }
-
-
-
-/* =========================
-   Mobile Background
-========================= */
-
-
 @media(max-width:768px){
 
+    .contact-page::before{
 
-    .contact-page{
-
-        background-image:
+        background:
         linear-gradient(
             rgba(5,10,24,.55),
             rgba(5,10,24,.85)
         ),
         url("../backgrounds/2p.png");
 
-        background-position:center center;
-
     }
 
 
+    .releases-page::before{
 
-    .releases-page{
-
-        background-image:
+        background:
         linear-gradient(
             rgba(5,10,24,.55),
             rgba(5,10,24,.85)
         ),
         url("../backgrounds/1p.png");
 
-        background-position:center center;
-
     }
 
 
+    .information-page::before{
 
-    .information-page{
-
-        background-image:
+        background:
         linear-gradient(
             rgba(5,10,24,.55),
             rgba(5,10,24,.85)
         ),
         url("../backgrounds/4p.png");
 
-        background-position:center center;
-
     }
 
-
 }
-
-
 
 
 .bg-video{
