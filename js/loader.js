@@ -191,64 +191,76 @@ const Loader = (() => {
 
     texts.forEach(text=>{
 
-        const original = text.textContent;
+
+        const original =
+            text.textContent.trim();
 
 
-        let changed = false;
+        const fakeMap = {
+
+            "2":"Z",
+            "0":"Ø",
+            "8":"⧖",
+
+            "R":"Γ",
+            "E":"Ξ",
+            "C":"Ɔ",
+            "O":"Ø",
+            "D":"Ð",
+            "S":"$"
+
+        };
+
 
 
         text.addEventListener(
-            "mouseenter",
-            ()=>{
+            "mousemove",
+            (e)=>{
 
 
-                if(changed) return;
+                const rect =
+                    text.getBoundingClientRect();
 
 
-                changed = true;
+
+                const index =
+                    Math.floor(
+                        (
+                            e.clientX - rect.left
+                        )
+                        /
+                        (
+                            rect.width / original.length
+                        )
+                    );
 
 
-                text.classList.add(
-                    "rgb-glitch"
-                );
 
-
-                setTimeout(()=>{
-
-
-                    const chars =
+                const chars =
                     original.split("");
 
 
-                    // 只修改一个字符
-                    if(original === "2088"){
 
-                        chars[2] = "⧖";
+                if(
+                    index >= 0 &&
+                    index < chars.length
+                ){
 
-                    }
-
-
-                    if(original === "RECORDS"){
-
-                        chars[2] = "Ɔ";
-
-                    }
+                    chars[index] =
+                        fakeMap[chars[index]]
+                        ||
+                        chars[index];
 
 
                     text.textContent =
-                    chars.join("");
+                        chars.join("");
 
 
-                    setTimeout(()=>{
+                    text.classList.add(
+                        "rgb-glitch"
+                    );
 
-                        text.classList.remove(
-                            "rgb-glitch"
-                        );
-
-                    },120);
-
-
-                },60);
+                }
 
 
             }
@@ -257,49 +269,27 @@ const Loader = (() => {
 
 
         text.addEventListener(
-               "mouseleave",
-               ()=>{
+            "mouseleave",
+            ()=>{
 
 
-                   if(!changed) return;
+                text.textContent =
+                    original;
 
 
-                   text.classList.add(
-                       "rgb-glitch"
-                   );
+                text.classList.remove(
+                    "rgb-glitch"
+                );
 
 
-                   setTimeout(()=>{
+            }
+        );
 
 
-                          text.textContent =
-                          original;
-   
-
-                          setTimeout(()=>{
-   
-                              text.classList.remove(
-                                  "rgb-glitch"
-                              );
-
-                          },120);
+    });
 
 
-                      },60);
-
-
-
-                      changed = false;
-
-
-                  }
-              );
-
-
-          });
-
-
-       }
+}
 
 
 
