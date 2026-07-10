@@ -6,7 +6,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>2088 // ARCHIVE</title>
+<title>2088 // ARCHIVE SYSTEM</title>
+
 
 <style>
 
@@ -19,6 +20,7 @@ body{
 
     margin:0;
 
+    width:100%;
     height:100vh;
 
     background:#050a18;
@@ -31,9 +33,9 @@ body{
 
     display:flex;
 
-    align-items:center;
-
     justify-content:center;
+
+    align-items:center;
 
     overflow:hidden;
 
@@ -50,6 +52,7 @@ body::before{
     inset:0;
 
     background:
+
     linear-gradient(
         rgba(5,10,24,.75),
         rgba(5,10,24,.95)
@@ -65,31 +68,39 @@ body::before{
 
     width:90%;
 
-    max-width:800px;
+    max-width:850px;
 
     padding:40px;
 
-    border:1px solid rgba(0,200,255,.35);
+    border:
+
+    1px solid rgba(0,200,255,.35);
+
 
     background:
-    rgba(5,10,24,.8);
+
+    rgba(5,10,24,.75);
+
 
     backdrop-filter:blur(15px);
 
+
     box-shadow:
-    0 0 40px rgba(0,200,255,.15);
+
+    0 0 50px rgba(0,200,255,.15);
 
 }
 
 
 
+
 .logo{
 
-    font-size:28px;
+    font-size:32px;
 
     letter-spacing:8px;
 
-    margin-bottom:30px;
+    margin-bottom:10px;
 
 }
 
@@ -99,7 +110,7 @@ body::before{
 
     color:#6e5cff;
 
-    margin-bottom:25px;
+    margin-bottom:35px;
 
 }
 
@@ -107,7 +118,7 @@ body::before{
 
 #screen{
 
-    height:250px;
+    height:320px;
 
     overflow:hidden;
 
@@ -119,13 +130,14 @@ body::before{
 
 
 
-.input-box{
+.input{
 
     display:flex;
 
-    gap:10px;
+    gap:12px;
 
     border-top:
+
     1px solid rgba(0,200,255,.25);
 
     padding-top:20px;
@@ -154,9 +166,30 @@ input{
 
 
 
+.success{
+
+    color:#38e0ff;
+
+    text-shadow:
+
+    0 0 12px #00c8ff;
+
+}
+
+
+
+.warning{
+
+    color:#6e5cff;
+
+}
+
+
+
 .glitch{
 
     animation:
+
     glitch .15s infinite;
 
 }
@@ -165,29 +198,58 @@ input{
 
 @keyframes glitch{
 
-    0%{
-        transform:translate(2px);
-    }
 
+0%{
 
-    50%{
-        transform:translate(-2px);
-    }
-
-
-    100%{
-        transform:translate(0);
-    }
+transform:translate(2px);
 
 }
 
 
-.success{
+50%{
 
-    color:#38e0ff;
+transform:translate(-2px);
 
-    text-shadow:
-    0 0 10px #00c8ff;
+}
+
+
+100%{
+
+transform:translate(0);
+
+}
+
+
+}
+
+
+
+
+@media(max-width:600px){
+
+
+.terminal{
+
+    padding:25px;
+
+}
+
+
+.logo{
+
+    font-size:22px;
+
+}
+
+
+#screen{
+
+    height:280px;
+
+    font-size:14px;
+
+}
+
 
 }
 
@@ -198,6 +260,7 @@ input{
 
 
 <body>
+
 
 
 <div class="terminal">
@@ -216,27 +279,35 @@ NEURAL ACCESS TERMINAL
 
 <div id="screen">
 
-<p>> BOOTING SYSTEM...</p>
-<p>> ESTABLISHING SIGNAL...</p>
-<p>> WAITING FOR COMMAND...</p>
+<p>> INITIALIZING SYSTEM...</p>
+<p>> CONNECTING TO 2088 NETWORK...</p>
+<p>> ACCESS LEVEL: GUEST</p>
+<p>> TYPE HELP FOR COMMANDS</p>
 
 </div>
 
 
 
-<div class="input-box">
+
+<div class="input">
+
 
 <span>></span>
+
 
 <input 
 id="command"
 autocomplete="off"
 placeholder="ENTER COMMAND">
 
+
 </div>
 
 
+
 </div>
+
+
 
 
 
@@ -253,45 +324,53 @@ document.getElementById("command");
 
 
 
-let unlocked=false;
+let level = 0;
 
 
 
-function log(text,className=""){
 
-    const p=
-    document.createElement("p");
-
-    p.textContent=
-    "> "+text;
+function log(text,type=""){
 
 
-    if(className)
-    p.className=className;
+const p =
+document.createElement("p");
 
 
-    screen.appendChild(p);
+p.textContent =
+"> " + text;
 
 
-    screen.scrollTop=
-    screen.scrollHeight;
+
+if(type)
+p.className=type;
+
+
+
+screen.appendChild(p);
+
+
+
+screen.scrollTop =
+screen.scrollHeight;
+
 
 }
 
 
 
 
+
 input.addEventListener(
 "keydown",
-function(e){
+(e)=>{
 
 
-if(e.key!=="Enter")
+if(e.key !== "Enter")
 return;
 
 
 
-const cmd=
+let cmd =
 input.value
 .trim()
 .toLowerCase();
@@ -306,38 +385,227 @@ log(cmd);
 
 
 
+
+
+/* =================
+   GLOBAL
+================= */
+
+
+if(cmd==="home"){
+
+
+log(
+"RETURNING TO MAIN SYSTEM..."
+);
+
+
+setTimeout(()=>{
+
+
+location.href="index.html";
+
+
+},1000);
+
+
+return;
+
+}
+
+
+
+
 if(cmd==="help"){
 
 
-log("AVAILABLE COMMAND:");
+log(
+"AVAILABLE COMMANDS:",
+"warning"
+);
+
+
+log("scan");
 
 log("2088");
+
+log("1788");
+
+log("status");
+
+log("home");
+
+
+return;
+
+}
+
+
+
+
+if(cmd==="status"){
+
+
+log(
+"CURRENT LEVEL: "
++
+(level+1)
+);
+
+
+return;
+
+}
+
+
+
+
+
+/* =================
+   LEVEL 1
+================= */
+
+
+if(level===0){
+
+
+if(cmd==="scan"){
+
+
+level=1;
+
+
+log(
+"SIGNAL FOUND",
+"success"
+);
+
+
+log(
+"UNKNOWN FREQUENCY DETECTED"
+);
+
+
+log(
+"REQUIRED KEY: 2088"
+);
+
+
+}
+
+
+else{
+
+
+log(
+"NO SIGNAL MATCH"
+);
+
+
+}
+
+
+return;
+
+}
+
+
+
+
+
+
+
+/* =================
+   LEVEL 2
+================= */
+
+
+if(level===1){
+
+
+if(cmd==="2088"){
+
+
+level=2;
+
+
+log(
+"FREQUENCY SYNCHRONIZED",
+"success"
+);
+
+
+log(
+"ARCHIVE CHANNEL OPEN"
+);
+
+
+log(
+"REQUIRED KEY: 1788"
+);
 
 
 
 }
 
 
+else{
 
-else if(cmd==="2088"){
+
+log(
+"INCORRECT FREQUENCY"
+);
 
 
-if(unlocked)
+}
+
+
 return;
 
+}
 
-unlocked=true;
 
 
-log("ACCESS GRANTED","success");
 
-log("----------------");
 
-log("ARCHIVE 1788-L FOUND","success");
 
-log("SIGNAL ORIGIN: UNKNOWN");
 
-log("WELCOME TO THE FUTURE WORLD","success");
+/* =================
+   LEVEL 3
+================= */
+
+
+if(level===2){
+
+
+if(cmd==="1788"){
+
+
+level=3;
+
+
+log(
+"ACCESS GRANTED",
+"success"
+);
+
+
+log(
+"ARCHIVE 1788-L UNLOCKED",
+"success"
+);
+
+
+log(
+"ORIGIN: UNKNOWN"
+);
+
+
+log(
+"WELCOME TO THE FUTURE WORLD",
+"success"
+);
+
 
 
 document.body.classList.add(
@@ -347,6 +615,7 @@ document.body.classList.add(
 
 
 setTimeout(()=>{
+
 
 document.body.classList.remove(
 "glitch"
@@ -360,35 +629,37 @@ document.body.classList.remove(
 }
 
 
-
 else{
 
 
-const replies=[
-
-"SEARCHING DATABASE...",
-
-"UNKNOWN COMMAND",
-
-"SIGNAL LOST",
-
-"ENCRYPTION ACTIVE",
-
-"ACCESS DENIED"
-
-];
-
-
 log(
-replies[
-Math.floor(
-Math.random()*replies.length
-)
-]
+"ARCHIVE ENCRYPTED"
 );
 
 
 }
+
+
+return;
+
+}
+
+
+
+
+
+
+if(level===3){
+
+
+log(
+"SYSTEM ALREADY UNLOCKED"
+);
+
+
+}
+
+
 
 
 });
@@ -396,6 +667,7 @@ Math.random()*replies.length
 
 
 </script>
+
 
 
 </body>
