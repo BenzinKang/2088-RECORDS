@@ -318,7 +318,7 @@ const Loader = (() => {
 
         logoTimer = setTimeout(()=>{
             logoClickCount = 0;
-        },1200);
+        },10000);
 
         if(logoClickCount < 5) return;
 
