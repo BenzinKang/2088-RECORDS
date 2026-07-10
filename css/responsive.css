@@ -67,12 +67,4 @@
 
 }
 
-@media (max-width:768px){
 
-    .contact-page,
-    .releases-page,
-    .information-page{
-        background-attachment: scroll;
-    }
-
-}
