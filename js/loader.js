@@ -44,7 +44,7 @@ const Loader = (() => {
 
             const fakeTextMap = {
                 "2088": "ZØS⧖",
-                "RECORDS": "RΞƆØΓ∂$"
+                "RECORDS": "RΞƆØΓÐ$"
             };
 
             const fakeText = fakeTextMap[original] || original;
