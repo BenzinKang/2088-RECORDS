@@ -649,3 +649,13 @@ main { position: relative; z-index: 1; }
     background-position:center;
     background-attachment:fixed;
 }
+.information-page{
+    background:
+        linear-gradient(rgba(5,10,24,.55),rgba(5,10,24,.85)),
+        url("../backgrounds/3.png");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+}
+
