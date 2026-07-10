@@ -420,31 +420,7 @@ const Loader = (() => {
         video.play().catch(()=>{});
 
     }
-    // ====================
-
-    // 等 loader 消失后启动标题动画
-
-    setTimeout(()=>{
-
-        startScramble();
-
-    },900);
-
-    setTimeout(()=>{
-
-        initHoverGlitch();
-        init1788EasterEgg();
-
-    },1000);
-
-    setTimeout(()=>{
-
-        loader.remove();
-
-    },1200);
-
-};
-
+    
 
 
             // 等 loader 消失后启动标题动画
