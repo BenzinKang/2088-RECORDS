@@ -622,38 +622,30 @@ main { position: relative; z-index: 1; }
 .glitch-char{
     display:inline-block;
 }
+
+
+
+/* =========================
+   Page Backgrounds
+========================= */
+
+
+/* 所有页面共用 */
+
 .contact-page,
 .releases-page,
 .information-page{
-    position: relative;
-    isolation: isolate;
-}
-
-
-/* 背景层 */
-.contact-page::before,
-.releases-page::before,
-.information-page::before{
-
-    content:"";
-
-    position: fixed;
-
-    inset:0;
-
-    z-index:-1;
-
 
     background-size: cover;
-    background-position:center;
-    background-repeat:no-repeat;
+    background-position: center;
+    background-repeat: no-repeat;
 
 }
 
 
-/* 各页面背景 */
+/* Contact */
 
-.contact-page::before{
+.contact-page{
 
     background:
     linear-gradient(
@@ -665,7 +657,9 @@ main { position: relative; z-index: 1; }
 }
 
 
-.releases-page::before{
+/* Releases */
+
+.releases-page{
 
     background:
     linear-gradient(
@@ -677,7 +671,9 @@ main { position: relative; z-index: 1; }
 }
 
 
-.information-page::before{
+/* Information */
+
+.information-page{
 
     background:
     linear-gradient(
@@ -687,45 +683,6 @@ main { position: relative; z-index: 1; }
     url("../backgrounds/3.png");
 
 }
-@media(max-width:768px){
-
-    .contact-page::before{
-
-        background:
-        linear-gradient(
-            rgba(5,10,24,.55),
-            rgba(5,10,24,.85)
-        ),
-        url("../backgrounds/2p.png");
-
-    }
-
-
-    .releases-page::before{
-
-        background:
-        linear-gradient(
-            rgba(5,10,24,.55),
-            rgba(5,10,24,.85)
-        ),
-        url("../backgrounds/1p.png");
-
-    }
-
-
-    .information-page::before{
-
-        background:
-        linear-gradient(
-            rgba(5,10,24,.55),
-            rgba(5,10,24,.85)
-        ),
-        url("../backgrounds/4p.png");
-
-    }
-
-}
-
 
 .bg-video{
     position: fixed;
