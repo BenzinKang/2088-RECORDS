@@ -33,7 +33,7 @@ const Loader = (() => {
 
 
         const chars =
-            "!<>-_\\/[]{}—=+*^?#∆ΞØΣЖΛΩ∇∴≈≠¤▒░█";
+            "!<>-_\\/[]{}—=+*^?#∆ΞØΣЖΛΩ∇∴≈≠¤▒░█θΘΠγΓ";
 
 
 
@@ -43,8 +43,8 @@ const Loader = (() => {
             const original = element.textContent.trim();
 
             const fakeTextMap = {
-                "2088": "ZØβS",
-                "RECORDS": "RΞCØR∂$"
+                "2088": "ZØS8",
+                "RECORDS": "RΞCØΓ∂$"
             };
 
             const fakeText = fakeTextMap[original] || original;
