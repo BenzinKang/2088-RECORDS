@@ -193,8 +193,13 @@ const Loader = (() => {
 
 
         const original =
-            text.textContent.trim();
-        let currentText = original;
+             text.dataset.original ||
+             text.textContent.trim();
+
+
+         text.dataset.original =
+             original;
+         let currentText = original;
 
 
         const fakeMap = {
@@ -278,7 +283,7 @@ const Loader = (() => {
 
                 text.textContent =
                     original;
-                currentText =
+                let currentText =
                     original;
 
 
