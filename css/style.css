@@ -632,53 +632,105 @@ main { position: relative; z-index: 1; }
 
 /* 所有页面共用 */
 
-.contact-page{
-    background:
-        linear-gradient(
-            rgba(5,10,24,.55),
-            rgba(5,10,24,.85)
-        ),
-        url("../backgrounds/5.png");
+/* =========================
+   Desktop Background
+========================= */
+
+.contact-page,
+.releases-page,
+.information-page{
 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+
+}
+
+
+.contact-page{
+
+    background-image:
+    linear-gradient(
+        rgba(5,10,24,.55),
+        rgba(5,10,24,.85)
+    ),
+    url("../backgrounds/5.png");
+
 }
 
 
 .releases-page{
-    background:
-        linear-gradient(
-            rgba(5,10,24,.55),
-            rgba(5,10,24,.85)
-        ),
-        url("../backgrounds/1.png");
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-image:
+    linear-gradient(
+        rgba(5,10,24,.55),
+        rgba(5,10,24,.85)
+    ),
+    url("../backgrounds/1.png");
+
 }
 
 
 .information-page{
-    background:
-        linear-gradient(
-            rgba(5,10,24,.55),
-            rgba(5,10,24,.85)
-        ),
-        url("../backgrounds/3.png");
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-image:
+    linear-gradient(
+        rgba(5,10,24,.55),
+        rgba(5,10,24,.85)
+    ),
+    url("../backgrounds/3.png");
+
 }
+
+
+
+
+/* =========================
+   Mobile Fixed Background
+========================= */
+
 @media(max-width:768px){
 
 
-    .contact-page{
+    .contact-page,
+    .releases-page,
+    .information-page{
+
+        background:none;
+
+        position:relative;
+
+        isolation:isolate;
+
+    }
+
+
+    .contact-page::before,
+    .releases-page::before,
+    .information-page::before{
+
+        content:"";
+
+        position:fixed;
+
+        top:0;
+        left:0;
+
+        width:100vw;
+        height:100dvh;
+
+        z-index:-1;
+
+        background-size:cover;
+        background-position:center center;
+        background-repeat:no-repeat;
+
+    }
+
+
+
+    .contact-page::before{
 
         background-image:
         linear-gradient(
@@ -687,13 +739,11 @@ main { position: relative; z-index: 1; }
         ),
         url("../backgrounds/2p.png");
 
-        background-position:center center;
-
     }
 
 
 
-    .releases-page{
+    .releases-page::before{
 
         background-image:
         linear-gradient(
@@ -702,13 +752,11 @@ main { position: relative; z-index: 1; }
         ),
         url("../backgrounds/1p.png");
 
-        background-position:center center;
-
     }
 
 
 
-    .information-page{
+    .information-page::before{
 
         background-image:
         linear-gradient(
@@ -717,10 +765,7 @@ main { position: relative; z-index: 1; }
         ),
         url("../backgrounds/4p.png");
 
-        background-position:center center;
-
     }
-
 
 }
 .bg-video{
