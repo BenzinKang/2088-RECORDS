@@ -622,44 +622,117 @@ main { position: relative; z-index: 1; }
 .glitch-char{
     display:inline-block;
 }
-.contact-page{
-    background:
-        linear-gradient(rgba(5,10,24,.55), rgba(5,10,24,.85)),
-        url("../backgrounds/5.png");
-}
-
-.releases-page{
-    background:
-        linear-gradient(rgba(5,10,24,.55), rgba(5,10,24,.85)),
-        url("../backgrounds/1.png");
-}
-
-.information-page{
-    background:
-        linear-gradient(rgba(5,10,24,.55), rgba(5,10,24,.85)),
-        url("../backgrounds/3.png");
-}
-
-/* 所有页面共用 */
 .contact-page,
 .releases-page,
 .information-page{
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    position: relative;
+    isolation: isolate;
 }
 
-/* 手机端 */
-@media (max-width:768px){
 
-    .contact-page,
-    .releases-page,
-    .information-page{
-        background-attachment: scroll;
+/* 背景层 */
+.contact-page::before,
+.releases-page::before,
+.information-page::before{
+
+    content:"";
+
+    position: fixed;
+
+    inset:0;
+
+    z-index:-1;
+
+
+    background-size: cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+}
+
+
+/* 各页面背景 */
+
+.contact-page::before{
+
+    background:
+    linear-gradient(
+        rgba(5,10,24,.55),
+        rgba(5,10,24,.85)
+    ),
+    url("../backgrounds/5.png");
+
+}
+
+
+.releases-page::before{
+
+    background:
+    linear-gradient(
+        rgba(5,10,24,.55),
+        rgba(5,10,24,.85)
+    ),
+    url("../backgrounds/1.png");
+
+}
+
+
+.information-page::before{
+
+    background:
+    linear-gradient(
+        rgba(5,10,24,.55),
+        rgba(5,10,24,.85)
+    ),
+    url("../backgrounds/3.png");
+
+}
+
+
+@media(max-width:768px){
+
+    .contact-page::before{
+
+        background:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/mobile-5.png");
+
+    }
+
+
+    .releases-page::before{
+
+        background:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/mobile-1.png");
+
+    }
+
+
+    .information-page::before{
+
+        background:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/mobile-3.png");
+
     }
 
 }
+
+
+
+
+
+
 .bg-video{
     position: fixed;
     inset: 0;
