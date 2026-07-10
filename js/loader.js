@@ -128,7 +128,7 @@ const Loader = (() => {
 
 
 
-                        recover += 1;
+                        recover += 0.5;
 
 
 
