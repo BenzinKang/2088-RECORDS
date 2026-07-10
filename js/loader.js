@@ -182,6 +182,124 @@ const Loader = (() => {
 
 
     }
+   function initHoverGlitch(){
+
+    const texts = document.querySelectorAll(
+        ".scramble-text"
+    );
+
+
+    texts.forEach(text=>{
+
+        const original = text.textContent;
+
+
+        let changed = false;
+
+
+        text.addEventListener(
+            "mouseenter",
+            ()=>{
+
+
+                if(changed) return;
+
+
+                changed = true;
+
+
+                text.classList.add(
+                    "rgb-glitch"
+                );
+
+
+                setTimeout(()=>{
+
+
+                    const chars =
+                    original.split("");
+
+
+                    // 只修改一个字符
+                    if(original === "2088"){
+
+                        chars[2] = "⧖";
+
+                    }
+
+
+                    if(original === "RECORDS"){
+
+                        chars[2] = "Ɔ";
+
+                    }
+
+
+                    text.textContent =
+                    chars.join("");
+
+
+                    setTimeout(()=>{
+
+                        text.classList.remove(
+                            "rgb-glitch"
+                        );
+
+                    },120);
+
+
+                },60);
+
+
+            }
+        );
+
+
+
+        text.addEventListener(
+               "mouseleave",
+               ()=>{
+
+
+                   if(!changed) return;
+
+
+                   text.classList.add(
+                       "rgb-glitch"
+                   );
+
+
+                   setTimeout(()=>{
+
+
+                          text.textContent =
+                          original;
+   
+
+                          setTimeout(()=>{
+   
+                              text.classList.remove(
+                                  "rgb-glitch"
+                              );
+
+                          },120);
+
+
+                      },60);
+
+
+
+                      changed = false;
+
+
+                  }
+              );
+
+
+          });
+
+
+       }
 
 
 
