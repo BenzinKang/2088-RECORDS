@@ -199,7 +199,7 @@ const Loader = (() => {
 
          text.dataset.original =
              original;
-         let currentText = original;
+      
 
 
         const fakeMap = {
@@ -243,7 +243,7 @@ const Loader = (() => {
 
 
                 const chars =
-                    currentText.split("");
+                    original.split("");
 
 
 
@@ -260,8 +260,7 @@ const Loader = (() => {
 
                     text.textContent =
                         chars.join("");
-                    currentText =
-                        chars.join("");
+                  
 
 
                     text.classList.add(
@@ -283,8 +282,7 @@ const Loader = (() => {
 
                 text.textContent =
                     original;
-                let currentText =
-                    original;
+                
 
 
                 text.classList.remove(
