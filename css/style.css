@@ -675,7 +675,54 @@ main { position: relative; z-index: 1; }
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
+@media(max-width:768px){
 
+
+    .contact-page{
+
+        background-image:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/2p.png");
+
+        background-position:center center;
+
+    }
+
+
+
+    .releases-page{
+
+        background-image:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/1p.png");
+
+        background-position:center center;
+
+    }
+
+
+
+    .information-page{
+
+        background-image:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/4p.png");
+
+        background-position:center center;
+
+    }
+
+
+}
 .bg-video{
     position: fixed;
     inset: 0;
