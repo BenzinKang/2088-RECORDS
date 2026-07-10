@@ -426,6 +426,7 @@ const Loader = (() => {
            setTimeout(()=>{
 
                 initHoverGlitch();
+                init1788EasterEgg();
 
             },1000);
 
@@ -438,12 +439,7 @@ const Loader = (() => {
 
 
         };
-          setTimeout(()=>{
-
-               init1788EasterEgg();
-  
-          },1000);
-
+         
 
 
 
