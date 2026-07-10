@@ -43,8 +43,8 @@ const Loader = (() => {
             const original = element.textContent.trim();
 
             const fakeTextMap = {
-                "2088": "ZØS8",
-                "RECORDS": "RΞCØΓ∂$"
+                "2088": "ZØS⧖",
+                "RECORDS": "RΞƆØΓ∂$"
             };
 
             const fakeText = fakeTextMap[original] || original;
