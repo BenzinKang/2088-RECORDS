@@ -698,7 +698,7 @@ main { position: relative; z-index: 1; }
             rgba(5,10,24,.55),
             rgba(5,10,24,.85)
         ),
-        url("../backgrounds/mobile-5.png");
+        url("../backgrounds/2p.png");
 
     }
 
@@ -710,7 +710,7 @@ main { position: relative; z-index: 1; }
             rgba(5,10,24,.55),
             rgba(5,10,24,.85)
         ),
-        url("../backgrounds/mobile-1.png");
+        url("../backgrounds/1p.png");
 
     }
 
@@ -722,7 +722,7 @@ main { position: relative; z-index: 1; }
             rgba(5,10,24,.55),
             rgba(5,10,24,.85)
         ),
-        url("../backgrounds/mobile-3.png");
+        url("../backgrounds/4p.png");
 
     }
 
