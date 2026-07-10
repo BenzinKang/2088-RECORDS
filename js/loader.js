@@ -81,7 +81,7 @@ const Loader = (() => {
 
 
 
-                iteration += 0.35;
+                iteration += 0.7;
 
 
 
