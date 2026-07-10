@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>2088 // ARCHIVE</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+
+body{
+
+    margin:0;
+
+    height:100vh;
+
+    background:#050a18;
+
+    color:#00c8ff;
+
+    font-family:
+    "Courier New",
+    monospace;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    overflow:hidden;
+
+}
+
+
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+    linear-gradient(
+        rgba(5,10,24,.75),
+        rgba(5,10,24,.95)
+    );
+
+    z-index:-1;
+
+}
+
+
+
+.terminal{
+
+    width:90%;
+
+    max-width:800px;
+
+    padding:40px;
+
+    border:1px solid rgba(0,200,255,.35);
+
+    background:
+    rgba(5,10,24,.8);
+
+    backdrop-filter:blur(15px);
+
+    box-shadow:
+    0 0 40px rgba(0,200,255,.15);
+
+}
+
+
+
+.logo{
+
+    font-size:28px;
+
+    letter-spacing:8px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.subtitle{
+
+    color:#6e5cff;
+
+    margin-bottom:25px;
+
+}
+
+
+
+#screen{
+
+    height:250px;
+
+    overflow:hidden;
+
+    line-height:1.8;
+
+    font-size:15px;
+
+}
+
+
+
+.input-box{
+
+    display:flex;
+
+    gap:10px;
+
+    border-top:
+    1px solid rgba(0,200,255,.25);
+
+    padding-top:20px;
+
+}
+
+
+
+input{
+
+    flex:1;
+
+    background:none;
+
+    border:none;
+
+    outline:none;
+
+    color:#00c8ff;
+
+    font-size:16px;
+
+    font-family:inherit;
+
+}
+
+
+
+.glitch{
+
+    animation:
+    glitch .15s infinite;
+
+}
+
+
+
+@keyframes glitch{
+
+    0%{
+        transform:translate(2px);
+    }
+
+
+    50%{
+        transform:translate(-2px);
+    }
+
+
+    100%{
+        transform:translate(0);
+    }
+
+}
+
+
+.success{
+
+    color:#38e0ff;
+
+    text-shadow:
+    0 0 10px #00c8ff;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="terminal">
+
+
+<div class="logo">
+2088 // ARCHIVE
+</div>
+
+
+<div class="subtitle">
+NEURAL ACCESS TERMINAL
+</div>
+
+
+
+<div id="screen">
+
+<p>> BOOTING SYSTEM...</p>
+<p>> ESTABLISHING SIGNAL...</p>
+<p>> WAITING FOR COMMAND...</p>
+
+</div>
+
+
+
+<div class="input-box">
+
+<span>></span>
+
+<input 
+id="command"
+autocomplete="off"
+placeholder="ENTER COMMAND">
+
+</div>
+
+
+</div>
+
+
+
+
+<script>
+
+
+const screen =
+document.getElementById("screen");
+
+
+const input =
+document.getElementById("command");
+
+
+
+let unlocked=false;
+
+
+
+function log(text,className=""){
+
+    const p=
+    document.createElement("p");
+
+    p.textContent=
+    "> "+text;
+
+
+    if(className)
+    p.className=className;
+
+
+    screen.appendChild(p);
+
+
+    screen.scrollTop=
+    screen.scrollHeight;
+
+}
+
+
+
+
+input.addEventListener(
+"keydown",
+function(e){
+
+
+if(e.key!=="Enter")
+return;
+
+
+
+const cmd=
+input.value
+.trim()
+.toLowerCase();
+
+
+
+input.value="";
+
+
+
+log(cmd);
+
+
+
+if(cmd==="help"){
+
+
+log("AVAILABLE COMMAND:");
+
+log("2088");
+
+
+
+}
+
+
+
+else if(cmd==="2088"){
+
+
+if(unlocked)
+return;
+
+
+unlocked=true;
+
+
+log("ACCESS GRANTED","success");
+
+log("----------------");
+
+log("ARCHIVE 1788-L FOUND","success");
+
+log("SIGNAL ORIGIN: UNKNOWN");
+
+log("WELCOME TO THE FUTURE WORLD","success");
+
+
+document.body.classList.add(
+"glitch"
+);
+
+
+
+setTimeout(()=>{
+
+document.body.classList.remove(
+"glitch"
+);
+
+
+},2000);
+
+
+
+}
+
+
+
+else{
+
+
+const replies=[
+
+"SEARCHING DATABASE...",
+
+"UNKNOWN COMMAND",
+
+"SIGNAL LOST",
+
+"ENCRYPTION ACTIVE",
+
+"ACCESS DENIED"
+
+];
+
+
+log(
+replies[
+Math.floor(
+Math.random()*replies.length
+)
+]
+);
+
+
+}
+
+
+});
+
+
+
+</script>
+
+
+</body>
+
+</html>
