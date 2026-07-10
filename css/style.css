@@ -628,12 +628,6 @@ main { position: relative; z-index: 1; }
         url("../backgrounds/5.png");
 }
 
-.home-page{
-    background:
-        linear-gradient(rgba(5,10,24,.55), rgba(5,10,24,.85)),
-        url("../backgrounds/4.png");
-}
-
 .releases-page{
     background:
         linear-gradient(rgba(5,10,24,.55), rgba(5,10,24,.85)),
@@ -648,7 +642,6 @@ main { position: relative; z-index: 1; }
 
 /* 所有页面共用 */
 .contact-page,
-.home-page,
 .releases-page,
 .information-page{
     background-size: cover;
@@ -661,11 +654,37 @@ main { position: relative; z-index: 1; }
 @media (max-width:768px){
 
     .contact-page,
-    .home-page,
     .releases-page,
     .information-page{
         background-attachment: scroll;
     }
 
+}
+.bg-video{
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    z-index: -3;
+
+    pointer-events: none;
+}
+
+.video-overlay{
+    position: fixed;
+    inset: 0;
+
+    background: linear-gradient(
+        rgba(5,10,24,.35),
+        rgba(5,10,24,.75)
+    );
+
+    z-index: -2;
+
+    pointer-events: none;
 }
 
