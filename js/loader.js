@@ -72,7 +72,7 @@ const Loader = (() => {
                         }
 
 
-                        return chars[
+                        return fakeText[index] || chars[
                             Math.floor(
                                 Math.random()
                                 *
@@ -86,7 +86,7 @@ const Loader = (() => {
 
 
 
-                iteration += 0.9;
+                iteration += 0.5;
 
 
 
