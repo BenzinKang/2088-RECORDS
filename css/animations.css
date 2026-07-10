@@ -97,3 +97,34 @@
     display: inline-block;
     min-width: max-content;
 }
+.rgb-glitch {
+    animation: rgbSplit 120ms steps(2);
+}
+
+
+@keyframes rgbSplit {
+
+    0% {
+        text-shadow:
+        2px 0 rgba(255,70,90,.45),
+        -2px 0 rgba(70,220,255,.45);
+    }
+
+
+    50% {
+
+        text-shadow:
+        -2px 0 rgba(255,70,90,.45),
+        2px 0 rgba(70,220,255,.45);
+
+    }
+
+
+    100% {
+
+        text-shadow:
+        0 0 transparent;
+
+    }
+
+}
