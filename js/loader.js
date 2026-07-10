@@ -194,6 +194,7 @@ const Loader = (() => {
 
         const original =
             text.textContent.trim();
+        let currentText = original;
 
 
         const fakeMap = {
@@ -237,7 +238,7 @@ const Loader = (() => {
 
 
                 const chars =
-                    original.split("");
+                    currentText.split("");
 
 
 
@@ -253,6 +254,8 @@ const Loader = (() => {
 
 
                     text.textContent =
+                        chars.join("");
+                    currentText =
                         chars.join("");
 
 
@@ -274,6 +277,8 @@ const Loader = (() => {
 
 
                 text.textContent =
+                    original;
+                currentText =
                     original;
 
 
