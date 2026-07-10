@@ -379,8 +379,12 @@ const Loader = (() => {
                 startScramble();
 
             },900);
+           
+           setTimeout(()=>{
 
+                initHoverGlitch();
 
+            },1000);
 
 
             setTimeout(()=>{
