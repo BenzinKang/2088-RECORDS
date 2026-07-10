@@ -412,6 +412,38 @@ const Loader = (() => {
             document.body.classList.add(
                 "is-loaded"
             );
+            // ===== 新增这里 =====
+    const video = document.querySelector(".bg-video");
+
+    if(video){
+
+        video.play().catch(()=>{});
+
+    }
+    // ====================
+
+    // 等 loader 消失后启动标题动画
+
+    setTimeout(()=>{
+
+        startScramble();
+
+    },900);
+
+    setTimeout(()=>{
+
+        initHoverGlitch();
+        init1788EasterEgg();
+
+    },1000);
+
+    setTimeout(()=>{
+
+        loader.remove();
+
+    },1200);
+
+};
 
 
 
