@@ -640,3 +640,12 @@ main { position: relative; z-index: 1; }
     background-position:center;
     background-attachment:fixed;
 }
+.releases-page{
+    background:
+        linear-gradient(rgba(5,10,24,.55),rgba(5,10,24,.85)),
+        url("../backgrounds/1.png");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+}
