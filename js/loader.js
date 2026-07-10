@@ -51,6 +51,7 @@ const Loader = (() => {
 
 
             let iteration = 0;
+            element.innerText = original;
 
 
 
