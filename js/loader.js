@@ -73,13 +73,7 @@ const Loader = (() => {
                         }
 
 
-                        return fakeText[index] || chars[
-                            Math.floor(
-                                Math.random()
-                                *
-                                chars.length
-                            )
-                        ];
+                        return original[index];
 
 
                     })
