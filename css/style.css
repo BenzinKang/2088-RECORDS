@@ -653,37 +653,6 @@ main { position: relative; z-index: 1; }
 
 /* 各页面背景 */
 
-.contact-page,
-.releases-page,
-.information-page{
-    position: relative;
-    isolation: isolate;
-}
-
-
-/* 背景层 */
-.contact-page::before,
-.releases-page::before,
-.information-page::before{
-
-    content:"";
-
-    position: fixed;
-
-    inset:0;
-
-    z-index:-1;
-
-
-    background-size: cover;
-    background-position:center;
-    background-repeat:no-repeat;
-
-}
-
-
-/* 各页面背景 */
-
 .contact-page::before{
 
     background:
