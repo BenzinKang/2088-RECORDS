@@ -86,7 +86,7 @@ const Loader = (() => {
 
 
 
-                iteration += 0.8;
+                iteration += 0.9;
 
 
 
@@ -128,7 +128,7 @@ const Loader = (() => {
 
 
 
-                        recover += 0.9;
+                        recover += 1;
 
 
 
