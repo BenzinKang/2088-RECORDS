@@ -1004,3 +1004,6 @@ main { position: relative; z-index: 1; }
     }
 
 }
+.glitch-char{
+    display:inline-block;
+}
