@@ -795,4 +795,34 @@ main { position: relative; z-index: 1; }
 
     pointer-events: none;
 }
+@media(max-width:768px){
 
+    .bg-video{
+
+        opacity:0;
+
+    }
+
+
+    body::before{
+
+        content:"";
+
+        position:fixed;
+
+        inset:0;
+
+        background:
+        url("../backgrounds/6p.png");
+
+        background-size:cover;
+
+        background-position:center;
+
+        background-repeat:no-repeat;
+
+        z-index:-3;
+
+    }
+
+}
