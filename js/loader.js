@@ -9,6 +9,8 @@
    ========================================================================== */
 
 const Loader = (() => {
+   let logoClickCount = 0;
+   let logoTimer = null;
 
 
     const STATUS_MESSAGES = [
@@ -299,6 +301,48 @@ const Loader = (() => {
 
 
 }
+   function init1788EasterEgg(){
+
+    const logo = document.querySelector(".logo");
+    const title = document.querySelector(".scramble-text");
+
+    if(!logo || !title) return;
+
+    logo.addEventListener("click",(e)=>{
+
+        e.preventDefault();
+
+        logoClickCount++;
+
+        clearTimeout(logoTimer);
+
+        logoTimer = setTimeout(()=>{
+            logoClickCount = 0;
+        },1200);
+
+        if(logoClickCount < 5) return;
+
+        logoClickCount = 0;
+
+        logo.classList.add("rgb-glitch");
+        title.classList.add("rgb-glitch");
+
+        const original = title.textContent;
+
+        title.textContent = "1788-L";
+
+        setTimeout(()=>{
+
+            title.textContent = original;
+
+            logo.classList.remove("rgb-glitch");
+            title.classList.remove("rgb-glitch");
+
+        },3000);
+
+    });
+
+}
 
 
 
@@ -394,6 +438,11 @@ const Loader = (() => {
 
 
         };
+          setTimeout(()=>{
+
+               init1788EasterEgg();
+  
+          },1000);
 
 
 
