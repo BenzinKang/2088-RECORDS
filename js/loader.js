@@ -376,7 +376,7 @@ const Loader = (() => {
 
         if(videoLoader){
 
-            videoLoader.remove();
+            video.remove();
 
         }
 
