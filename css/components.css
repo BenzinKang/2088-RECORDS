@@ -108,11 +108,12 @@
     gap: var(--space-sm);
 }
 
-@media (max-width:768px){
+@media(max-width:768px){
 
     .loader-video{
-        transform: scale(0.7);
-        transform-origin: center;
+
+        object-fit:contain;
+
     }
 
 }
