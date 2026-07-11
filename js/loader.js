@@ -389,6 +389,7 @@ const isHome =
 
 // 首页第一次进入：视频模式
 if(isHome && firstVisit && loaderVideo){
+   loader.classList.add("video-loader");
 
     if(loaderContent){
 
@@ -401,6 +402,8 @@ if(isHome && firstVisit && loaderVideo){
 
 // 首页非第一次进入：恢复普通loader
 if(isHome && !firstVisit){
+   loader.classList.remove("video-loader");
+   
 
     if(loaderVideo){
 
