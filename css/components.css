@@ -111,7 +111,7 @@
 @media (max-width:768px){
 
     .loader-video{
-        transform: scale(0.92);
+        transform: scale(0.7);
         transform-origin: center;
     }
 
