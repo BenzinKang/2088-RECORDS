@@ -93,6 +93,13 @@
   z-index: 2;
 
 }
+.loader:not(:has(.loader-video)) .loader-content {
+    position: static;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 
 
 
