@@ -769,7 +769,7 @@ main { position: relative; z-index: 1; }
 
 }
 
-@media(max-width:1024px) and (orientation:landscape){
+@media(max-width:1200px) and (orientation:landscape){
 
 
     .contact-page::before{
