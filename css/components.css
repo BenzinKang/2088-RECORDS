@@ -108,16 +108,11 @@
     gap: var(--space-sm);
 }
 
-@media(max-width:768px){
+@media (max-width:768px){
 
     .loader-video{
-
-        width:90%;
-        height:90%;
-
-        top:5%;
-        left:5%;
-
+        transform: scale(0.92);
+        transform-origin: center;
     }
 
 }
