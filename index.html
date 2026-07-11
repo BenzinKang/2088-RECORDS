@@ -31,12 +31,43 @@
 
   <!-- Loader -->
   <div class="loader" data-loader>
-    <div class="loader-mark">
-    <img src="Images/LOGO.png" alt="2088 RECORDS Logo">
+
+
+    <video 
+    class="loader-video"
+    autoplay
+    muted
+    playsinline
+    preload="auto">
+
+        <source src="videos/loader.mp4" type="video/mp4">
+
+    </video>
+
+
+    <div class="loader-overlay"></div>
+
+
+    <div class="loader-content">
+
+        <div class="loader-mark">
+            <img src="Images/LOGO.png" alt="2088 RECORDS Logo">
+        </div>
+
+
+        <div class="loader-bar"></div>
+
+
+        <div 
+        class="loader-status" 
+        data-loader-status>
+            ESTABLISHING SIGNAL
+        </div>
+
     </div>
-    <div class="loader-bar"></div>
-    <div class="loader-status" data-loader-status>ESTABLISHING SIGNAL</div>
-  </div>
+
+
+</div>
 
   <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
