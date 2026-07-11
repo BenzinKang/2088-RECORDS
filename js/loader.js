@@ -401,6 +401,33 @@ const Loader = (() => {
             loader.querySelector(
                 "[data-loader-status]"
             );
+       const loaderContent =
+    loader.querySelector(
+        ".loader-content"
+    );
+
+
+const loaderVideo =
+    loader.querySelector(
+        ".loader-video"
+    );
+
+
+// 首页首次进入：隐藏文字和logo
+if(loaderVideo && !sessionStorage.getItem("2088_entered")){
+
+    if(loaderContent){
+
+        loaderContent.style.display = "none";
+
+    }
+
+
+    sessionStorage.setItem(
+        "2088_entered",
+        "true"
+    );
+
 
 
 
@@ -493,10 +520,6 @@ const Loader = (() => {
         new Promise(resolve=>{
 
 
-    const loaderVideo =
-    document.querySelector(".loader-video");
-
-
     if(loaderVideo){
 
         loaderVideo.addEventListener(
@@ -508,7 +531,6 @@ const Loader = (() => {
         );
 
 
-        // 防止视频异常卡死
         setTimeout(resolve,5000);
 
 
@@ -522,7 +544,6 @@ const Loader = (() => {
 
 
 });
-
 
 
 
