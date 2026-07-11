@@ -375,12 +375,11 @@ const isHome =
     document.body.classList.contains(
         "home-index"
     );
-
-
-const loaderVideo =
-    loader.querySelector(
-        ".loader-video"
+    const firstVisit =
+    !sessionStorage.getItem(
+        "2088_entered"
     );
+
 
 
 // 首页第一次进入：视频模式
