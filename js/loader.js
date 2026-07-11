@@ -368,19 +368,20 @@ const Loader = (() => {
 
     if(isHome && !firstVisit){
 
-        const videoLoader =
-        document.querySelector(
-            ".video-loader"
-        );
+    if(loaderVideo){
 
-
-        if(videoLoader){
-
-            video.remove();
-
-        }
+        loaderVideo.remove();
 
     }
+
+
+    if(loaderContent){
+
+        loaderContent.style.display = "flex";
+
+    }
+
+}
 
 
     if(isHome && firstVisit){
