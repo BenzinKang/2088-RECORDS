@@ -414,7 +414,7 @@ const loaderVideo =
 
 
 // 首页首次进入：隐藏文字和logo
-if(loaderVideo && !sessionStorage.getItem("2088_entered")){
+if(loaderVideo && firstVisit){
 
     if(loaderContent){
 
@@ -422,16 +422,7 @@ if(loaderVideo && !sessionStorage.getItem("2088_entered")){
 
     }
 
-
-    sessionStorage.setItem(
-        "2088_entered",
-        "true"
-    );
-
-
-
-
-        let step = 0;
+}
 
 
 
