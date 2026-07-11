@@ -456,10 +456,35 @@ const Loader = (() => {
         new Promise(resolve=>{
 
 
-            setTimeout(resolve,1700);
+    const loaderVideo =
+    document.querySelector(".loader-video");
 
 
-        });
+    if(loaderVideo){
+
+        loaderVideo.addEventListener(
+            "ended",
+            resolve,
+            {
+                once:true
+            }
+        );
+
+
+        // 防止视频异常卡死
+        setTimeout(resolve,5000);
+
+
+    }else{
+
+
+        setTimeout(resolve,1700);
+
+
+    }
+
+
+});
 
 
 
