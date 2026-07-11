@@ -370,6 +370,11 @@ const loaderVideo =
         ".loader-video"
     );
 
+const status =
+    loader.querySelector(
+        "[data-loader-status]"
+    );
+
 
 const isHome =
     document.body.classList.contains(
