@@ -354,6 +354,43 @@ const Loader = (() => {
             document.querySelector(
                 "[data-loader]"
             );
+           const isHome =
+    document.body.classList.contains(
+        "home-index"
+    );
+
+
+    const firstVisit =
+    !sessionStorage.getItem(
+        "2088_entered"
+    );
+
+
+    if(isHome && !firstVisit){
+
+        const videoLoader =
+        document.querySelector(
+            ".video-loader"
+        );
+
+
+        if(videoLoader){
+
+            videoLoader.remove();
+
+        }
+
+    }
+
+
+    if(isHome && firstVisit){
+
+        sessionStorage.setItem(
+            "2088_entered",
+            "true"
+        );
+
+    }
 
 
         if(!loader) return;
