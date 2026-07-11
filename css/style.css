@@ -772,6 +772,45 @@ main { position: relative; z-index: 1; }
 @media(max-width:1200px) and (orientation:landscape){
 
 
+    .contact-page,
+    .releases-page,
+    .information-page{
+
+        background:none;
+
+        position:relative;
+
+        isolation:isolate;
+
+    }
+
+
+    .contact-page::before,
+    .releases-page::before,
+    .information-page::before{
+
+        content:"";
+
+        position:fixed;
+
+        top:0;
+        left:0;
+
+        width:100vw;
+        height:100dvh;
+
+        z-index:-1;
+
+        background-size:cover;
+
+        background-position:center center;
+
+        background-repeat:no-repeat;
+
+    }
+
+
+
     .contact-page::before{
 
         background-image:
@@ -809,9 +848,7 @@ main { position: relative; z-index: 1; }
 
     }
 
-
 }
-
 
 
 
