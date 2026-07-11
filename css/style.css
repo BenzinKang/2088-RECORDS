@@ -769,6 +769,49 @@ main { position: relative; z-index: 1; }
 
 }
 
+@media(max-width:768px) and (orientation:landscape){
+
+
+    .contact-page::before{
+
+        background-image:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/8h.png");
+
+    }
+
+
+
+    .releases-page::before{
+
+        background-image:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/7h.png");
+
+    }
+
+
+
+    .information-page::before{
+
+        background-image:
+        linear-gradient(
+            rgba(5,10,24,.55),
+            rgba(5,10,24,.85)
+        ),
+        url("../backgrounds/9h.png");
+
+    }
+
+
+}
+
 
 
 
