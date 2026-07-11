@@ -377,9 +377,9 @@ const isHome =
     );
 
 
-const firstVisit =
-    !sessionStorage.getItem(
-        "2088_entered"
+const loaderVideo =
+    loader.querySelector(
+        ".loader-video"
     );
 
 
@@ -389,6 +389,30 @@ if(isHome && firstVisit && loaderVideo){
     if(loaderContent){
 
         loaderContent.style.display = "none";
+
+    }
+
+}
+
+
+// 首页非第一次进入：恢复普通loader
+if(isHome && !firstVisit){
+
+    if(loaderVideo){
+
+        loaderVideo.remove();
+
+    }
+
+
+    loader.classList.remove(
+        "video-loader"
+    );
+
+
+    if(loaderContent){
+
+        loaderContent.style.display = "flex";
 
     }
 
@@ -406,16 +430,6 @@ if(isHome && firstVisit){
 }
 
 
-// 首页首次进入：隐藏文字和logo
-if(loaderVideo && firstVisit){
-
-    if(loaderContent){
-
-        loaderContent.style.display = "none";
-
-    }
-
-}
 
 
         let step = 0;
