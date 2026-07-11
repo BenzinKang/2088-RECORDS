@@ -723,17 +723,42 @@ main { position: relative; z-index: 1; }
 }
 
 
-.information-page{
+.informaton-bg-video{
 
-    background-image:
-    linear-gradient(
-        rgba(5,10,24,.55),
-        rgba(5,10,24,.85)
-    ),
-    url("../backgrounds/3.png");
+    position:fixed;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    z-index:-3;
+
+    pointer-events:none;
 
 }
 
+
+
+.information-video-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+    linear-gradient(
+        rgba(5,10,24,.55),
+        rgba(5,10,24,.85)
+    );
+
+    z-index:-2;
+
+    pointer-events:none;
+
+}
 
 
 
@@ -828,6 +853,11 @@ main { position: relative; z-index: 1; }
 
     }
    .releases-bg-video{
+
+        display:none;
+
+    }
+   .information-bg-video{
 
         display:none;
 
@@ -977,6 +1007,11 @@ main { position: relative; z-index: 1; }
 
     }
    .releases-bg-video{
+
+        display:none;
+
+    }
+   .information-bg-video{
 
         display:none;
 
