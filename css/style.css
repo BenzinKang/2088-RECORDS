@@ -723,7 +723,7 @@ main { position: relative; z-index: 1; }
 }
 
 
-.informaton-bg-video{
+.information-bg-video{
 
     position:fixed;
 
@@ -739,7 +739,6 @@ main { position: relative; z-index: 1; }
     pointer-events:none;
 
 }
-
 
 
 .information-video-overlay{
@@ -758,7 +757,6 @@ main { position: relative; z-index: 1; }
 
     pointer-events:none;
 
-}
 
 
 
