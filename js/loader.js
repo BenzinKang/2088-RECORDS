@@ -350,59 +350,16 @@ const Loader = (() => {
     function init(){
 
 
-        const loader =
-            document.querySelector(
-                "[data-loader]"
-            );
-           const isHome =
-    document.body.classList.contains(
-        "home-index"
+const loader =
+    document.querySelector(
+        "[data-loader]"
     );
 
 
-    const firstVisit =
-    !sessionStorage.getItem(
-        "2088_entered"
-    );
+if(!loader) return;
 
 
-    if(isHome && !firstVisit){
-
-    if(loaderVideo){
-
-        loaderVideo.remove();
-
-    }
-
-
-    if(loaderContent){
-
-        loaderContent.style.display = "flex";
-
-    }
-
-}
-
-
-    if(isHome && firstVisit){
-
-        sessionStorage.setItem(
-            "2088_entered",
-            "true"
-        );
-
-    }
-
-
-        if(!loader) return;
-
-
-
-        const status =
-            loader.querySelector(
-                "[data-loader-status]"
-            );
-       const loaderContent =
+const loaderContent =
     loader.querySelector(
         ".loader-content"
     );
@@ -412,6 +369,41 @@ const loaderVideo =
     loader.querySelector(
         ".loader-video"
     );
+
+
+const isHome =
+    document.body.classList.contains(
+        "home-index"
+    );
+
+
+const firstVisit =
+    !sessionStorage.getItem(
+        "2088_entered"
+    );
+
+
+// 首页第一次进入：视频模式
+if(isHome && firstVisit && loaderVideo){
+
+    if(loaderContent){
+
+        loaderContent.style.display = "none";
+
+    }
+
+}
+
+
+// 首页进入记录
+if(isHome && firstVisit){
+
+    sessionStorage.setItem(
+        "2088_entered",
+        "true"
+    );
+
+}
 
 
 // 首页首次进入：隐藏文字和logo
@@ -426,7 +418,7 @@ if(loaderVideo && firstVisit){
 }
 
 
-
+        let step = 0;
         const statusTimer =
         setInterval(()=>{
 
@@ -508,11 +500,12 @@ if(loaderVideo && firstVisit){
 
 
 
-        const minTime =
-        new Promise(resolve=>{
+const minTime =
+new Promise(resolve=>{
 
 
-    if(loaderVideo){
+    if(loaderVideo && isHome && firstVisit){
+
 
         loaderVideo.addEventListener(
             "ended",
@@ -523,13 +516,20 @@ if(loaderVideo && firstVisit){
         );
 
 
-        setTimeout(resolve,5000);
+        // 防止视频异常
+        setTimeout(
+            resolve,
+            6000
+        );
 
 
     }else{
 
 
-        setTimeout(resolve,1700);
+        setTimeout(
+            resolve,
+            1700
+        );
 
 
     }
