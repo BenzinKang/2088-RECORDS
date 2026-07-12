@@ -983,6 +983,14 @@ main { position: relative; z-index: 1; }
     object-fit:cover;
 
     z-index:-6;
+
+    filter:brightness(0.7);
+    transition:filter .5s ease;
+}
+
+
+.home-page.video-off .bg-image{
+    filter:brightness(1);
 }
 
 
