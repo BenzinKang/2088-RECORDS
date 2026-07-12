@@ -960,7 +960,7 @@ main { position: relative; z-index: 1; }
 
     object-fit:cover;
 
-    z-index:-3;
+    z-index:-2;
 
     pointer-events:none;
     mix-blend-mode:screen;
@@ -993,7 +993,7 @@ main { position: relative; z-index: 1; }
         rgba(5,10,24,.75)
     );
 
-    z-index:-2;
+    z-index:-3;
 
     pointer-events:none;
 
