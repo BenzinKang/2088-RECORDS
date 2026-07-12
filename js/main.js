@@ -181,3 +181,77 @@ if (reviewText) {
   });
 
 }
+
+function initMotionToggle(){
+
+    const button =
+    document.querySelector(".motion-toggle");
+
+    const video =
+    document.querySelector(".bg-video");
+
+
+    if(!button || !video) return;
+
+
+    let enabled = true;
+
+
+    button.addEventListener("click",()=>{
+
+
+        if(enabled){
+
+
+            // 开始淡出
+
+            video.classList.add("video-off");
+
+            button.classList.add("active");
+
+
+            // 等淡出结束再暂停
+
+            setTimeout(()=>{
+
+                video.pause();
+
+            },500);
+
+
+
+        }else{
+
+
+            // 先播放
+
+            video.play().catch(()=>{});
+
+
+            // 再淡入
+
+            video.classList.remove("video-off");
+
+            button.classList.remove("active");
+
+
+        }
+
+
+        enabled=!enabled;
+
+
+    });
+
+
+}
+
+
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+    initMotionToggle();
+
+});
