@@ -964,6 +964,9 @@ main { position: relative; z-index: 1; }
 
     pointer-events:none;
     mix-blend-mode:screen;
+    filter:
+         contrast(150%)
+         brightness(120%);
 
 }
 .bg-image{
