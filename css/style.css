@@ -960,7 +960,7 @@ main { position: relative; z-index: 1; }
 
     object-fit:cover;
 
-    z-index:-2;
+    z-index:-3;
 
     pointer-events:none;
     mix-blend-mode:screen;
@@ -978,7 +978,7 @@ main { position: relative; z-index: 1; }
 
     object-fit:cover;
 
-    z-index:-4;
+    z-index:-5;
 }
 
 
@@ -993,10 +993,25 @@ main { position: relative; z-index: 1; }
         rgba(5,10,24,.75)
     );
 
-    z-index:-3;
+    z-index:-4;
 
     pointer-events:none;
 
+}
+.overlay2{
+    position:fixed;
+    inset:0;
+
+    background:
+    radial-gradient(
+        circle at center,
+        rgba(0,200,255,.08),
+        transparent 60%
+    );
+
+    z-index:-2;
+
+    pointer-events:none;
 }
 
 
@@ -1067,5 +1082,12 @@ main { position: relative; z-index: 1; }
 
     }
 
+
+}
+@media (max-width: 768px){
+
+    .overlay2{
+        display:none;
+    }
 
 }
