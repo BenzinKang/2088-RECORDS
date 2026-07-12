@@ -1002,7 +1002,7 @@ main { position: relative; z-index: 1; }
     position:fixed;
     inset:0;
 
-    background:rgba(0,0,0,.35);
+    background:rgba(0,0,0,.2);
 
     z-index:-2;
 
