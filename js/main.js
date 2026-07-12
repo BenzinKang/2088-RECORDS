@@ -206,6 +206,8 @@ function initMotionToggle(){
             // 开始淡出
 
             video.classList.add("video-off");
+            document.querySelector(".home-page")
+                   ?.classList.add("video-off");
 
             button.classList.add("active");
 
@@ -231,6 +233,8 @@ function initMotionToggle(){
             // 再淡入
 
             video.classList.remove("video-off");
+            document.querySelector(".home-page")
+                   ?.classList.remove("video-off");
 
             button.classList.remove("active");
 
