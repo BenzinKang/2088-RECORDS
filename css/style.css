@@ -117,6 +117,10 @@ textarea:focus-visible,
   outline-offset: 4px;
   border-radius: 4px;
 }
+.home-page{
+    position:relative;
+    isolation:isolate;
+}
 
 /* ---- Skip link ---- */
 .skip-link {
