@@ -1045,13 +1045,7 @@ main { position: relative; z-index: 1; }
     }
 
 
-    .home-page{
-
-        position:relative;
-
-        isolation:isolate;
-
-    }
+    
 
 
     .home-page::before{
