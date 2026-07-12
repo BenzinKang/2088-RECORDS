@@ -989,8 +989,8 @@ main { position: relative; z-index: 1; }
 
     background:
     linear-gradient(
-        rgba(5,10,24,.45),
-        rgba(5,10,24,.85)
+        rgba(5,10,24,.6),
+        rgba(5,10,24,.9)
     );
 
     z-index:-4;
