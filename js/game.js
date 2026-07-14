@@ -140,255 +140,274 @@ function drawPlayer() {
     const x = player.x;
     const y = player.y;
 
+
+    // 动画时间
+    const time = Date.now() / 120;
+
+
+    // 跑步摆动
+    const walk =
+        running && !gameOver
+        ? Math.sin(time) * 3
+        : 0;
+
+
+    // 跳跃压缩
+    const jumping =
+        player.y < GROUND_Y - player.height - 5;
+
+
+    const legCompress =
+        jumping ? -5 : 0;
+
+
+
     ctx.save();
 
-    // ===== Glow =====
+
     ctx.shadowBlur = 20;
-    ctx.shadowColor = "#00d7ff";
+    ctx.shadowColor="#00d7ff";
 
-    ctx.strokeStyle = "#00d7ff";
-    ctx.fillStyle = "#061521";
-    ctx.lineWidth = 2;
+    ctx.lineWidth=2;
+    ctx.strokeStyle="#00d7ff";
 
 
-    // ===== Head =====
+
+    /*
+        HEAD / COCKPIT
+    */
+
+
+    ctx.fillStyle="#071522";
+
     ctx.beginPath();
+
     ctx.roundRect(
-        x + 6,
+        x+8,
         y,
-        30,
+        28,
         22,
         5
     );
-    ctx.fill();
-    ctx.stroke();
-
-
-    // Head antenna
-    ctx.beginPath();
-    ctx.moveTo(x + 21, y);
-    ctx.lineTo(x + 21, y - 8);
-    ctx.stroke();
-
-
-    ctx.fillStyle = "#00ffff";
-    ctx.beginPath();
-    ctx.arc(
-        x + 21,
-        y - 10,
-        2,
-        0,
-        Math.PI * 2
-    );
-    ctx.fill();
-
-
-
-    // ===== Eyes =====
-    ctx.shadowBlur = 12;
-    ctx.fillStyle = "#00ffff";
-
-    ctx.fillRect(
-        x + 13,
-        y + 8,
-        7,
-        4
-    );
-
-    ctx.fillRect(
-        x + 23,
-        y + 8,
-        7,
-        4
-    );
-
-
-    // Scan line
-    ctx.strokeStyle = "#38e0ff";
-    ctx.globalAlpha = 0.5;
-
-    ctx.beginPath();
-    ctx.moveTo(x + 10, y + 17);
-    ctx.lineTo(x + 32, y + 17);
-    ctx.stroke();
-
-    ctx.globalAlpha = 1;
-
-
-
-    // ===== Body armor =====
-
-    ctx.fillStyle = "#091526";
-
-    ctx.beginPath();
-    ctx.roundRect(
-        x + 9,
-        y + 22,
-        24,
-        28,
-        4
-    );
 
     ctx.fill();
     ctx.stroke();
 
 
 
-    // chest core
-
-    ctx.shadowBlur = 15;
-    ctx.fillStyle = "#00ffff";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x + 21,
-        y + 34,
-        5,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-
-    // chest lines
-
-    ctx.strokeStyle = "#38e0ff";
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        x + 12,
-        y + 40
-    );
-
-    ctx.lineTo(
-        x + 30,
-        y + 40
-    );
-
-    ctx.stroke();
-
-
-
-    // ===== Arms =====
-
-    ctx.strokeStyle="#00d7ff";
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        x + 9,
-        y + 27
-    );
-
-    ctx.lineTo(
-        x + 2,
-        y + 40
-    );
-
-    ctx.lineTo(
-        x + 5,
-        y + 47
-    );
-
-
-    ctx.moveTo(
-        x + 33,
-        y + 27
-    );
-
-    ctx.lineTo(
-        x + 40,
-        y + 40
-    );
-
-    ctx.lineTo(
-        x + 37,
-        y + 47
-    );
-
-    ctx.stroke();
-
-
-
-    // ===== Legs =====
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        x + 16,
-        y + 50
-    );
-
-    ctx.lineTo(
-        x + 14,
-        y + 63
-    );
-
-    ctx.lineTo(
-        x + 9,
-        y + 67
-    );
-
-
-    ctx.moveTo(
-        x + 26,
-        y + 50
-    );
-
-    ctx.lineTo(
-        x + 28,
-        y + 63
-    );
-
-    ctx.lineTo(
-        x + 33,
-        y + 67
-    );
-
-    ctx.stroke();
-
-
-
-    // Feet glow
+    // glass
 
     ctx.fillStyle="#00ffff";
 
+    ctx.shadowBlur=12;
+
     ctx.fillRect(
-        x + 5,
-        y + 67,
-        9,
+        x+14,
+        y+8,
+        16,
+        5
+    );
+
+
+
+    /*
+        BODY CORE
+    */
+
+
+    ctx.shadowBlur=15;
+
+    ctx.fillStyle="#091526";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        x+10,
+        y+23,
+        24,
+        30,
+        4
+    );
+
+    ctx.fill();
+
+    ctx.stroke();
+
+
+
+    // energy reactor
+
+    ctx.fillStyle="#00ffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x+22,
+        y+37,
+        5 + Math.sin(time)*1,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+
+
+    /*
+        ARMS
+    */
+
+    ctx.shadowBlur=10;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        x+10,
+        y+28
+    );
+
+    ctx.lineTo(
+        x+2,
+        y+40+walk
+    );
+
+
+    ctx.moveTo(
+        x+34,
+        y+28
+    );
+
+    ctx.lineTo(
+        x+42,
+        y+40-walk
+    );
+
+
+    ctx.stroke();
+
+
+
+
+    /*
+        MECH LEGS
+    */
+
+
+    const leftLeg =
+        Math.sin(time)*5;
+
+    const rightLeg =
+        Math.sin(time+Math.PI)*5;
+
+
+
+    // 左液压腿
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        x+16,
+        y+53
+    );
+
+    ctx.lineTo(
+        x+14+leftLeg,
+        y+65+legCompress
+    );
+
+
+    ctx.lineTo(
+        x+8+leftLeg,
+        y+70
+    );
+
+
+
+    // 右腿
+
+    ctx.moveTo(
+        x+28,
+        y+53
+    );
+
+    ctx.lineTo(
+        x+30+rightLeg,
+        y+65+legCompress
+    );
+
+
+    ctx.lineTo(
+        x+36+rightLeg,
+        y+70
+    );
+
+
+    ctx.stroke();
+
+
+
+
+    /*
+        FOOT THRUSTERS
+    */
+
+
+    ctx.fillStyle="#00ffff";
+
+
+    ctx.fillRect(
+        x+5+leftLeg,
+        y+70,
+        10,
         3
     );
 
+
     ctx.fillRect(
-        x + 28,
-        y + 67,
-        9,
+        x+31+rightLeg,
+        y+70,
+        10,
         3
     );
+
+
+
+    /*
+        JUMP BOOSTER
+    */
+
+    if(jumping){
+
+        ctx.shadowBlur=25;
+        ctx.fillStyle="#00ffff";
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x+18,
+            y+72
+        );
+
+        ctx.lineTo(
+            x+22,
+            y+90
+        );
+
+        ctx.lineTo(
+            x+26,
+            y+72
+        );
+
+        ctx.fill();
+
+    }
 
 
     ctx.restore();
-
-}
-
-const buildings = [];
-
-for(let i=0;i<30;i++){
-
-    buildings.push({
-
-        x:i*120,
-
-        width:60+Math.random()*60,
-
-        height:80+Math.random()*180
-
-    });
 
 }
 
