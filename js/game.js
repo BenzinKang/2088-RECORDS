@@ -142,31 +142,235 @@ function drawPlayer() {
 
     ctx.save();
 
-    ctx.shadowBlur = 18;
+    // ===== Glow =====
+    ctx.shadowBlur = 20;
     ctx.shadowColor = "#00d7ff";
+
     ctx.strokeStyle = "#00d7ff";
+    ctx.fillStyle = "#061521";
     ctx.lineWidth = 2;
 
-    // Head
-    ctx.strokeRect(x + 8, y, 26, 20);
 
-    // Eyes
-    ctx.fillStyle = "#00ffff";
-    ctx.fillRect(x + 14, y + 7, 4, 4);
-    ctx.fillRect(x + 24, y + 7, 4, 4);
-
-    // Body
-    ctx.strokeRect(x + 10, y + 20, 22, 24);
-
-    // Legs
+    // ===== Head =====
     ctx.beginPath();
-    ctx.moveTo(x + 16, y + 44);
-    ctx.lineTo(x + 13, y + 60);
+    ctx.roundRect(
+        x + 6,
+        y,
+        30,
+        22,
+        5
+    );
+    ctx.fill();
+    ctx.stroke();
 
-    ctx.moveTo(x + 26, y + 44);
-    ctx.lineTo(x + 29, y + 60);
+
+    // Head antenna
+    ctx.beginPath();
+    ctx.moveTo(x + 21, y);
+    ctx.lineTo(x + 21, y - 8);
+    ctx.stroke();
+
+
+    ctx.fillStyle = "#00ffff";
+    ctx.beginPath();
+    ctx.arc(
+        x + 21,
+        y - 10,
+        2,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+
+
+    // ===== Eyes =====
+    ctx.shadowBlur = 12;
+    ctx.fillStyle = "#00ffff";
+
+    ctx.fillRect(
+        x + 13,
+        y + 8,
+        7,
+        4
+    );
+
+    ctx.fillRect(
+        x + 23,
+        y + 8,
+        7,
+        4
+    );
+
+
+    // Scan line
+    ctx.strokeStyle = "#38e0ff";
+    ctx.globalAlpha = 0.5;
+
+    ctx.beginPath();
+    ctx.moveTo(x + 10, y + 17);
+    ctx.lineTo(x + 32, y + 17);
+    ctx.stroke();
+
+    ctx.globalAlpha = 1;
+
+
+
+    // ===== Body armor =====
+
+    ctx.fillStyle = "#091526";
+
+    ctx.beginPath();
+    ctx.roundRect(
+        x + 9,
+        y + 22,
+        24,
+        28,
+        4
+    );
+
+    ctx.fill();
+    ctx.stroke();
+
+
+
+    // chest core
+
+    ctx.shadowBlur = 15;
+    ctx.fillStyle = "#00ffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x + 21,
+        y + 34,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+
+    // chest lines
+
+    ctx.strokeStyle = "#38e0ff";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x + 12,
+        y + 40
+    );
+
+    ctx.lineTo(
+        x + 30,
+        y + 40
+    );
 
     ctx.stroke();
+
+
+
+    // ===== Arms =====
+
+    ctx.strokeStyle="#00d7ff";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x + 9,
+        y + 27
+    );
+
+    ctx.lineTo(
+        x + 2,
+        y + 40
+    );
+
+    ctx.lineTo(
+        x + 5,
+        y + 47
+    );
+
+
+    ctx.moveTo(
+        x + 33,
+        y + 27
+    );
+
+    ctx.lineTo(
+        x + 40,
+        y + 40
+    );
+
+    ctx.lineTo(
+        x + 37,
+        y + 47
+    );
+
+    ctx.stroke();
+
+
+
+    // ===== Legs =====
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x + 16,
+        y + 50
+    );
+
+    ctx.lineTo(
+        x + 14,
+        y + 63
+    );
+
+    ctx.lineTo(
+        x + 9,
+        y + 67
+    );
+
+
+    ctx.moveTo(
+        x + 26,
+        y + 50
+    );
+
+    ctx.lineTo(
+        x + 28,
+        y + 63
+    );
+
+    ctx.lineTo(
+        x + 33,
+        y + 67
+    );
+
+    ctx.stroke();
+
+
+
+    // Feet glow
+
+    ctx.fillStyle="#00ffff";
+
+    ctx.fillRect(
+        x + 5,
+        y + 67,
+        9,
+        3
+    );
+
+    ctx.fillRect(
+        x + 28,
+        y + 67,
+        9,
+        3
+    );
+
 
     ctx.restore();
 
