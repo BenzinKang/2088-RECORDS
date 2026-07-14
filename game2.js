@@ -95,39 +95,42 @@ class BackgroundSystem {
         this.generateParallaxSectors();
     }
 
+// 找到 BackgroundSystem 类的 generateParallaxSectors 方法并替换
     generateParallaxSectors() {
-        // 1. 远景建筑（缩减尺寸以增强空间远近对比）
+        // 1. 远景建筑（保持原有微缩尺寸）
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 20 + this.rand.next() * 30; // 从 35-80 缩小到 20-50
-            let h = 45 + this.rand.next() * 55; // 从 80-170 缩小到 45-100
+            let w = 20 + this.rand.next() * 30;
+            let h = 45 + this.rand.next() * 55;
             this.bgBuildings.push({ x: curX, w: w, h: h, seed: this.rand.next() });
             curX += w - 3;
         }
 
-        // 2. 中景建筑（整体高度压缩，使夕阳和桥梁露出来）
+        // 2. 中景建筑【升级：引入 4 种奇特的建筑外观类型】
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 30 + this.rand.next() * 40; // 从 45-100 缩小到 30-70
-            let h = 70 + this.rand.next() * 50; // 从 110-190 缩小到 70-120
+            let w = 35 + this.rand.next() * 35; // 稍微放宽宽度以容纳复杂结构
+            let h = 65 + this.rand.next() * 55; 
             this.midBuildings.push({
-                x: curX, w: w, h: h, 
-                type: Math.floor(this.rand.next() * 3),
+                x: curX, 
+                w: w, 
+                h: h, 
+                archType: Math.floor(this.rand.next() * 4), // 新增：0=标准, 1=阶梯塔, 2=斜切顶, 3=机械悬挑/双子星
                 neonColor: this.rand.next() > 0.4 ? (this.rand.next() > 0.5 ? PALETTE.neonCyan : PALETTE.neonMagenta) : null,
                 seed: this.rand.next()
             });
-            curX += w + 15;
+            curX += w + 18; // 增加间距避免奇形怪状的建筑叠在一起
         }
 
-        // 3. 生成前景电线杆（间距较大，移动速度快）
+        // 3. 前景电线杆（保持原样）
         curX = 100;
         while (curX < GAME_WIDTH + 300) {
             this.utilityPoles.push({
                 x: curX,
-                h: 75 + Math.random() * 20, // 随机高度
-                crossarms: Math.random() > 0.3 // 是否带横梁
+                h: 75 + Math.random() * 20,
+                crossarms: Math.random() > 0.3
             });
-            curX += 160 + Math.random() * 100; // 电线杆之间的间距
+            curX += 160 + Math.random() * 100;
         }
     }
 
@@ -262,55 +265,138 @@ class BackgroundSystem {
         ctx.restore();
     }
 
+    // 找到 BackgroundSystem 类的 drawCity 方法并替换
     drawCity(ctx) {
         const pSize = 2;
 
-        // 1. 远景建筑（现在尺寸缩小，更精致地贴在地平线上）
+        // 1. 远景建筑（保持原有灰色剪影）
         ctx.globalAlpha = 0.8;
         ctx.fillStyle = PALETTE.cityDark; 
         for (let b of this.bgBuildings) {
             let bY = FLOOR_Y - b.h;
             ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
             if (b.seed > 0.6) {
-                ctx.fillRect(Math.floor(b.x + b.w/2), Math.floor(bY - 8), 1, 8); // 缩小天线
+                ctx.fillRect(Math.floor(b.x + b.w/2), Math.floor(bY - 8), 1, 8);
             }
         }
         ctx.globalAlpha = 1.0;
 
-        // 2. 中景建筑
+        // 2. 中景建筑【升级：多样式像素建筑渲染】
         for (let b of this.midBuildings) {
-            let bY = FLOOR_Y - b.h;
+            const bx = Math.floor(b.x);
+            const bw = Math.floor(b.w);
+            const bh = Math.floor(b.h);
+            const bY = Math.floor(FLOOR_Y - bh);
             
-            let bGrad = ctx.createLinearGradient(b.x, bY, b.x, FLOOR_Y);
+            // 基础渐变填充
+            let bGrad = ctx.createLinearGradient(bx, bY, bx, FLOOR_Y);
             bGrad.addColorStop(0, '#13142f'); 
             bGrad.addColorStop(1, PALETTE.cityDark); 
             ctx.fillStyle = bGrad;
-            ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
 
-            // Windows
+            // 根据不同的建筑类型进行精细化形状裁剪和绘制
+            ctx.save();
+            ctx.beginPath();
+
+            if (b.archType === 1) { 
+                // 【类型 1】阶梯式 corporate 巨塔
+                ctx.moveTo(bx, FLOOR_Y);
+                ctx.lineTo(bx, bY + bh * 0.4); // 下层基座高
+                ctx.lineTo(bx + bw * 0.2, bY + bh * 0.4);
+                ctx.lineTo(bx + bw * 0.2, bY); // 上层收缩塔身
+                ctx.lineTo(bx + bw * 0.8, bY);
+                ctx.lineTo(bx + bw * 0.8, bY + bh * 0.4);
+                ctx.lineTo(bx + bw, bY + bh * 0.4);
+                ctx.lineTo(bx + bw, FLOOR_Y);
+            } 
+            else if (b.archType === 2) {
+                // 【类型 2】前卫斜切顶建筑
+                ctx.moveTo(bx, FLOOR_Y);
+                ctx.lineTo(bx, bY + 15); // 左侧稍低
+                ctx.lineTo(bx + bw, bY);    // 右侧斜切尖顶
+                ctx.lineTo(bx + bw, FLOOR_Y);
+            } 
+            else if (b.archType === 3 && bw > 45) {
+                // 【类型 3】镂空中部 + 顶部天桥连接（双子星塔）
+                // 左塔
+                ctx.rect(bx, bY, Math.floor(bw * 0.35), bh);
+                // 右塔
+                ctx.rect(bx + Math.floor(bw * 0.65), bY, Math.floor(bw * 0.35), bh);
+                // 顶部连接天桥
+                ctx.rect(bx, bY + 10, bw, 6);
+            } 
+            else {
+                // 【类型 0 或宽度过窄时】传统工业厂房/带有机械侧翼天线的大楼
+                ctx.moveTo(bx, FLOOR_Y);
+                ctx.lineTo(bx, bY);
+                ctx.lineTo(bx + bw, bY);
+                ctx.lineTo(bx + bw, FLOOR_Y);
+                
+                // 顺便在天花板画个小通风机箱
+                ctx.rect(bx + 4, bY - 4, 8, 4);
+            }
+
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // 3. 为奇形怪状的建筑精准排布窗户 (只在楼体范围内绘制)
+            ctx.save();
+            // 使用和楼体相同的路径进行剪裁，防止窗户“飘”到楼体外
+            ctx.beginPath();
+            if (b.archType === 1) {
+                ctx.moveTo(bx, FLOOR_Y); ctx.lineTo(bx, bY + bh * 0.4); ctx.lineTo(bx + bw * 0.2, bY + bh * 0.4); ctx.lineTo(bx + bw * 0.2, bY); ctx.lineTo(bx + bw * 0.8, bY); ctx.lineTo(bx + bw * 0.8, bY + bh * 0.4); ctx.lineTo(bx + bw, bY + bh * 0.4); ctx.lineTo(bx + bw, FLOOR_Y);
+            } else if (b.archType === 2) {
+                ctx.moveTo(bx, FLOOR_Y); ctx.lineTo(bx, bY + 15); ctx.lineTo(bx + bw, bY); ctx.lineTo(bx + bw, FLOOR_Y);
+            } else if (b.archType === 3 && bw > 45) {
+                ctx.rect(bx, bY, Math.floor(bw * 0.35), bh);
+                ctx.rect(bx + Math.floor(bw * 0.65), bY, Math.floor(bw * 0.35), bh);
+            } else {
+                ctx.rect(bx, bY, bw, bh);
+            }
+            ctx.clip();
+
+            // 填充窗户
             ctx.fillStyle = '#1e244a';
             let winSeed = b.seed;
-            for (let wx = b.x + 5; wx < b.x + b.w - 5; wx += 7) {
+            for (let wx = bx + 5; wx < bx + bw - 5; wx += 8) {
                 for (let wy = bY + 8; wy < FLOOR_Y - 10; wy += 12) {
                     winSeed = (winSeed * 31 + 17) % 100;
-                    if (winSeed > 70) {
-                        ctx.fillStyle = winSeed > 88 ? PALETTE.neonGold : '#2d3360';
-                        ctx.fillRect(Math.floor(wx), Math.floor(wy), 2, 4); // 窗户微型化
+                    if (winSeed > 72) {
+                        ctx.fillStyle = winSeed > 88 ? PALETTE.neonGold : '#222954';
+                        ctx.fillRect(Math.floor(wx), Math.floor(wy), 2, 4);
                     }
                 }
             }
+            ctx.restore();
 
-            // 霓虹广告
-            if (b.neonColor) {
-                ctx.fillStyle = b.neonColor;
-                ctx.globalAlpha = 0.5;
-                ctx.fillRect(Math.floor(b.x + 2), Math.floor(bY + 4), 1, Math.floor(b.h - 10));
-                
-                if (b.type === 1) {
-                    ctx.fillRect(Math.floor(b.x + b.w/2 - 6), Math.floor(bY + 3), 12, 4);
-                }
-                ctx.globalAlpha = 1.0;
+            // 4. 独特的霓虹点缀与天线细节
+            ctx.fillStyle = b.neonColor || PALETTE.neonCyan;
+            ctx.globalAlpha = 0.5;
+
+            if (b.archType === 1) {
+                // 阶梯巨塔顶端的激光针
+                ctx.fillRect(bx + Math.floor(bw/2), bY - 14, 1, 14);
+                ctx.fillRect(bx + Math.floor(bw/2) - 1, bY - 8, 3, 1);
+            } 
+            else if (b.archType === 2 && b.neonColor) {
+                // 斜切顶沿边缘发光的霓虹灯条
+                ctx.save();
+                ctx.strokeStyle = b.neonColor;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(bx, bY + 15);
+                ctx.lineTo(bx + bw, bY);
+                ctx.stroke();
+                ctx.restore();
             }
+            else if (b.archType === 3 && bw > 45) {
+                // 双子星连接天桥处的强霓虹指示灯
+                ctx.fillStyle = PALETTE.neonMagenta;
+                ctx.fillRect(bx + Math.floor(bw * 0.35), bY + 12, Math.floor(bw * 0.3), 2);
+            }
+
+            ctx.globalAlpha = 1.0;
         }
     }
 
