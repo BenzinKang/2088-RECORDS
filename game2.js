@@ -248,7 +248,7 @@ class BackgroundSystem {
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, GAME_WIDTH, FLOOR_Y);
 
-        // 2. 震撼超大夕阳
+// 2. 震撼超大夕阳
         let sunX = GAME_WIDTH / 2; 
         let sunY = FLOOR_Y - 5; 
         let sunRadius = 75;     
@@ -264,10 +264,11 @@ class BackgroundSystem {
         ctx.fill();
         ctx.restore();
 
-        ctx.save();
+        // === 【精准修复】用一个独立的 save 块把太阳裁剪彻底隔离 ===
+        ctx.save(); 
         ctx.beginPath();
         ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
-        ctx.clip();
+        ctx.clip(); // 开启裁剪，只对太阳内部生效
 
         let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
         sunGrad.addColorStop(0, '#ffd11a'); 
@@ -283,7 +284,7 @@ class BackgroundSystem {
             let currentBarWidth = Math.floor((y - (sunY - sunRadius + 15)) / 7) + 1;
             ctx.fillRect(sunX - sunRadius - 10, y, sunRadius * 2 + 20, currentBarWidth);
         }
-        ctx.restore();
+        ctx.restore(); // 【核心】立刻释放 clip 裁剪区域和颜色状态！确保不污染后面的大楼
 
         // 3. 不规则写实叠云
         ctx.save();
