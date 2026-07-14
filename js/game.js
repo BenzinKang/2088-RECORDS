@@ -739,3 +739,7 @@ document
     gameLoop();
 
 });
+
+document
+    .getElementById("restartButton")
+    .addEventListener("click", restart);
