@@ -660,6 +660,10 @@ function restart() {
 
     player.velocityY = 0;
 
+    timer = 0;
+
+    requestAnimationFrame(gameLoop);
+
 }
 
 let timer = 0;
