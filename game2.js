@@ -140,46 +140,62 @@ class BackgroundSystem {
         }
     }
 
-   // 在 game.js 的 BackgroundSystem 类中找到并替换此函数
+
+ // 替换 game.js 中 BackgroundSystem 类的 drawSky 函数
     drawSky(ctx) {
-        // --- 1. 创建符合“合成器浪潮”风格的天空渐变 ---
-        // 顶部：深紫色 (171033) 
-        // 中部：强烈的霓虹粉紫色 (4c103e) 
-        // 城市线：温暖的橙色 (ff5500)
+        // 1. 创建 Synthwave 紫橙粉渐变天空
         let skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
         skyGrad.addColorStop(0, '#171033');    // 深紫 Synthwave Top
-        skyGrad.addColorStop(0.5, '#4c103e');  // 霓虹粉紫 Middle (新增)
-        skyGrad.addColorStop(1, '#ff5500');    // 温暖橙 Horizon (sunset warm glow)
+        skyGrad.addColorStop(0.5, '#4c103e');  // 霓虹粉紫 Middle
+        skyGrad.addColorStop(1, '#ff5500');    // 温暖橙 Horizon
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, GAME_WIDTH, FLOOR_Y);
 
-        // --- 2. 绘制巨大的合成器浪潮夕阳 ---
-        let sunX = GAME_WIDTH / 2; // 夕阳放在画面中央
-        let sunY = FLOOR_Y + 10;   // 夕阳低垂在城市后方
-        let sunRadius = 60;       // 巨大的太阳
+        // 2. 绘制合成器浪潮巨大的太阳 (把太阳往上提，并添加复古横向切线效果)
+        let sunX = GAME_WIDTH / 2; 
+        let sunY = FLOOR_Y - 45;   // 【修改】将太阳的Y轴大幅往上提，使其跃出地平线
+        let sunRadius = 45;        // 太阳半径
 
-        // 夕阳核心：金色 (ffaa00) 到透明的径向渐变
-        let sunGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, sunRadius);
-        sunGrad.addColorStop(0, '#ffaa00');    // Golden Core
-        sunGrad.addColorStop(0.4, '#ff5500');  // Orange mid
-        sunGrad.addColorStop(1, 'transparent');// Edge blends out
+        // 绘制太阳发光底层 (Bloom)
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        let bloomGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, sunRadius + 20);
+        bloomGrad.addColorStop(0, '#ff0055');
+        bloomGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = bloomGrad;
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, sunRadius + 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // 绘制太阳本体
+        ctx.save();
+        // 限制绘制区域在一个圆形中
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+        ctx.clip();
+
+        // 填充太阳渐变色
+        let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
+        sunGrad.addColorStop(0, '#ffaa00'); // 顶部金黄
+        sunGrad.addColorStop(1, '#ff0055'); // 底部渐变霓虹粉
 
         ctx.fillStyle = sunGrad;
-        ctx.beginPath();
-        // 绘制一个半圆夕阳，使其看起来正在落下
-        ctx.arc(sunX, sunY, sunRadius, Math.PI, Math.PI * 2); 
-        ctx.fill();
-        
-        // 可选：给夕阳增加一个霓虹光晕 (Bloom Effect)
-        ctx.globalAlpha = 0.3; // 透明度
-        ctx.fillStyle = '#ff0055'; // 霓虹粉光晕
-        ctx.beginPath();
-        ctx.arc(sunX, sunY, sunRadius + 20, Math.PI, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1.0; // 恢复透明度
+        ctx.fillRect(sunX - sunRadius, sunY - sunRadius, sunRadius * 2, sunRadius * 2);
 
-        // --- 3. 绘制大气层像素云（保持原样，但色彩会受夕阳影响） ---
-        ctx.fillStyle = '#171033'; // 云使用天空顶部色，形成剪影
+        // --- 核心亮点：Synthwave 标志性的太阳水平切线 ---
+        // 我们用天空的渐变色在太阳上画横线，营造出复古合成器浪潮效果
+        ctx.fillStyle = skyGrad; 
+        let barHeight = 2; // 切线高度
+        // 从太阳中下部开始切线，越往下切线越宽
+        for (let y = sunY - 10; y < sunY + sunRadius; y += 6) {
+            let currentBarWidth = Math.floor((y - (sunY - 10)) / 4) + 1;
+            ctx.fillRect(sunX - sunRadius, y, sunRadius * 2, currentBarWidth);
+        }
+        ctx.restore();
+
+        // 3. 绘制大气层像素云（保持原样）
+        ctx.fillStyle = '#171033';
         ctx.globalAlpha = 0.3;
         const pSize = 4;
         for (let c of this.clouds) {
