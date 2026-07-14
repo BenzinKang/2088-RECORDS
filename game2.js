@@ -78,10 +78,9 @@ class ParticleSystem {
         ctx.globalAlpha = 1.0;
     }
 }
-
 class BackgroundSystem {
     constructor() {
-        // 暖色调、不规则写实叠云
+        // 温暖黄昏、不规则写实叠云
         this.clouds = [
             { x: 30,  y: 12, w: 110, h: 14, speed: 0.02, alpha: 0.18, color: '#ff6a00' },
             { x: 190, y: 30, w: 160, h: 22, speed: 0.01, alpha: 0.22, color: '#b33600' },
@@ -92,32 +91,29 @@ class BackgroundSystem {
         this.rand = new SeededRandom(789);
         this.bgBuildings = [];
         this.midBuildings = [];
-        this.utilityPoles = []; // 前景电线杆
-        this.smokeParticles = []; // 工厂烟雾粒子
-        this.factories = []; // 远景独立工厂
+        this.utilityPoles = []; 
+        this.smokeParticles = []; 
+        this.factories = []; 
         
-        // 重新加入的高架桥车流粒子 (x, speed, width, color)
         this.highwayTraffic = [];
         this.initTraffic();
-
         this.generateParallaxSectors();
     }
 
     initTraffic() {
-        // 在高架桥上随机生成车流光迹
         for (let i = 0; i < 12; i++) {
             this.highwayTraffic.push({
                 x: Math.random() * GAME_WIDTH,
-                yOffset: -1 + Math.random() * 3, // 桥面高度微调分道
-                speed: 1.5 + Math.random() * 2.5, // 不同的车速
-                length: 8 + Math.random() * 15, // 车灯光轨长度
-                color: Math.random() > 0.4 ? '#ff2a00' : '#00ffff' // 尾灯红，前灯蓝绿
+                yOffset: -1 + Math.random() * 3, 
+                speed: 1.5 + Math.random() * 2.5, 
+                length: 8 + Math.random() * 15, 
+                color: Math.random() > 0.4 ? '#ff2a00' : '#00ffff' 
             });
         }
     }
 
     generateParallaxSectors() {
-        // 1. 最远处高楼重构：陆家嘴现代感 + 赛博朋克超高层（扭曲塔、东方明珠球体、高塔避雷针）
+        // 1. 最远处高楼重构
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
             let w = 14 + this.rand.next() * 16; 
@@ -148,7 +144,7 @@ class BackgroundSystem {
             factX += 300 + this.rand.next() * 150; 
         }
 
-        // 3. 中景多元化现代写字楼群（保持矮小比例，给大夕阳和高架桥腾出视觉空间）
+        // 3. 中景多元化现代写字楼群
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
             let w = 24 + this.rand.next() * 18; 
@@ -202,7 +198,6 @@ class BackgroundSystem {
             f.x -= 0.09 * baseSpeed * dt * 60;
             if (f.x + f.w < 0) f.x += GAME_WIDTH + 300;
 
-            // 烟雾产生
             if (Math.random() < 0.05 * dt * 60) {
                 const chimney1X = f.x + f.w * 0.35;
                 const chimney1Y = FLOOR_Y - f.chimneyH1;
@@ -212,13 +207,11 @@ class BackgroundSystem {
                 let ty = Math.random() > 0.5 ? chimney1Y : chimney2Y;
 
                 this.smokeParticles.push({
-                    x: tx,
-                    y: ty,
+                    x: tx, y: ty,
                     vx: -0.8 - Math.random() * 0.4, 
                     vy: -0.3 - Math.random() * 0.3, 
                     size: 1 + Math.random() * 2,    
-                    alpha: 0.3,
-                    life: 1.0
+                    alpha: 0.3, life: 1.0
                 });
             }
         }
@@ -238,7 +231,7 @@ class BackgroundSystem {
             if (b.x + b.w < -50) b.x += GAME_WIDTH + 200;
         }
 
-        // 烟雾粒子物理更新
+        // 烟雾粒子更新
         for (let i = this.smokeParticles.length - 1; i >= 0; i--) {
             let p = this.smokeParticles[i];
             p.x += p.vx * dt * 60;
@@ -287,10 +280,11 @@ class BackgroundSystem {
         ctx.fill();
         ctx.restore();
 
+        // --- 【核心修复】使用独立的局部 Canvas 状态，防止太阳切线穿透到大楼背景上 ---
         ctx.save();
         ctx.beginPath();
         ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
-        ctx.clip();
+        ctx.clip(); // 将接下来的横线硬性裁剪在太阳圆圈内
 
         let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
         sunGrad.addColorStop(0, '#ffd11a'); 
@@ -300,13 +294,13 @@ class BackgroundSystem {
         ctx.fillStyle = sunGrad;
         ctx.fillRect(sunX - sunRadius, sunY - sunRadius, sunRadius * 2, sunRadius * 2);
 
-        // 太阳网格切线
+        // 太阳内部网格切线
         ctx.fillStyle = skyGrad; 
         for (let y = sunY - sunRadius + 15; y < sunY + sunRadius; y += 7) {
             let currentBarWidth = Math.floor((y - (sunY - sunRadius + 15)) / 7) + 1;
             ctx.fillRect(sunX - sunRadius - 10, y, sunRadius * 2 + 20, currentBarWidth);
         }
-        ctx.restore();
+        ctx.restore(); // 完美恢复状态，确保切线不会干扰后续图层
 
         // 3. 不规则写实叠云
         ctx.save();
@@ -342,8 +336,8 @@ class BackgroundSystem {
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-        // 1. 远景高耸摩天大楼（调暗至 #140706，完美的重影和强对比背光面）
-        ctx.fillStyle = '#140706'; 
+        // 1. 远景高耸摩天大楼（【核心修改】改用冷调深黑灰 `#0a0b10`，彻底斩断红色视觉残留）
+        ctx.fillStyle = '#0a0b10'; 
         for (let b of this.bgBuildings) {
             let bx = Math.floor(b.x);
             let bw = Math.floor(b.w);
@@ -355,7 +349,6 @@ class BackgroundSystem {
             ctx.moveTo(bx, FLOOR_Y);
 
             if (b.landmarkType === 1) {
-                // 仿东方明珠塔式
                 ctx.lineTo(bx + bw * 0.4, bY + bh * 0.6);
                 ctx.lineTo(bx + bw * 0.4, bY); 
                 ctx.lineTo(bx + bw * 0.6, bY);
@@ -369,7 +362,6 @@ class BackgroundSystem {
                 ctx.fill();
             } 
             else if (b.landmarkType === 2) {
-                // 上海中心旋转流线
                 ctx.lineTo(bx, bY + bh * 0.7);
                 ctx.bezierCurveTo(bx + bw * 0.1, bY + bh * 0.4, bx + bw * 0.2, bY + bh * 0.2, bx + bw * 0.4, bY);
                 ctx.lineTo(bx + bw * 0.6, bY);
@@ -377,7 +369,6 @@ class BackgroundSystem {
                 ctx.fill();
             }
             else if (b.landmarkType === 3) {
-                // 赛博广告大厦
                 ctx.lineTo(bx, bY + bh * 0.25);
                 ctx.lineTo(bx - 3, bY + bh * 0.25); 
                 ctx.lineTo(bx - 3, bY + bh * 0.12);
@@ -388,7 +379,6 @@ class BackgroundSystem {
                 ctx.fill();
             }
             else {
-                // 经典科技楼
                 ctx.lineTo(bx + bw * 0.15, bY + bh * 0.3);
                 ctx.lineTo(bx + bw * 0.35, bY);
                 ctx.lineTo(bx + bw * 0.65, bY);
@@ -400,15 +390,15 @@ class BackgroundSystem {
             
             // 航空红灯
             if (b.hasSpire) {
-                ctx.fillStyle = '#0a0302';
+                ctx.fillStyle = '#050508';
                 ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 12), 1, 12);
                 ctx.fillStyle = '#ff1100'; 
                 ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 13), 1, 1);
             }
         }
 
-        // 2. 独立远景工厂与烟囱 (调暗至 #120504)
-        ctx.fillStyle = '#120504'; 
+        // 2. 独立远景工厂与烟囱 (【核心修改】同步改成极深暗色 `#07080c`)
+        ctx.fillStyle = '#07080c'; 
         for (let f of this.factories) {
             let fx = Math.floor(f.x);
             let fw = Math.floor(f.w);
@@ -430,33 +420,31 @@ class BackgroundSystem {
             let c1W = 4;
             let c1X = Math.floor(fx + fw * 0.35 - c1W / 2);
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1, c1W, f.chimneyH1);
-            ctx.fillStyle = '#7a1c11'; // 暗红色工业圈
+            ctx.fillStyle = '#3a110e'; // 略微调暗工业细节圈
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1 + 4, c1W, 3);
-            ctx.fillStyle = '#120504';
+            ctx.fillStyle = '#07080c';
 
             // 烟囱2
             let c2W = 3;
             let c2X = Math.floor(fx + fw * 0.7 - c2W / 2);
             ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2, c2W, f.chimneyH2);
-            ctx.fillStyle = '#7a1c11';
+            ctx.fillStyle = '#3a110e';
             ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2 + 3, c2W, 2);
-            ctx.fillStyle = '#120504';
+            ctx.fillStyle = '#07080c';
         }
 
-        // 3. 中景现代写字楼 (调暗，使其作为前景的高对比衬托)
+        // 3. 中景现代写字楼 
         for (let b of this.midBuildings) {
             const bx = Math.floor(b.x);
             const bw = Math.floor(b.w);
             const bh = Math.floor(b.h);
             const bY = Math.floor(FLOOR_Y - bh);
             
-            // 使用比之前更暗的渐变剪影色
             let bGrad = ctx.createLinearGradient(bx, bY, bx, FLOOR_Y);
             bGrad.addColorStop(0, '#190807'); 
             bGrad.addColorStop(1, '#0f0302'); 
             ctx.fillStyle = bGrad;
 
-            // 绘制中景建筑形状
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(bx, FLOOR_Y);
@@ -495,7 +483,6 @@ class BackgroundSystem {
             ctx.fill();
             ctx.restore();
 
-            // 环球大圆孔扣空
             if (b.buildingType === 1) {
                 ctx.save();
                 ctx.globalCompositeOperation = 'destination-out';
@@ -505,7 +492,7 @@ class BackgroundSystem {
                 ctx.restore();
             }
 
-            // 楼顶天线避雷针 (调暗为更细的深色线)
+            // 楼顶天线避雷针
             ctx.save();
             ctx.strokeStyle = '#0f0404';
             ctx.lineWidth = 1;
@@ -527,13 +514,13 @@ class BackgroundSystem {
             }
             ctx.restore();
 
-            // 楼栋窗户（在更暗的楼身上会显得更亮更通透）
+            // 楼栋窗户
             let winSeed = b.seed;
             for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) {
                 for (let wy = bY + 16; wy < FLOOR_Y - 8; wy += 11) {
                     winSeed = (winSeed * 37 + 23) % 100;
                     if (winSeed > 72) {
-                        ctx.fillStyle = winSeed > 90 ? '#ffbf66' : '#9e3f00'; // 稍微微调了窗户亮色，增加质感
+                        ctx.fillStyle = winSeed > 90 ? '#ffbf66' : '#9e3f00'; 
                         ctx.fillRect(Math.floor(wx), Math.floor(wy), 1.2, 2);
                     }
                 }
@@ -551,7 +538,7 @@ class BackgroundSystem {
                 let boardY = bY + b.boardYOffset;
                 
                 ctx.shadowBlur = 0;
-                drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#0c0405'); // 牌子底色也调暗
+                drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#0c0405'); 
                 
                 ctx.strokeStyle = neonColor;
                 ctx.lineWidth = 1;
@@ -569,10 +556,10 @@ class BackgroundSystem {
             }
         }
 
-        // 4. 绘制从工厂飘出的轻微白烟
+        // 4. 绘制白烟
         this.drawSmoke(ctx);
 
-        // 5. 空中高架桥 (Viaduct) 
+        // 5. 空中高架桥 
         this.drawViaduct(ctx);
     }
 
@@ -581,18 +568,15 @@ class BackgroundSystem {
         const bridgeH = 4;
 
         ctx.save();
-        // 1. 绘制高架桥立柱支撑架 (调暗至极深的 #0b0202)
         ctx.fillStyle = '#0b0202'; 
         for (let x = 0; x < GAME_WIDTH + 100; x += 120) {
             drawPixelRect(ctx, x + 50, bridgeY + 3, 8, FLOOR_Y - bridgeY, '#0b0202');
             drawPixelRect(ctx, x + 52, bridgeY + 3, 4, FLOOR_Y - bridgeY, '#120404');
         }
 
-        // 2. 绘制桥面主体
         drawPixelRect(ctx, 0, bridgeY, GAME_WIDTH, bridgeH, '#120404');
         drawPixelRect(ctx, 0, bridgeY + bridgeH, GAME_WIDTH, 1, '#080101'); 
 
-        // 3. 绘制桥面保护栏护栏发光线
         ctx.strokeStyle = '#00e6b8'; 
         ctx.globalAlpha = 0.3;
         ctx.lineWidth = 1;
@@ -602,7 +586,6 @@ class BackgroundSystem {
         ctx.stroke();
         ctx.globalAlpha = 1.0;
 
-        // 4. 车流光轨
         for (let car of this.highwayTraffic) {
             let cx = Math.floor(car.x);
             let cy = Math.floor(bridgeY + car.yOffset);
@@ -648,7 +631,7 @@ class BackgroundSystem {
         }
         ctx.stroke();
 
-        ctx.strokeStyle = '#d43f00'; // 前景橙色荧光线同步变暗柔和
+        ctx.strokeStyle = '#d43f00'; 
         ctx.globalAlpha = 0.4;
         ctx.beginPath();
         ctx.moveTo(0, FLOOR_Y + 4);
