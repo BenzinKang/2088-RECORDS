@@ -110,6 +110,25 @@ function updatePlayer() {
 
         player.jumping = false;
 
+
+        particles.push({
+
+            x: player.x,
+
+            y: player.y + player.height / 2,
+    
+            size: 5,
+
+            alpha: 1
+    
+        });
+
+        if (particles.length > 80) {
+
+            particles.shift();
+
+        }
+
     }
 
 }
@@ -167,14 +186,39 @@ for(let i=0;i<30;i++){
 
 }
 
-ctx.fillStyle="#0b2746";
+function drawBuildings() {
 
-ctx.fillRect(
-    b.x,
-    GROUND_Y-b.height,
-    b.width,
-    b.height
-);
+    ctx.fillStyle = "#0b2746";
+
+    buildings.forEach(b => {
+
+        b.x -= speed * 0.2;
+
+        if (b.x + b.width < 0) {
+
+            b.x = canvas.width + Math.random() * 300;
+
+            b.height = 80 + Math.random() * 180;
+
+            b.width = 60 + Math.random() * 60;
+
+        }
+
+        ctx.fillRect(
+
+            b.x,
+
+            GROUND_Y - b.height,
+
+            b.width,
+
+            b.height
+
+        );
+
+    });
+
+}
 
 for(let y=0;y<canvas.height;y+=4){
 
@@ -315,36 +359,43 @@ for (let i = 0; i < 120; i++) {
 
 let glitchTimer = 0;
 
-glitchTimer++;
+function updateGlitch(){
 
-if(glitchTimer>600){
+    glitchTimer++;
 
-    glitchTimer=0;
+    if(glitchTimer>600){
+
+        glitchTimer=0;
+
+    }
 
 }
 
+function drawGlitch(){
 
-if(glitchTimer<15){
+    if(glitchTimer<15){
 
-    ctx.save();
+        ctx.save();
 
-    ctx.globalAlpha=.08;
+        ctx.globalAlpha=.08;
 
-    ctx.fillStyle="#00ffff";
+        ctx.fillStyle="#00ffff";
 
-    ctx.fillRect(
+        ctx.fillRect(
 
-        Math.random()*canvas.width,
+            Math.random()*canvas.width,
 
-        Math.random()*canvas.height,
+            Math.random()*canvas.height,
 
-        200,
+            200,
 
-        4
+            4
 
-    );
+        );
 
-    ctx.restore();
+        ctx.restore();
+
+    }
 
 }
 
@@ -432,6 +483,10 @@ function collision() {
         ) {
 
             gameOver = true;
+
+            document
+            .getElementById("gameover-screen")
+            .classList.add("active");
 
             running = false;
 
@@ -525,17 +580,9 @@ function drawHUD() {
 }
 
 const particles = [];
-particles.push({
 
-    x: player.x,
 
-    y: player.y + player.height / 2,
 
-    size: 5,
-
-    alpha: 1
-
-});
 
 function updateParticles() {
 
@@ -556,25 +603,7 @@ function updateParticles() {
     }
 
 }
-function updateParticles() {
 
-    for (let i = particles.length - 1; i >= 0; i--) {
-
-        const p = particles[i];
-
-        p.x -= 3;
-
-        p.alpha -= .03;
-
-        p.size *= .97;
-
-        if (p.alpha <= 0)
-
-            particles.splice(i,1);
-
-    }
-
-}
 function drawParticles() {
 
     particles.forEach(p=>{
@@ -613,11 +642,17 @@ function restart() {
 
     obstacles.length = 0;
 
+    particles.length = 0;
+
     score = 0;
 
     speed = 8;
 
     gameOver = false;
+
+    document
+    .getElementById("gameover-screen")
+    .classList.remove("active");
 
     running = true;
 
@@ -635,7 +670,13 @@ function gameLoop() {
 
     drawBackground();
 
+    updateGlitch();
+
+    drawGlitch();
+
     drawGround();
+
+    drawBuildings();
 
     updatePlayer();
 
@@ -684,6 +725,8 @@ document
     .getElementById("start-screen")
 
     .classList.remove("active");
+
+    if(running) return;
 
     running = true;
 
