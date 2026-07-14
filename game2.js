@@ -66,7 +66,7 @@ class ParticleSystem {
     draw(ctx) {
         for (let p of this.particles) {
             ctx.fillStyle = p.color;
-            ctx.globalAlpha = p.life / p.maxLife;
+            ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
             ctx.fillRect(Math.floor(p.x), Math.floor(p.y), Math.floor(p.size), Math.floor(p.size));
         }
         ctx.globalAlpha = 1.0;
@@ -94,7 +94,7 @@ class BackgroundSystem {
     }
 
     generateParallaxSectors() {
-        // 1. 远景高耸大楼（变细、变密，突出林立感）
+        // 1. 远景高耸大楼
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
             let w = 12 + this.rand.next() * 14; 
@@ -104,9 +104,9 @@ class BackgroundSystem {
                 w: w, 
                 h: h, 
                 seed: this.rand.next(),
-                hasSpire: this.rand.next() > 0.4 // 拥有避雷针的概率提高
+                hasSpire: this.rand.next() > 0.4 
             });
-            curX += w + 8; // 间距更紧密
+            curX += w + 8; 
         }
 
         // 2. 远景独立工厂
@@ -169,13 +169,13 @@ class BackgroundSystem {
         // 远景大楼移动
         for (let b of this.bgBuildings) {
             b.x -= 0.05 * baseSpeed * dt * 60;
-            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
+            if (b.x + b.w < -40) b.x += GAME_WIDTH + 200;
         }
 
         // 远景独立工厂移动
         for (let f of this.factories) {
             f.x -= 0.09 * baseSpeed * dt * 60;
-            if (f.x + f.w < 0) f.x += GAME_WIDTH + 300;
+            if (f.x + f.w < -100) f.x += GAME_WIDTH + 300;
 
             // 烟雾产生
             if (Math.random() < 0.05 * dt * 60) {
@@ -201,7 +201,7 @@ class BackgroundSystem {
         // 中景大楼移动
         for (let b of this.midBuildings) {
             b.x -= 0.22 * baseSpeed * dt * 60;
-            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
+            if (b.x + b.w < -40) b.x += GAME_WIDTH + 200;
         }
 
         // 烟雾粒子物理更新
@@ -253,7 +253,6 @@ class BackgroundSystem {
         ctx.fill();
         ctx.restore();
 
-        // === 用一个独立的 save 块把太阳裁剪彻底隔离 ===
         ctx.save(); 
         ctx.beginPath();
         ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
@@ -324,7 +323,6 @@ class BackgroundSystem {
             ctx.moveTo(bx, FLOOR_Y);
 
             if (landmarkType === 1) {
-                // 1. 仿东方明珠/信号发射塔式
                 ctx.lineTo(bx + bw * 0.4, bY + bh * 0.5);
                 ctx.lineTo(bx + bw * 0.4, bY); 
                 ctx.lineTo(bx + bw * 0.6, bY);
@@ -340,7 +338,6 @@ class BackgroundSystem {
                 ctx.fill();
             } 
             else if (landmarkType === 2) {
-                // 2. 流线渐进收缩顶
                 ctx.lineTo(bx, bY + bh * 0.6);
                 ctx.bezierCurveTo(bx + bw * 0.1, bY + bh * 0.3, bx + bw * 0.2, bY + bh * 0.1, bx + bw * 0.5, bY);
                 ctx.bezierCurveTo(bx + bw * 0.8, bY + bh * 0.1, bx + bw * 0.9, bY + bh * 0.3, bx + bw, FLOOR_Y);
@@ -348,7 +345,6 @@ class BackgroundSystem {
                 ctx.fill();
             }
             else if (landmarkType === 3) {
-                // 3. 科技切角斜顶
                 ctx.lineTo(bx, bY + bh * 0.2);
                 ctx.lineTo(bx + bw * 0.7, bY);
                 ctx.lineTo(bx + bw, bY + bh * 0.1);
@@ -357,7 +353,6 @@ class BackgroundSystem {
                 ctx.fill();
             }
             else {
-                // 0. 传统阶梯对称式
                 ctx.lineTo(bx, bY + bh * 0.3);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.3);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.1);
@@ -374,7 +369,6 @@ class BackgroundSystem {
             }
             ctx.restore(); 
             
-            // 远景极细避雷针与航空灯
             if (b.hasSpire) {
                 ctx.save();
                 ctx.fillStyle = '#050508';
@@ -404,7 +398,6 @@ class BackgroundSystem {
             ctx.lineTo(fx + fw, FLOOR_Y);
             ctx.fill();
 
-            // 烟囱1
             let c1W = 4;
             let c1X = Math.floor(fx + fw * 0.35 - c1W / 2);
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1, c1W, f.chimneyH1);
@@ -412,7 +405,6 @@ class BackgroundSystem {
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1 + 4, c1W, 3);
             ctx.fillStyle = '#2e1613';
 
-            // 烟囱2
             let c2W = 3;
             let c2X = Math.floor(fx + fw * 0.7 - c2W / 2);
             ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2, c2W, f.chimneyH2);
@@ -433,7 +425,6 @@ class BackgroundSystem {
             bGrad.addColorStop(1, '#24100d'); 
             ctx.fillStyle = bGrad;
 
-            // --- 3.1 绘制写字楼屋顶形状 ---
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(bx, FLOOR_Y);
@@ -472,7 +463,6 @@ class BackgroundSystem {
             ctx.fill();
             ctx.restore();
 
-            // 标志性“镂空圆孔”
             if (b.buildingType === 1) {
                 ctx.save();
                 ctx.globalCompositeOperation = 'destination-out'; 
@@ -482,7 +472,6 @@ class BackgroundSystem {
                 ctx.restore();
             }
 
-            // --- 3.2 绘制大楼顶部的天线与避雷针设备 ---
             ctx.save();
             ctx.strokeStyle = '#1f0d0b';
             ctx.lineWidth = 1;
@@ -511,7 +500,6 @@ class BackgroundSystem {
             }
             ctx.restore();
 
-            // --- 3.3 静态密集的摩天楼窗格 ---
             let winSeed = b.seed;
             for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) { 
                 for (let wy = bY + 16; wy < FLOOR_Y - 8; wy += 11) {
@@ -523,18 +511,14 @@ class BackgroundSystem {
                 }
             }
 
-            // --- 3.4 动态霓虹广告牌 ---
             const isBlinking = Math.sin(time * b.blinkSpeed) > -0.3; 
             if (isBlinking && (b.buildingType === 0 || b.buildingType === 3)) {
                 ctx.save();
                 const neonColor = b.neonColor;
-                ctx.shadowColor = neonColor;
-                ctx.shadowBlur = 1.5;
 
                 let boardX = bx - 2; 
                 let boardY = bY + b.boardYOffset;
                 
-                ctx.shadowBlur = 0;
                 drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#1c0a0c');
                 
                 ctx.strokeStyle = neonColor;
@@ -542,8 +526,6 @@ class BackgroundSystem {
                 ctx.strokeRect(boardX + 0.5, boardY + 0.5, b.boardW - 1, b.boardH - 1);
 
                 ctx.fillStyle = neonColor;
-                ctx.shadowColor = neonColor;
-                ctx.shadowBlur = 1;
                 for (let cy = boardY + 2; cy < boardY + b.boardH - 3; cy += 3) {
                     if (Math.sin(cy + time * 1.5) > -0.2) {
                         ctx.fillRect(boardX + 1.5, cy, b.boardW - 3, 1);
@@ -553,7 +535,6 @@ class BackgroundSystem {
             }
         }
 
-        // 4. 绘制远方工厂冒出的烟雾
         this.drawSmoke(ctx);
     }
 
@@ -718,31 +699,26 @@ class Player {
             legOffset = this.vy < 0 ? 3 : -2; 
         }
 
-        // 1. Back Hydraulic Leg Architecture
         ctx.fillStyle = '#0f1224';
         ctx.fillRect(px + 4, py + 18 + torsoBounce, 4, 8);
         ctx.fillStyle = '#1d2242';
         ctx.fillRect(px + 2 + (this.isGrounded ? -legOffset : 2), py + 24, 4, 8);
 
-        // 2. Heavy Steel Mech Torso & Plating Armor
         ctx.fillStyle = '#2d355a';
         ctx.fillRect(px + 2, py + 6 - torsoBounce, 16, 14);
         ctx.fillStyle = '#414b7e'; 
         ctx.fillRect(px + 4, py + 8 - torsoBounce, 12, 4);
 
-        // 3. Cybernetic Control Cockpit Head Canopy
         ctx.fillStyle = '#171a33';
         ctx.fillRect(px + 10, py - torsoBounce, 10, 8);
         ctx.fillStyle = PALETTE.neonCyan;
         ctx.fillRect(px + 16, py + 2 - torsoBounce, 4, 2);
 
-        // 4. Front Kinetic Leg Architecture
         ctx.fillStyle = '#1d2242';
         ctx.fillRect(px + 12, py + 18 + torsoBounce, 4, 8);
         ctx.fillStyle = '#5260a4';
         ctx.fillRect(px + 10 + (this.isGrounded ? legOffset : -2), py + 24, 5, 8);
 
-        // 5. Plasma Core Over-heat Reactor Vent (Center Core)
         ctx.fillStyle = (Math.floor(this.animTimer) % 2 === 0) ? PALETTE.neonMagenta : '#a30036';
         ctx.fillRect(px + 8, py + 12 - torsoBounce, 4, 4);
     }
@@ -757,7 +733,6 @@ class WorldManager {
         this.ps = particleSystem;
         this.obstacles = [];
         this.spawnTimer = 0;
-        this.minSpawnInterval = 90;
     }
 
     reset() {
@@ -836,13 +811,198 @@ class WorldManager {
                 ctx.globalAlpha = 1.0;
             } 
             else if (obs.type === 'drone') {
-                // 补充无人机细节绘制
                 ctx.fillStyle = '#0b0d14';
-                ctx.fillRect(ox - 2, oy + 2, 4, 2); // 左翼
-                ctx.fillRect(ox + obs.w - 2, oy + 2, 4, 2); // 右翼
-                ctx.fillStyle = obs.trim; // 霓虹冰蓝核心指示灯
+                ctx.fillRect(ox - 2, oy + 2, 4, 2); 
+                ctx.fillRect(ox + obs.w - 2, oy + 2, 4, 2); 
+                ctx.fillStyle = obs.trim; 
                 ctx.fillRect(ox + Math.floor(obs.w/2) - 1, oy + 4, 2, 2);
             }
         }
     }
 }
+
+// ============================================================================
+// --- GAME ENGINE CORE CORE / STATE CONTROLLER (补齐部分) ---
+// ============================================================================
+
+class GameEngine {
+    constructor() {
+        this.canvas = document.getElementById("gameCanvas");
+        this.ctx = this.canvas.getContext("2d");
+        
+        // 游戏核心属性
+        this.gameState = STATES.START;
+        this.score = 0;
+        this.highscore = parseInt(localStorage.getItem("neonrun_highscore")) || 0;
+        this.worldX = 0; 
+        this.speedMultiplier = 1.0;
+        this.lastTime = 0;
+
+        // 初始化子系统
+        this.particles = new ParticleSystem();
+        this.background = new BackgroundSystem();
+        this.player = new Player(this.particles);
+        this.world = new WorldManager(this.particles);
+
+        // 获取 HTML UI 元素
+        this.ui = {
+            hud: document.getElementById("hud"),
+            hudScore: document.getElementById("hud-score"),
+            hudHighscore: document.getElementById("hud-highscore"),
+            startScreen: document.getElementById("screen-start"),
+            gameoverScreen: document.getElementById("screen-gameover"),
+            finalScore: document.getElementById("final-score"),
+            finalHighscore: document.getElementById("final-highscore"),
+            btnStart: document.getElementById("btn-start"),
+            btnRestart: document.getElementById("btn-restart")
+        };
+
+        this.initEvents();
+        this.resetUI();
+        
+        // 启动主循环（在 Start 状态下负责渲染流动的背景）
+        requestAnimationFrame((t) => this.loop(t));
+    }
+
+    initEvents() {
+        // 动作触发（跳跃）
+        const handleJump = (e) => {
+            if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return;
+            if (this.gameState === STATES.RUNNING) {
+                this.player.jump();
+                if (e.cancelable) e.preventDefault();
+            }
+        };
+        window.addEventListener("keydown", handleJump);
+        this.canvas.addEventListener("touchstart", handleJump, { passive: false });
+
+        // 按钮监听器
+        this.ui.btnStart.addEventListener("click", () => this.startGame());
+        this.ui.btnRestart.addEventListener("click", () => this.startGame());
+    }
+
+    resetUI() {
+        this.ui.hudHighscore.textContent = String(this.highscore).padStart(5, '0');
+    }
+
+    startGame() {
+        this.gameState = STATES.RUNNING;
+        this.score = 0;
+        this.speedMultiplier = 1.0;
+        this.worldX = 0;
+
+        this.player.reset();
+        this.world.reset();
+        this.particles.particles = [];
+
+        // UI 状态切换
+        this.ui.startScreen.classList.add("hidden");
+        this.ui.gameoverScreen.classList.add("hidden");
+        this.ui.hud.classList.remove("hidden");
+    }
+
+    gameOver() {
+        this.gameState = STATES.GAMEOVER;
+        
+        // 机甲核心爆炸火花效果
+        this.particles.spawnExplosion(this.player.x + this.player.w/2, this.player.y + this.player.h/2, PALETTE.neonMagenta, 30);
+        this.particles.spawnExplosion(this.player.x + this.player.w/2, this.player.y + this.player.h/2, PALETTE.neonCyan, 15);
+
+        // 记录高分
+        if (this.score > this.highscore) {
+            this.highscore = this.score;
+            localStorage.setItem("neonrun_highscore", this.highscore);
+            this.ui.hudHighscore.textContent = String(this.highscore).padStart(5, '0');
+        }
+
+        // 刷新结算界面数据
+        this.ui.finalScore.textContent = this.score;
+        this.ui.finalHighscore.textContent = this.highscore;
+
+        // UI 状态切换
+        this.ui.hud.classList.add("hidden");
+        this.ui.gameoverScreen.classList.remove("hidden");
+    }
+
+    checkCollisions() {
+        const pBox = this.player.getHitbox();
+        for (let obs of this.world.obstacles) {
+            // AABB 碰撞检测算法
+            if (pBox.x < obs.x + obs.w &&
+                pBox.x + pBox.w > obs.x &&
+                pBox.y < obs.y + obs.h &&
+                pBox.y + pBox.h > obs.y) {
+                this.gameOver();
+                break;
+            }
+        }
+    }
+
+    loop(timestamp) {
+        if (!this.lastTime) this.lastTime = timestamp;
+        let dt = (timestamp - this.lastTime) / 1000;
+        this.lastTime = timestamp;
+
+        // 防止切屏或降帧导致单帧计算过大（锁帧上限）
+        if (dt > 0.1) dt = 0.1;
+
+        this.update(dt);
+        this.draw();
+
+        requestAnimationFrame((t) => this.loop(t));
+    }
+
+    update(dt) {
+        if (this.gameState === STATES.RUNNING) {
+            // 速度平滑加速曲线
+            this.speedMultiplier += dt * 0.015;
+            
+            // 距离计算
+            this.worldX += 4.2 * this.speedMultiplier * dt * 60;
+            this.score = Math.floor(this.worldX / 10);
+            this.ui.hudScore.textContent = String(this.score).padStart(5, '0');
+
+            // 物理引擎子系统步进
+            this.background.update(dt, this.speedMultiplier);
+            this.player.update(dt);
+            this.world.update(dt, this.speedMultiplier);
+            this.checkCollisions();
+        } else {
+            // 在 Start 界面或者 GameOver 界面下，背景元素依然保持轻微的怠速滚动，增强高级感
+            this.background.update(dt, 0.1);
+        }
+        this.particles.update(dt);
+    }
+
+    draw() {
+        // 清理上帧画布
+        this.ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+        // 1. 渲染背景、太阳和云彩层
+        this.background.drawSky(this.ctx);
+        
+        // 2. 渲染林立的赛博建筑群与动态闪烁广告牌
+        this.background.drawCity(this.ctx);
+        
+        // 3. 渲染近景带有透视效果的地面网格
+        this.background.drawForegroundGrid(this.ctx, this.worldX);
+
+        // 4. 渲染跑道上的障碍物
+        if (this.gameState === STATES.RUNNING || this.gameState === STATES.GAMEOVER) {
+            this.world.draw(this.ctx);
+        }
+
+        // 5. 渲染玩家操作的机甲战士
+        if (this.gameState !== STATES.GAMEOVER) {
+            this.player.draw(this.ctx);
+        }
+
+        // 6. 渲染全屏粒子发生器层
+        this.particles.draw(this.ctx);
+    }
+}
+
+// 当 DOM 加载完成后实例化游戏
+window.addEventListener("DOMContentLoaded", () => {
+    new GameEngine();
+});
