@@ -93,6 +93,7 @@ class BackgroundSystem {
         // --- 新增数据数组 ---
         this.airships = [];    // 远景天空飞艇
         this.shops = [];       // 近中景矮店铺
+        this.houses = [];      // [新增] 近中景多元日系住宅
         this.streetSigns = []; // 前景/近景路牌
         
         this.generateParallaxSectors();
@@ -128,13 +129,13 @@ class BackgroundSystem {
             factX += 280 + this.rand.next() * 150; 
         }
 
-        // [新增] 2.5 远景天空飞艇 (速度慢，色彩丰富)
+        // 2.5 远景天空飞艇
         const airshipColors = ['#cc241d', '#98971a', '#d79921', '#458588', '#b16286', '#689d6a', '#d65d0e'];
         let airshipX = 50;
         while (airshipX < GAME_WIDTH + 400) {
             this.airships.push({
                 x: airshipX,
-                y: 15 + this.rand.next() * 35, // 飞在天空的中上部
+                y: 15 + this.rand.next() * 35,
                 w: 25 + this.rand.next() * 15,
                 h: 10 + this.rand.next() * 6,
                 speed: 0.02 + this.rand.next() * 0.02,
@@ -166,34 +167,55 @@ class BackgroundSystem {
             curX += w + 22; 
         }
 
-        // [新增] 3.5 边缘矮店铺群 (贴地，细节多，移动速度比中景楼稍快)
+        // 3.5 边缘矮店铺群
         curX = 10;
         const signColors = ['#ff0055', '#00ffcc', '#ffcc00', '#ff5500'];
         while (curX < GAME_WIDTH + 300) {
-            let w = 35 + this.rand.next() * 25; // 宽度
-            let h = 18 + this.rand.next() * 10; // 矮店铺，高度大概在18-28之间
+            let w = 35 + this.rand.next() * 25;
+            let h = 18 + this.rand.next() * 10;
             this.shops.push({
                 x: curX,
                 w: w,
                 h: h,
                 seed: this.rand.next(),
-                hasAwning: this.rand.next() > 0.3, // 是否有遮阳雨棚
+                hasAwning: this.rand.next() > 0.3,
                 awningColor: this.rand.next() > 0.5 ? '#b83214' : '#146eb8',
-                hasVerticalSign: this.rand.next() > 0.4, // 是否有侧边立式招牌
+                hasVerticalSign: this.rand.next() > 0.4,
                 signColor: signColors[Math.floor(this.rand.next() * signColors.length)],
-                gateOpenRatio: 0.3 + this.rand.next() * 0.7, // 卷帘门打开的高度比例
-                lightOn: this.rand.next() > 0.2 // 店铺内灯是否亮着
+                gateOpenRatio: 0.3 + this.rand.next() * 0.7,
+                lightOn: this.rand.next() > 0.2
             });
-            curX += w + 15 + this.rand.next() * 30; // 店铺间距错落
+            curX += w + 15 + this.rand.next() * 30;
         }
 
-        // [新增] 3.8 道路旁边的路牌/路灯杆 (贴地，最前景)
+        // [新增] 3.6 矮小日系住宅群（与矮店铺属于同一层级，交错排列，色彩丰富）
+        let houseX = 40;
+        const roofColors = ['#2e5c8a', '#9c3a3a', '#4a5e43', '#5c5146', '#3b3b3b']; // 蓝瓦、红瓦、绿瓦、灰瓦
+        const wallColors = ['#d9c5b2', '#cca47e', '#afbfa3', '#615449', '#e3dbcf']; // 浅木色、白墙、淡绿、深木色
+        while (houseX < GAME_WIDTH + 400) {
+            let w = 25 + this.rand.next() * 15; // 日系单体住宅较窄
+            let h = 16 + this.rand.next() * 12; // 一层或小两层高
+            this.houses.push({
+                x: houseX,
+                w: w,
+                h: h,
+                roofColor: roofColors[Math.floor(this.rand.next() * roofColors.length)],
+                wallColor: wallColors[Math.floor(this.rand.next() * wallColors.length)],
+                houseType: this.rand.next() > 0.5 ? 0 : 1, // 0: 双坡斜屋顶, 1: 单劈镰屋顶/带独立小露台
+                hasPole: this.rand.next() > 0.6, // 是否自带一根屋顶小天线/独立晾衣杆
+                lightOn: this.rand.next() > 0.3,
+                seed: this.rand.next()
+            });
+            houseX += w + 40 + this.rand.next() * 60; // 留出间隙，防止完全重叠
+        }
+
+        // 3.8 道路旁边的路牌/路灯杆
         curX = 60;
         while (curX < GAME_WIDTH + 200) {
             this.streetSigns.push({
                 x: curX,
-                h: 22 + this.rand.next() * 8, // 路牌高度
-                type: Math.floor(this.rand.next() * 3), // 0: 三角警告牌, 1: 圆形限速牌, 2: 方形指路牌
+                h: 22 + this.rand.next() * 8,
+                type: Math.floor(this.rand.next() * 3),
                 glowColor: this.rand.next() > 0.5 ? '#00ff00' : '#ff3300'
             });
             curX += 120 + this.rand.next() * 150;
@@ -220,7 +242,7 @@ class BackgroundSystem {
             if (c.x + c.w < -60) c.x = GAME_WIDTH + 60;
         }
 
-        // [新增] 飞艇移动 (比云慢一点，属于远景)
+        // 飞艇移动
         for (let a of this.airships) {
             a.x -= a.speed * baseSpeed * dt * 30;
             if (a.x + a.w < -50) {
@@ -267,10 +289,16 @@ class BackgroundSystem {
             if (b.x + b.w < -40) b.x += GAME_WIDTH + 200;
         }
 
-        // [新增] 矮店铺移动 (中近景，速度设置为 0.6，比中景楼快，带来更好的立体感)
+        // 矮店铺移动
         for (let s of this.shops) {
             s.x -= 0.6 * baseSpeed * dt * 60;
             if (s.x + s.w < -50) s.x += GAME_WIDTH + 200;
+        }
+
+        // [新增] 日系住宅移动 (与矮店铺速度同步为 0.6 保持对齐)
+        for (let h of this.houses) {
+            h.x -= 0.6 * baseSpeed * dt * 60;
+            if (h.x + h.w < -50) h.x += GAME_WIDTH + 250;
         }
 
         // 烟雾粒子物理更新
@@ -286,7 +314,7 @@ class BackgroundSystem {
             }
         }
 
-        // [新增] 路牌移动 (贴近最前景，速度与电线杆基本同步或稍慢，这里定为 3.0)
+        // 路牌移动
         for (let s of this.streetSigns) {
             s.x -= 3.0 * speedMultiplier * dt * 60;
             if (s.x < -30) {
@@ -351,7 +379,7 @@ class BackgroundSystem {
         }
         ctx.restore(); 
 
-        // [新增渲染] 2.8 绘制远景天空飞艇 (放在云彩前面或后面皆可，这里放在云前面)
+        // 绘制远景天空飞艇
         this.drawAirships(ctx);
 
         // 3. 不规则写实叠云
@@ -385,7 +413,6 @@ class BackgroundSystem {
         ctx.restore();
     }
 
-    // [新增方法] 绘制天空飞艇
     drawAirships(ctx) {
         ctx.save();
         const time = Date.now() * 0.001;
@@ -393,33 +420,28 @@ class BackgroundSystem {
             let ax = Math.floor(a.x);
             let ay = Math.floor(a.y);
             
-            // 飞艇阴影剪影渐变 (带有一点空气透视色)
             let shipGrad = ctx.createLinearGradient(ax, ay, ax, ay + a.h);
             shipGrad.addColorStop(0, a.color);
             shipGrad.addColorStop(1, '#1f0d0a');
             ctx.fillStyle = shipGrad;
 
-            // 1. 绘制椭圆气囊主壳体
             ctx.beginPath();
             ctx.ellipse(ax + a.w / 2, ay + a.h / 2, a.w / 2, a.h / 2, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // 2. 绘制尾翼 (像素风小方块拼接)
             ctx.fillStyle = '#2b120c';
             ctx.fillRect(ax + a.w - 2, ay + 2, 4, 2);
             ctx.fillRect(ax + a.w - 2, ay + a.h - 4, 4, 2);
             ctx.fillRect(ax + a.w, ay + a.h / 2 - 2, 3, 4);
 
-            // 3. 吊舱 (下方挂载小舱)
             ctx.fillStyle = '#120503';
             ctx.fillRect(ax + a.w * 0.3, ay + a.h, a.w * 0.3, 2);
 
-            // 4. 动态闪烁指示灯 (红/绿交替或单闪)
             if (Math.sin(time * a.signalSpeed) > 0) {
                 ctx.fillStyle = '#ff3300';
-                ctx.fillRect(ax + 3, ay + a.h / 2, 1.5, 1.5); // 车头灯
+                ctx.fillRect(ax + 3, ay + a.h / 2, 1.5, 1.5);
                 ctx.fillStyle = '#00ff55';
-                ctx.fillRect(ax + a.w * 0.4, ay + a.h + 1, 1, 1); // 吊舱尾灯
+                ctx.fillRect(ax + a.w * 0.4, ay + a.h + 1, 1, 1);
             }
         }
         ctx.restore();
@@ -659,13 +681,15 @@ class BackgroundSystem {
             }
         }
 
-        // [新增方法调用] 3.9 绘制贴地的矮小店铺群（遮挡中景大楼底部，更有街区生活感）
+        // 绘制边缘细致的矮店铺
         this.drawShops(ctx, time);
+
+        // [新增渲染] 3.95 绘制错落有致的日系低矮住宅群 (放在店铺图层附近，融合为生活街区)
+        this.drawHouses(ctx, time);
 
         this.drawSmoke(ctx);
     }
 
-    // [新增方法] 绘制边缘细致的矮店铺
     drawShops(ctx, time) {
         ctx.save();
         for (let s of this.shops) {
@@ -674,14 +698,12 @@ class BackgroundSystem {
             let sw = Math.floor(s.w);
             let sh = Math.floor(s.h);
 
-            // 1. 店铺主体墙面渐变 (比中景大楼略深，凸显轮廓)
             let shopGrad = ctx.createLinearGradient(sx, sy, sx, FLOOR_Y);
             shopGrad.addColorStop(0, '#241212');
             shopGrad.addColorStop(1, '#140a0a');
             ctx.fillStyle = shopGrad;
             ctx.fillRect(sx, sy, sw, sh);
 
-            // 2. 店内灯光/橱窗 (如果开灯)
             let winW = sw - 8;
             let winH = sh - 8;
             let winX = sx + 4;
@@ -689,47 +711,39 @@ class BackgroundSystem {
             if (s.lightOn) {
                 ctx.fillStyle = '#ffaa33';
                 ctx.globalAlpha = 0.15;
-                ctx.fillRect(winX, winY, winW, winH); // 橱窗泛光
+                ctx.fillRect(winX, winY, winW, winH); 
                 ctx.globalAlpha = 1.0;
             }
 
-            // 3. 细节：卷帘门 (金属线条感)
             ctx.fillStyle = '#1c1515';
             ctx.fillRect(winX, winY, winW, winH);
             ctx.fillStyle = '#2d2424';
-            // 根据打开比例绘制拉开的卷帘门叶片
             let gateH = Math.floor(winH * (1 - s.gateOpenRatio));
             for (let gy = winY; gy < winY + gateH; gy += 2) {
                 ctx.fillRect(winX, gy, winW, 1);
             }
 
-            // 4. 细节：遮阳/雨棚 (平铺斜纹感)
             if (s.hasAwning) {
                 ctx.fillStyle = s.awningColor;
                 ctx.fillRect(sx - 1, sy + 2, sw + 2, 3);
-                // 雨棚条纹细节
                 ctx.fillStyle = '#0f0707';
                 for (let ax = sx; ax < sx + sw; ax += 4) {
                     ctx.fillRect(ax, sy + 2, 2, 3);
                 }
             }
 
-            // 5. 细节：霓虹灯招牌 (屋顶横幅或侧边侧招)
             if (s.hasVerticalSign) {
                 let signX = sx - 4;
                 let signY = sy + 2;
                 let signW = 3;
                 let signH = sh - 6;
-                // 招牌底座
                 ctx.fillStyle = '#120808';
                 ctx.fillRect(signX, signY, signW, signH);
-                // 闪烁的霓虹灯心
                 if (Math.sin(time * 2 + sx) > -0.3) {
                     ctx.fillStyle = s.signColor;
                     ctx.fillRect(signX + 1, signY + 1, signW - 2, signH - 2);
                 }
             } else {
-                // 屋顶横向小灯箱
                 ctx.fillStyle = '#120808';
                 ctx.fillRect(sx + 4, sy - 2, sw - 8, 3);
                 if (Math.sin(time * 1.2 + sx) > -0.1) {
@@ -738,10 +752,101 @@ class BackgroundSystem {
                 }
             }
 
-            // 6. 门面边框勾勒
             ctx.strokeStyle = '#0d0505';
             ctx.lineWidth = 1;
             ctx.strokeRect(sx, sy, sw, sh);
+        }
+        ctx.restore();
+    }
+
+    // [新增方法] 绘制非常矮小、颜色丰富且细节生动的日系住宅
+    drawHouses(ctx, time) {
+        ctx.save();
+        for (let h of this.houses) {
+            let hx = Math.floor(h.x);
+            let hw = Math.floor(h.w);
+            let hh = Math.floor(h.h);
+            let hy = Math.floor(FLOOR_Y - hh);
+            let roofH = Math.floor(hh * 0.35); // 屋顶占比控制在高度的三分之一左右
+
+            // 1. 绘制住宅墙体 (带有一点阴影质感)
+            let wallGrad = ctx.createLinearGradient(hx, hy + roofH, hx, FLOOR_Y);
+            wallGrad.addColorStop(0, h.wallColor);
+            wallGrad.addColorStop(1, '#1a100d'); // 底部暗色衔接
+            ctx.fillStyle = wallGrad;
+            ctx.fillRect(hx + 1, hy + roofH, hw - 2, hh - roofH);
+
+            // 2. 绘制日系经典斜屋顶 (两端有微小的像素延伸翘角)
+            ctx.fillStyle = h.roofColor;
+            ctx.beginPath();
+            if (h.houseType === 0) {
+                // 双坡斜屋顶 (切面三角形)
+                ctx.moveTo(hx - 2, hy + roofH);
+                ctx.lineTo(hx + hw / 2, hy);
+                ctx.lineTo(hx + hw + 2, hy + roofH);
+            } else {
+                // 单劈镰屋顶 (一路向一侧倾斜，并留出小露台空间)
+                ctx.moveTo(hx - 1, hy + roofH - 2);
+                ctx.lineTo(hx + hw * 0.7, hy + 2);
+                ctx.lineTo(hx + hw * 0.7, hy + roofH);
+                ctx.closePath();
+                ctx.fill();
+
+                // 露台小围栏
+                ctx.fillStyle = '#1c1210';
+                ctx.fillRect(hx + hw * 0.7, hy + roofH - 4, hw * 0.3, 1);
+                ctx.fillRect(hx + hw * 0.7 + 2, hy + roofH - 4, 1, 4);
+                ctx.fillRect(hx + hw * 0.9, hy + roofH - 4, 1, 4);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // 屋顶阴影沿边缘厚度
+            ctx.fillStyle = '#140c0a';
+            ctx.fillRect(hx - 1, hy + roofH, hw + 2, 1.5);
+
+            // 3. 细节：窗户与格子门 (日系独有格子窗感，带温和灯光)
+            let winSeed = h.seed;
+            let winY = hy + roofH + 3;
+            let winH = Math.floor((hh - roofH) * 0.4);
+
+            // 左侧格栅拉门/大窗
+            if (h.lightOn) {
+                ctx.fillStyle = '#ffa64d'; // 暖黄色室内光
+                ctx.fillRect(hx + 4, winY, 8, winH);
+                // 格子网格线
+                ctx.fillStyle = '#261712';
+                ctx.fillRect(hx + 8, winY, 1, winH);
+                ctx.fillRect(hx + 4, winY + winH / 2, 8, 1);
+            } else {
+                ctx.fillStyle = '#241a18';
+                ctx.fillRect(hx + 4, winY, 8, winH);
+            }
+
+            // 右侧二楼或侧面独立小窗
+            if (hw > 30) {
+                ctx.fillStyle = h.lightOn && winSeed > 0.5 ? '#ffbf80' : '#1a1210';
+                ctx.fillRect(hx + hw - 10, winY + 1, 5, 4);
+            }
+
+            // 4. 特色细节：房顶独立拉出的小晾衣杆、或者是突出的一根细细无线电天线杆
+            if (h.hasPole) {
+                ctx.strokeStyle = '#261b18';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(hx + hw * 0.3, hy + 2);
+                ctx.lineTo(hx + hw * 0.3, hy - 6); // 竖向立杆
+                ctx.stroke();
+
+                // 晾衣绳/或小横杆
+                ctx.fillStyle = '#1c1512';
+                ctx.fillRect(hx + hw * 0.3 - 3, hy - 6, 7, 1);
+            }
+
+            // 5. 房屋边框勾勒，增加像素画的厚重写实感
+            ctx.strokeStyle = '#0f0908';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(hx + 1, hy + roofH, hw - 2, hh - roofH);
         }
         ctx.restore();
     }
@@ -782,48 +887,39 @@ class BackgroundSystem {
         ctx.stroke();
         ctx.globalAlpha = 1.0;
 
-        // [新增渲染] 在地表网格之上、电线杆之下绘制路牌
+        // 在地表网格之上、电线杆之下绘制路牌
         this.drawStreetSigns(ctx);
 
         this.drawUtilityPoles(ctx);
     }
 
-    // [新增方法] 绘制前景错落的路牌
     drawStreetSigns(ctx) {
         ctx.save();
         for (let s of this.streetSigns) {
             let sx = Math.floor(s.x);
             let sy = Math.floor(FLOOR_Y - s.h);
 
-            // 1. 绘制路牌立柱 (金属细杆)
             drawPixelRect(ctx, sx, sy, 1, s.h, '#0d0404');
-            drawPixelRect(ctx, sx + 1, sy, 1, s.h, '#241111'); // 高光边
+            drawPixelRect(ctx, sx + 1, sy, 1, s.h, '#241111');
 
-            // 2. 根据类型绘制不同的路牌头
-            ctx.fillStyle = '#140606'; // 路牌深色底板面
+            ctx.fillStyle = '#140606';
             if (s.type === 0) {
-                // 三角形警告牌
                 ctx.beginPath();
                 ctx.moveTo(sx - 3, sy + 6);
                 ctx.lineTo(sx + 4, sy + 6);
                 ctx.lineTo(sx + 0.5, sy);
                 ctx.closePath();
                 ctx.fill();
-                // 内部小荧光点
                 ctx.fillStyle = s.glowColor;
                 ctx.fillRect(sx, sy + 4, 1, 1);
             } else if (s.type === 1) {
-                // 圆形限速/禁止牌
                 ctx.beginPath();
                 ctx.arc(sx + 0.5, sy + 3, 3.5, 0, Math.PI * 2);
                 ctx.fill();
-                // 荧光内圈
                 ctx.fillStyle = '#ff3300';
                 ctx.fillRect(sx, sy + 2, 1, 2);
             } else {
-                // 方形霓虹指路牌
                 ctx.fillRect(sx - 3, sy, 7, 5);
-                // 亮色边缘指引
                 ctx.fillStyle = '#00ffcc';
                 ctx.fillRect(sx - 2, sy + 2, 2, 1);
             }
