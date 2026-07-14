@@ -394,33 +394,206 @@ for(let i=0;i<30;i++){
 
 function drawBuildings() {
 
-    ctx.fillStyle = "#0b2746";
-
     buildings.forEach(b => {
 
         b.x -= speed * 0.2;
+
 
         if (b.x + b.width < 0) {
 
             b.x = canvas.width + Math.random() * 300;
 
-            b.height = 80 + Math.random() * 180;
+            b.height = 100 + Math.random() * 220;
 
-            b.width = 60 + Math.random() * 60;
+            b.width = 70 + Math.random() * 90;
+
+            // 随机楼属性
+            b.neon = Math.random() > 0.4;
+            b.color = Math.random() > 0.5
+                ? "#00d7ff"
+                : "#9b5cff";
 
         }
 
+
+        const x = b.x;
+        const y = GROUND_Y - b.height;
+
+
+
+        ctx.save();
+
+
+        // ===== Building shadow =====
+
+        ctx.fillStyle = "#050b18";
+
         ctx.fillRect(
-
-            b.x,
-
-            GROUND_Y - b.height,
-
+            x,
+            y,
             b.width,
-
             b.height
-
         );
+
+
+
+        // ===== Glass reflection =====
+
+        ctx.fillStyle = "#091d35";
+
+        ctx.fillRect(
+            x + 5,
+            y + 5,
+            b.width - 10,
+            b.height - 10
+        );
+
+
+
+        // ===== Neon edge =====
+
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = b.color;
+
+        ctx.strokeStyle = b.color;
+
+        ctx.lineWidth = 2;
+
+        ctx.strokeRect(
+            x,
+            y,
+            b.width,
+            b.height
+        );
+
+
+
+        ctx.shadowBlur = 0;
+
+
+
+        // ===== Windows =====
+
+        const rows = Math.floor(b.height / 18);
+        const cols = Math.floor(b.width / 18);
+
+
+        for(let r = 0; r < rows; r++){
+
+            for(let c = 0; c < cols; c++){
+
+                // 随机亮灯
+                if(Math.random() > 0.45){
+
+                    ctx.fillStyle =
+                        Math.random() > 0.7
+                        ? "#ff3df2"
+                        : "#00d7ff";
+
+
+                    ctx.fillRect(
+
+                        x + 10 + c * 18,
+
+                        y + 12 + r * 18,
+
+                        6,
+
+                        5
+
+                    );
+
+                }
+
+            }
+
+        }
+
+
+
+        // ===== Neon billboard =====
+
+        if(b.neon){
+
+            ctx.shadowBlur = 20;
+
+            ctx.shadowColor = "#00ffff";
+
+            ctx.strokeStyle="#00ffff";
+
+
+            ctx.strokeRect(
+
+                x + b.width/2 - 15,
+
+                y + 40,
+
+                30,
+
+                15
+
+            );
+
+
+            ctx.fillStyle="#00ffff";
+
+            ctx.fillRect(
+
+                x + b.width/2 - 10,
+
+                y + 45,
+
+                20,
+
+                3
+
+            );
+
+        }
+
+
+
+        // ===== Rooftop antenna =====
+
+        if(Math.random() > 0.8){
+
+            ctx.strokeStyle="#00ffff";
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                x+b.width/2,
+                y
+            );
+
+            ctx.lineTo(
+                x+b.width/2,
+                y-25
+            );
+
+            ctx.stroke();
+
+
+            ctx.fillStyle="#ff3df2";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                x+b.width/2,
+                y-27,
+                3,
+                0,
+                Math.PI*2
+            );
+
+            ctx.fill();
+
+        }
+
+
+
+        ctx.restore();
+
 
     });
 
