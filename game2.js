@@ -1,9 +1,3 @@
-/**
- * CYBER_CORE: NEON RUN - Pure Vanilla HTML5 Canvas Procedural Pixel-Art Engine
- * Optimized structural modularity mimicking professional indie game frameworks.
- */
-
-// --- ENUM CONFIGURATIONS & GAME STATE CONSTANTS ---
 const STATES = { START: 0, RUNNING: 1, GAMEOVER: 2 };
 const GAME_WIDTH = 480;
 const GAME_HEIGHT = 270;
@@ -78,6 +72,7 @@ class ParticleSystem {
         ctx.globalAlpha = 1.0;
     }
 }
+
 class BackgroundSystem {
     constructor() {
         // 暖色调、写实风云彩
@@ -102,7 +97,7 @@ class BackgroundSystem {
         // 1. 远景高耸大楼（变细、变密，突出林立感）
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 12 + this.rand.next() * 14; // 大幅变细（原18-38，现12-26）
+            let w = 12 + this.rand.next() * 14; 
             let h = 50 + this.rand.next() * 55; 
             this.bgBuildings.push({ 
                 x: curX, 
@@ -128,10 +123,10 @@ class BackgroundSystem {
             factX += 280 + this.rand.next() * 150; 
         }
 
-        // 3. 中景多元化写字楼群（大楼变细，融入经典的国际商业区屋顶形状）
+        // 3. 中景多元化写字楼群
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 24 + this.rand.next() * 18; // 大幅变细（原35-65，现24-42）
+            let w = 24 + this.rand.next() * 18; 
             let h = 40 + this.rand.next() * 38; 
             
             this.midBuildings.push({
@@ -140,13 +135,7 @@ class BackgroundSystem {
                 h: h, 
                 seed: this.rand.next(),
                 neonColor: this.rand.next() > 0.5 ? PALETTE.neonMagenta : PALETTE.neonGold,
-                // 建筑类型：
-                // 0 = 阶梯收缩塔（纽约帝国大厦风）
-                // 1 = 顶部镂空圆孔塔（上海环球金融中心风）
-                // 2 = 不对称斜尖顶
-                // 3 = 双子联合写字楼（东京东京都厅风）
                 buildingType: Math.floor(this.rand.next() * 4),
-                // 屋顶天线类型：0=无, 1=中央避雷针, 2=双耳天线, 3=雷达锅
                 antennaType: Math.floor(this.rand.next() * 4),
                 boardW: 6 + Math.floor(this.rand.next() * 6), 
                 boardH: 15 + Math.floor(this.rand.next() * 12),
@@ -248,7 +237,7 @@ class BackgroundSystem {
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, GAME_WIDTH, FLOOR_Y);
 
-// 2. 震撼超大夕阳
+        // 2. 震撼超大夕阳
         let sunX = GAME_WIDTH / 2; 
         let sunY = FLOOR_Y - 5; 
         let sunRadius = 75;     
@@ -264,11 +253,11 @@ class BackgroundSystem {
         ctx.fill();
         ctx.restore();
 
-        // === 【精准修复】用一个独立的 save 块把太阳裁剪彻底隔离 ===
+        // === 用一个独立的 save 块把太阳裁剪彻底隔离 ===
         ctx.save(); 
         ctx.beginPath();
         ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
-        ctx.clip(); // 开启裁剪，只对太阳内部生效
+        ctx.clip(); 
 
         let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
         sunGrad.addColorStop(0, '#ffd11a'); 
@@ -284,7 +273,7 @@ class BackgroundSystem {
             let currentBarWidth = Math.floor((y - (sunY - sunRadius + 15)) / 7) + 1;
             ctx.fillRect(sunX - sunRadius - 10, y, sunRadius * 2 + 20, currentBarWidth);
         }
-        ctx.restore(); // 【核心】立刻释放 clip 裁剪区域和颜色状态！确保不污染后面的大楼
+        ctx.restore(); 
 
         // 3. 不规则写实叠云
         ctx.save();
@@ -320,7 +309,7 @@ class BackgroundSystem {
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-// 1. 远景窄楼（【彻底修复版】严格闭合每栋楼的路径，确保颜色绝不跑偏）
+        // 1. 远景窄楼
         ctx.fillStyle = '#0a0b10'; 
         for (let b of this.bgBuildings) {
             let bx = Math.floor(b.x);
@@ -331,7 +320,7 @@ class BackgroundSystem {
             let landmarkType = Math.floor((b.seed * 100) % 4);
 
             ctx.save();
-            ctx.beginPath(); // 开启当前大楼的独立路径
+            ctx.beginPath(); 
             ctx.moveTo(bx, FLOOR_Y);
 
             if (landmarkType === 1) {
@@ -344,7 +333,6 @@ class BackgroundSystem {
                 ctx.closePath();
                 ctx.fill();
 
-                // 球体部分单独作为一个独立路径填充，防止污染
                 ctx.beginPath();
                 ctx.arc(bx + bw * 0.5, bY + bh * 0.25, bw * 0.4, 0, Math.PI * 2); 
                 ctx.arc(bx + bw * 0.5, bY + bh * 0.5, bw * 0.5, 0, Math.PI * 2); 
@@ -384,9 +372,9 @@ class BackgroundSystem {
                 ctx.closePath();
                 ctx.fill();
             }
-            ctx.restore(); // 弹出当前大楼的状态栈
+            ctx.restore(); 
             
-            // 远景极细避雷针与航空灯（不受大楼路径填充影响）
+            // 远景极细避雷针与航空灯
             if (b.hasSpire) {
                 ctx.save();
                 ctx.fillStyle = '#050508';
@@ -394,15 +382,6 @@ class BackgroundSystem {
                 ctx.fillStyle = '#ff1100'; 
                 ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 11), 1, 1);
                 ctx.restore();
-            }
-        }
-            
-            // 远景极细避雷针与航空灯
-            if (b.hasSpire) {
-                ctx.fillStyle = '#050508';
-                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 10), 1, 10);
-                ctx.fillStyle = '#ff1100'; // 真正的耀眼红点常亮安全灯
-                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 11), 1, 1);
             }
         }
 
@@ -442,7 +421,7 @@ class BackgroundSystem {
             ctx.fillStyle = '#2e1613';
         }
 
-        // 3. 中景多元化现代写字楼群（大楼更瘦、房顶结构丰富）
+        // 3. 中景多元化现代写字楼群
         for (let b of this.midBuildings) {
             const bx = Math.floor(b.x);
             const bw = Math.floor(b.w);
@@ -454,13 +433,12 @@ class BackgroundSystem {
             bGrad.addColorStop(1, '#24100d'); 
             ctx.fillStyle = bGrad;
 
-            // --- 3.1 绘制各具特色的写字楼屋顶形状 ---
+            // --- 3.1 绘制写字楼屋顶形状 ---
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(bx, FLOOR_Y);
             
             if (b.buildingType === 0) {
-                // 帝国大厦风格：逐层向内收缩的尖顶
                 ctx.lineTo(bx, bY + bh * 0.4);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.4);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.2);
@@ -472,21 +450,18 @@ class BackgroundSystem {
                 ctx.lineTo(bx + bw * 0.8, bY + bh * 0.4);
                 ctx.lineTo(bx + bw, bY + bh * 0.4);
             } else if (b.buildingType === 1) {
-                // 上海环球金融中心风格：屋顶圆孔斜截面 (先画完轮廓，稍后在内部画镂空)
                 ctx.lineTo(bx, bY + 12);
                 ctx.lineTo(bx + bw * 0.15, bY);
                 ctx.lineTo(bx + bw * 0.85, bY);
                 ctx.lineTo(bx + bw, bY + 12);
             } else if (b.buildingType === 2) {
-                // 东京现代斜坡折角大楼：优雅的不对称斜屋顶
                 ctx.lineTo(bx, bY + 18);
                 ctx.lineTo(bx + bw * 0.6, bY);
                 ctx.lineTo(bx + bw, bY + 4);
             } else if (b.buildingType === 3) {
-                // 都厅双子大楼：两个挺拔的高塔合并，中间有低矮连廊
                 ctx.lineTo(bx, bY);
                 ctx.lineTo(bx + bw * 0.35, bY);
-                ctx.lineTo(bx + bw * 0.35, bY + 12); // 中间凹下
+                ctx.lineTo(bx + bw * 0.35, bY + 12); 
                 ctx.lineTo(bx + bw * 0.65, bY + 12);
                 ctx.lineTo(bx + bw * 0.65, bY);
                 ctx.lineTo(bx + bw, bY);
@@ -497,10 +472,10 @@ class BackgroundSystem {
             ctx.fill();
             ctx.restore();
 
-            // 针对上海环球金融中心风格（1号楼）额外扣出屋顶的标志性“镂空圆孔”
+            // 标志性“镂空圆孔”
             if (b.buildingType === 1) {
                 ctx.save();
-                ctx.globalCompositeOperation = 'destination-out'; // 使用橡皮擦模式擦除圆形
+                ctx.globalCompositeOperation = 'destination-out'; 
                 ctx.beginPath();
                 ctx.arc(bx + bw * 0.5, bY + 8, 3.5, 0, Math.PI * 2);
                 ctx.fill();
@@ -513,17 +488,14 @@ class BackgroundSystem {
             ctx.lineWidth = 1;
             
             if (b.antennaType === 1) {
-                // 1. 中央细长天线
                 let ax = Math.floor(bx + bw * 0.5);
                 ctx.beginPath();
                 ctx.moveTo(ax, bY);
                 ctx.lineTo(ax, bY - 14);
                 ctx.stroke();
-                // 针尖微弱常亮航空灯
                 ctx.fillStyle = '#ff3300';
                 ctx.fillRect(ax, bY - 15, 1, 1);
             } else if (b.antennaType === 2) {
-                // 2. 左右对称双天线
                 let ax1 = Math.floor(bx + bw * 0.25);
                 let ax2 = Math.floor(bx + bw * 0.75);
                 ctx.beginPath();
@@ -531,18 +503,17 @@ class BackgroundSystem {
                 ctx.moveTo(ax2, bY); ctx.lineTo(ax2, bY - 10);
                 ctx.stroke();
             } else if (b.antennaType === 3) {
-                // 3. 雷达卫星锅/网状圆弧
                 ctx.fillStyle = '#1f0d0b';
                 ctx.beginPath();
-                ctx.arc(bx + bw * 0.5, bY - 3, 4, Math.PI, 0); // 半圆弧
+                ctx.arc(bx + bw * 0.5, bY - 3, 4, Math.PI, 0); 
                 ctx.stroke();
-                ctx.fillRect(Math.floor(bx + bw * 0.5) - 0.5, bY - 3, 1, 3); // 支架
+                ctx.fillRect(Math.floor(bx + bw * 0.5) - 0.5, bY - 3, 1, 3); 
             }
             ctx.restore();
 
-            // --- 3.3 静态密集的摩天楼窗格（常亮橙黄点，不闪烁） ---
+            // --- 3.3 静态密集的摩天楼窗格 ---
             let winSeed = b.seed;
-            for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) { // 窗户排布也随着大楼变窄而更密集
+            for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) { 
                 for (let wy = bY + 16; wy < FLOOR_Y - 8; wy += 11) {
                     winSeed = (winSeed * 37 + 23) % 100;
                     if (winSeed > 72) {
@@ -552,7 +523,7 @@ class BackgroundSystem {
                 }
             }
 
-            // --- 3.4 动态霓虹广告牌（仅在对称梯形和双子塔大楼侧边闪烁，维持整体静态） ---
+            // --- 3.4 动态霓虹广告牌 ---
             const isBlinking = Math.sin(time * b.blinkSpeed) > -0.3; 
             if (isBlinking && (b.buildingType === 0 || b.buildingType === 3)) {
                 ctx.save();
@@ -599,503 +570,4 @@ class BackgroundSystem {
     }
 
     drawForegroundGrid(ctx, worldX) {
-        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#1c0d0d');
-        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#0d0404');
-
-        ctx.strokeStyle = '#2b1414';
-        ctx.lineWidth = 1;
-        let spacing = 18;
-        let offset = (worldX * 1.5) % spacing;
-
-        ctx.beginPath();
-        for (let x = -offset; x < GAME_WIDTH; x += spacing) {
-            ctx.moveTo(Math.floor(x), FLOOR_Y + 4);
-            ctx.lineTo(Math.floor(x), GAME_HEIGHT);
-        }
-        ctx.stroke();
-
-        ctx.strokeStyle = '#ff4d00';
-        ctx.globalAlpha = 0.45;
-        ctx.beginPath();
-        ctx.moveTo(0, FLOOR_Y + 4);
-        ctx.lineTo(GAME_WIDTH, FLOOR_Y + 4);
-        ctx.stroke();
-        ctx.globalAlpha = 1.0;
-
-        this.drawUtilityPoles(ctx);
-    }
-
-    drawUtilityPoles(ctx) {
-        ctx.save();
-        ctx.strokeStyle = '#080202';
-        ctx.lineWidth = 1;
-        ctx.globalAlpha = 0.75;
-        
-        for (let i = 0; i < this.utilityPoles.length - 1; i++) {
-            let p1 = this.utilityPoles[i];
-            let p2 = this.utilityPoles[i + 1];
-            
-            if (p2.x - p1.x < 300) {
-                let y1 = FLOOR_Y - p1.h + 5;
-                let y2 = FLOOR_Y - p2.h + 5;
-                ctx.beginPath();
-                ctx.moveTo(p1.x, y1);
-                ctx.quadraticCurveTo((p1.x + p2.x) / 2, Math.max(y1, y2) + 12, p2.x, y2);
-                ctx.stroke();
-            }
-        }
-
-        for (let p of this.utilityPoles) {
-            const px = Math.floor(p.x);
-            const py = Math.floor(FLOOR_Y - p.h);
-            
-            drawPixelRect(ctx, px - 1, py, 3, p.h, '#140606');
-            drawPixelRect(ctx, px, py, 1, p.h, '#2b1414'); 
-
-            if (p.h > 85) {
-                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#1c0d0d');
-                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#140606');
-                drawPixelRect(ctx, px - 2, py + 18, 1, 1, '#ff4d00');
-            }
-
-            if (p.crossarms) {
-                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#140606');
-                drawPixelRect(ctx, px - 6, py + 2, 2, 2, '#ffffff');
-                drawPixelRect(ctx, px + 5, py + 2, 2, 2, '#ffffff');
-                
-                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#140606');
-                drawPixelRect(ctx, px - 4, py + 8, 2, 2, '#ffffff');
-                drawPixelRect(ctx, px + 3, py + 8, 2, 2, '#ffffff');
-            } else {
-                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#140606');
-                drawPixelRect(ctx, px - 8, py + 4, 2, 2, '#ffffff');
-                drawPixelRect(ctx, px + 6, py + 4, 2, 2, '#ffffff');
-            }
-        }
-        ctx.restore();
-    }
-}
-
-
-class Player {
-    constructor(particleSystem) {
-        this.ps = particleSystem;
-        this.reset();
-    }
-
-    reset() {
-        this.x = 45;
-        this.y = FLOOR_Y - 32;
-        this.w = 20;
-        this.h = 32;
-        this.vy = 0;
-        this.gravity = 0.45;
-        this.jumpForce = -7.5;
-        this.isGrounded = true;
-        this.jumpCount = 0;
-        this.animTimer = 0;
-        this.state = 'RUN'; // RUN, JUMP, LAND
-    }
-
-    jump() {
-        if (this.isGrounded || this.jumpCount < 2) {
-            this.vy = this.jumpForce;
-            this.isGrounded = false;
-            this.jumpCount++;
-            this.state = 'JUMP';
-            
-            // Thrust engine fire effects
-            for(let i=0; i<8; i++) {
-                this.ps.spawn(this.x + 4, this.y + 24, -1 - Math.random()*2, (Math.random()-0.5)*3, 15, PALETTE.neonCyan, 2);
-            }
-        }
-    }
-
-    update(dt) {
-        this.animTimer += dt * 12;
-
-        // Semi-realistic physics implementation
-        this.vy += this.gravity * dt * 60;
-        this.y += this.vy * dt * 60;
-
-        // Ground Collision Lock
-        if (this.y >= FLOOR_Y - this.h) {
-            this.y = FLOOR_Y - this.h;
-            this.vy = 0;
-            
-            if (!this.isGrounded) {
-                this.isGrounded = true;
-                this.jumpCount = 0;
-                this.state = 'RUN';
-                // Impact dust dynamics
-                for(let i=0; i<6; i++) {
-                    this.ps.spawn(this.x + 10, FLOOR_Y, (Math.random()-0.5)*4, -Math.random()*2, 12, '#8892b0', 2);
-                }
-            }
-        }
-
-        // Particle generation running constant heat core discharge
-        if (this.isGrounded && Math.random() > 0.7) {
-            this.ps.spawn(this.x, this.y + 16, -1, -0.5, 10, PALETTE.neonMagenta, 1);
-        }
-    }
-
-    draw(ctx) {
-        const px = Math.floor(this.x);
-        const py = Math.floor(this.y);
-        
-        // Procedural leg cycle calculation based on active runtime states
-        let legOffset = 0;
-        let torsoBounce = 0;
-        if (this.isGrounded) {
-            legOffset = Math.sin(this.animTimer) * 4;
-            torsoBounce = Math.abs(Math.cos(this.animTimer)) * 2;
-        } else {
-            legOffset = this.vy < 0 ? 3 : -2; // Leg posture configuration based on velocity vectors
-        }
-
-        // --- LAYERED MECHANIZED DRAW SYSTEM ---
-
-        // 1. Back Hydraulic Leg Architecture
-        ctx.fillStyle = '#0f1224';
-        ctx.fillRect(px + 4, py + 18 + torsoBounce, 4, 8);
-        ctx.fillStyle = '#1d2242';
-        ctx.fillRect(px + 2 + (this.isGrounded ? -legOffset : 2), py + 24, 4, 8);
-
-        // 2. Heavy Steel Mech Torso & Plating Armor
-        ctx.fillStyle = '#2d355a';
-        ctx.fillRect(px + 2, py + 6 - torsoBounce, 16, 14);
-        ctx.fillStyle = '#414b7e'; // Panel Highlights
-        ctx.fillRect(px + 4, py + 8 - torsoBounce, 12, 4);
-
-        // 3. Cybernetic Control Cockpit Head Canopy
-        ctx.fillStyle = '#171a33';
-        ctx.fillRect(px + 10, py - torsoBounce, 10, 8);
-        // Glowing Visor / Optical Scanner Lens
-        ctx.fillStyle = PALETTE.neonCyan;
-        ctx.fillRect(px + 16, py + 2 - torsoBounce, 4, 2);
-
-        // 4. Front Kinetic Leg Architecture
-        ctx.fillStyle = '#1d2242';
-        ctx.fillRect(px + 12, py + 18 + torsoBounce, 4, 8);
-        ctx.fillStyle = '#5260a4';
-        ctx.fillRect(px + 10 + (this.isGrounded ? legOffset : -2), py + 24, 5, 8);
-
-        // 5. Plasma Core Over-heat Reactor Vent (Center Core)
-        ctx.fillStyle = (Math.floor(this.animTimer) % 2 === 0) ? PALETTE.neonMagenta : '#a30036';
-        ctx.fillRect(px + 8, py + 12 - torsoBounce, 4, 4);
-    }
-
-    getHitbox() {
-        // Compressed tight collision boxes for satisfying gameplay loops
-        return { x: this.x + 4, y: this.y + 2, w: this.w - 6, h: this.h - 4 };
-    }
-}
-
-class WorldManager {
-    constructor(particleSystem) {
-        this.ps = particleSystem;
-        this.obstacles = [];
-        this.spawnTimer = 0;
-        this.minSpawnInterval = 90;
-    }
-
-    reset() {
-        this.obstacles = [];
-        this.spawnTimer = 0;
-    }
-
-    update(dt, speedMultiplier) {
-        this.spawnTimer += dt * 60;
-        
-        // Dynamic scaling difficulty algorithm
-        let currentInterval = Math.max(50, 130 - speedMultiplier * 15);
-        
-        if (this.spawnTimer >= currentInterval) {
-            this.spawnTimer = 0;
-            this.spawnObstacle();
-        }
-
-        // Loop array backwards for standard safe deletion sequences
-        for (let i = this.obstacles.length - 1; i >= 0; i--) {
-            let obs = this.obstacles[i];
-            obs.x -= 4.2 * speedMultiplier * dt * 60;
-            
-            // Atmospheric particle trails tracking on high-velocity drones
-            if (obs.type === 'drone' && Math.random() > 0.6) {
-                this.ps.spawn(obs.x + obs.w, obs.y + obs.h/2, 1, 0, 8, PALETTE.neonCyan, 1);
-            }
-
-            if (obs.x + obs.w < 0) {
-                this.obstacles.splice(i, 1);
-            }
-        }
-    }
-
-    spawnObstacle() {
-        let randVal = Math.random();
-        let obs = {};
-
-        if (randVal < 0.45) {
-            // Industrial Freight Matrix Cache Box
-            obs = {
-                x: GAME_WIDTH + 20, y: FLOOR_Y - 22, w: 18, h: 22,
-                type: 'container', color: '#632512', trim: PALETTE.neonGold
-            };
-        } else if (randVal < 0.8) {
-            // High-voltage Neon Plasma Deflection Node Grid
-            obs = {
-                x: GAME_WIDTH + 20, y: FLOOR_Y - 36, w: 12, h: 36,
-                type: 'barrier', color: '#172540', trim: PALETTE.neonMagenta
-            };
-        } else {
-            // Low-altitude Autonomous Air Security Hunter Drone
-            let droneAlt = FLOOR_Y - 48 - Math.random() * 25;
-            obs = {
-                x: GAME_WIDTH + 20, y: droneAlt, w: 16, h: 10,
-                type: 'drone', color: '#202538', trim: PALETTE.neonCyan
-            };
-        }
-        this.obstacles.push(obs);
-    }
-
-    draw(ctx) {
-        for (let obs of this.obstacles) {
-            const ox = Math.floor(obs.x);
-            const oy = Math.floor(obs.y);
-            
-            // Core structure profile rendering
-            drawPixelRect(ctx, ox, oy, obs.w, obs.h, obs.color);
-            
-            // Cyberpunk detail injection based on contextual metadata
-            if (obs.type === 'container') {
-                // Reinforced iron cargo cross beams
-                ctx.fillStyle = '#3a180d';
-                ctx.fillRect(ox + 2, oy + 2, obs.w - 4, 2);
-                ctx.fillRect(ox + 2, oy + obs.h - 4, obs.w - 4, 2);
-                ctx.fillStyle = obs.trim;
-                ctx.fillRect(ox + 4, oy + 8, 3, 3); // Nuclear tracking marker
-            } 
-            else if (obs.type === 'barrier') {
-                // High voltage energetic node posts
-                ctx.fillStyle = '#0d1626';
-                ctx.fillRect(ox + 3, oy, obs.w - 6, obs.h);
-                // Glowing plasma energy field stream core
-                ctx.fillStyle = obs.trim;
-                ctx.globalAlpha = 0.7 + Math.sin(Date.now() * 0.02) * 0.2;
-                ctx.fillRect(ox + 5, oy + 4, obs.w - 10, obs.h - 12);
-                ctx.globalAlpha = 1.0;
-            } 
-            else if (obs.type === 'drone') {
-                // Multi-wing engine structural alignment profile
-                ctx.fillStyle = '#0b0d14';
-                ctx.fillRect(ox, oy + 2, 4, 4); // Rear thruster alignment
-                ctx.fillStyle = obs.trim;       // Forward laser optic tracker camera
-                ctx.fillRect(ox + obs.w - 3, oy + 4, 3, 3);
-            }
-        }
-    }
-}
-
-// --- CENTRAL CORE GAME ENGINE ---
-
-class GameEngine {
-    constructor() {
-        this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        
-        this.particleSystem = new ParticleSystem();
-        this.bgSystem = new BackgroundSystem();
-        this.player = new Player(this.particleSystem);
-        this.worldManager = new WorldManager(this.particleSystem);
-
-        this.gameState = STATES.START;
-        this.score = 0;
-        this.highscore = parseInt(localStorage.getItem('cc_highscore')) || 0;
-        this.speedMultiplier = 1.0;
-        this.worldX = 0;
-        
-        this.lastTime = 0;
-        this.shakeTimer = 0;
-        this.shakeIntensity = 0;
-
-        this.initUI();
-        this.bindInput();
-        
-        // Active loop initializer kick-start
-        requestAnimationFrame((t) => this.loop(t));
-    }
-
-    initUI() {
-        this.dom = {
-            hud: document.getElementById('hud'),
-            score: document.getElementById('hud-score'),
-            highscore: document.getElementById('hud-highscore'),
-            startScreen: document.getElementById('screen-start'),
-            gameoverScreen: document.getElementById('screen-gameover'),
-            finalScore: document.getElementById('final-score'),
-            finalHighscore: document.getElementById('final-highscore'),
-            btnStart: document.getElementById('btn-start'),
-            btnRestart: document.getElementById('btn-restart')
-        };
-
-        this.dom.btnStart.addEventListener('click', () => this.startGame());
-        this.dom.btnRestart.addEventListener('click', () => this.startGame());
-    }
-
-    bindInput() {
-        const triggerJump = () => {
-            if (this.gameState === STATES.RUNNING) {
-                this.player.jump();
-            }
-        };
-
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
-                e.preventDefault();
-                triggerJump();
-            }
-        });
-
-        // Instant universal touch interface binding for smart responsive mobile scaling
-        window.addEventListener('touchstart', (e) => {
-            if (this.gameState === STATES.RUNNING) {
-                // Prevent duplicate ghost click execution paths on complex mobile devices
-                if (e.target.tagName !== 'BUTTON') {
-                    e.preventDefault();
-                    triggerJump();
-                }
-            }
-        }, { passive: false });
-    }
-
-    startGame() {
-        this.score = 0;
-        this.speedMultiplier = 1.0;
-        this.worldX = 0;
-        this.player.reset();
-        this.worldManager.reset();
-        
-        this.gameState = STATES.RUNNING;
-        
-        this.dom.startScreen.classList.add('hidden');
-        this.dom.gameoverScreen.classList.add('hidden');
-        this.dom.hud.classList.remove('hidden');
-    }
-
-    triggerScreenShake(duration, intensity) {
-        this.shakeTimer = duration;
-        this.shakeIntensity = intensity;
-    }
-
-    checkCollisions() {
-        let pHitbox = this.player.getHitbox();
-
-        for (let obs of this.worldManager.obstacles) {
-            if (pHitbox.x < obs.x + obs.w &&
-                pHitbox.x + pHitbox.w > obs.x &&
-                pHitbox.y < obs.y + obs.h &&
-                pHitbox.y + pHitbox.h > obs.y) {
-                this.gameOver();
-                break;
-            }
-        }
-    }
-
-    gameOver() {
-        this.gameState = STATES.GAMEOVER;
-        this.triggerScreenShake(30, 6);
-        
-        // Massive energy core implosion particle spray
-        this.particleSystem.spawnExplosion(this.player.x + 10, this.player.y + 16, PALETTE.neonMagenta, 24);
-        this.particleSystem.spawnExplosion(this.player.x + 10, this.player.y + 16, PALETTE.neonCyan, 16);
-
-        if (this.score > this.highscore) {
-            this.highscore = this.score;
-            localStorage.setItem('cc_highscore', this.highscore);
-        }
-
-        // String numerical padding conversions
-        this.dom.finalScore.textContent = Math.floor(this.score);
-        this.dom.finalHighscore.textContent = Math.floor(this.highscore);
-        
-        this.dom.gameoverScreen.classList.remove('hidden');
-    }
-
-    update(dt) {
-        // Enforce max delta step boundary to secure stable collision sweeps during extreme frame skips
-        if (dt > 0.1) dt = 0.1;
-
-        // Camera shake matrix timer countdowns
-        if (this.shakeTimer > 0) {
-            this.shakeTimer -= dt * 60;
-        }
-
-        this.particleSystem.update(dt);
-
-        if (this.gameState === STATES.RUNNING) {
-            // Progressive algorithmic procedural speed amplification curves
-            this.speedMultiplier += 0.015 * dt;
-            this.worldX += 4.2 * this.speedMultiplier * dt * 60;
-            this.score += dt * 8 * this.speedMultiplier;
-
-            // DOM Interface Metrics Engine Refresh
-            this.dom.score.textContent = String(Math.floor(this.score)).padStart(5, '0');
-            this.dom.highscore.textContent = String(Math.floor(this.highscore)).padStart(5, '0');
-
-            this.bgSystem.update(dt, this.speedMultiplier);
-            this.player.update(dt);
-            this.worldManager.update(dt, this.speedMultiplier);
-            this.checkCollisions();
-        }
-        
-        // Ambient environmental matrix weather rain details
-        if (Math.random() > 0.4) {
-            this.particleSystem.spawn(Math.random() * GAME_WIDTH, -5, -1, 4, 60, '#3d4b7c', 1, 'rain');
-        }
-    }
-
-    draw() {
-        this.ctx.save();
-        
-        // Apply procedural screenshake translations across global matrix transformation hooks
-        if (this.shakeTimer > 0) {
-            let dx = (Math.random() - 0.5) * this.shakeIntensity;
-            let dy = (Math.random() - 0.5) * this.shakeIntensity;
-            this.ctx.translate(dx, dy);
-        }
-
-        this.ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-        // Core Pipeline Layers Sequences execution execution map
-        this.bgSystem.drawSky(this.ctx);
-        this.bgSystem.drawCity(this.ctx);
-        this.bgSystem.drawForegroundGrid(this.ctx, this.worldX);
-        
-        this.worldManager.draw(this.ctx);
-        
-        if (this.gameState !== STATES.GAMEOVER) {
-            this.player.draw(this.ctx);
-        }
-        
-        this.particleSystem.draw(this.ctx);
-
-        this.ctx.restore();
-    }
-
-    loop(timestamp) {
-        if (!this.lastTime) this.lastTime = timestamp;
-        let dt = (timestamp - this.lastTime) / 1000;
-        this.lastTime = timestamp;
-
-        this.update(dt);
-        this.draw();
-
-        requestAnimationFrame((t) => this.loop(t));
-    }
-}
-
-// Instantiate and initialize runtime system stack once file registers safely
-window.addEventListener('DOMContentLoaded', () => {
-    new GameEngine();
-});
+        drawPixelRect(ctx,
