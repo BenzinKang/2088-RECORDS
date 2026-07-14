@@ -308,13 +308,18 @@ class BackgroundSystem {
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-        // 1. 远景窄楼
-        ctx.fillStyle = '#0a0b10'; 
+        // 1. 远景窄楼 (已优化：改为温暖的暮色红紫渐变，增加空气透视感)
         for (let b of this.bgBuildings) {
             let bx = Math.floor(b.x);
             let bw = Math.floor(b.w);
             let bh = Math.floor(b.h);
             let bY = FLOOR_Y - bh;
+
+            // 创建专属每个大楼的高级纵向渐变
+            let bgBuildingGrad = ctx.createLinearGradient(bx, bY, bx, FLOOR_Y);
+            bgBuildingGrad.addColorStop(0, '#2e141a'); // 顶部：带有黄昏余晖和空气感的暗红紫
+            bgBuildingGrad.addColorStop(1, '#130810'); // 底部：沉入地面的深沉紫影（不突兀的暗色）
+            ctx.fillStyle = bgBuildingGrad;
 
             let landmarkType = Math.floor((b.seed * 100) % 4);
 
@@ -371,7 +376,7 @@ class BackgroundSystem {
             
             if (b.hasSpire) {
                 ctx.save();
-                ctx.fillStyle = '#050508';
+                ctx.fillStyle = '#10060c';
                 ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 10), 1, 10);
                 ctx.fillStyle = '#ff1100'; 
                 ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 11), 1, 1);
