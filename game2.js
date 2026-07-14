@@ -570,4 +570,279 @@ class BackgroundSystem {
     }
 
     drawForegroundGrid(ctx, worldX) {
-        drawPixelRect(ctx,
+        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#1c0d0d');
+        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#0d0404');
+
+        ctx.strokeStyle = '#2b1414';
+        ctx.lineWidth = 1;
+        let spacing = 18;
+        let offset = (worldX * 1.5) % spacing;
+
+        ctx.beginPath();
+        for (let x = -offset; x < GAME_WIDTH; x += spacing) {
+            ctx.moveTo(Math.floor(x), FLOOR_Y + 4);
+            ctx.lineTo(Math.floor(x), GAME_HEIGHT);
+        }
+        ctx.stroke();
+
+        ctx.strokeStyle = '#ff4d00';
+        ctx.globalAlpha = 0.45;
+        ctx.beginPath();
+        ctx.moveTo(0, FLOOR_Y + 4);
+        ctx.lineTo(GAME_WIDTH, FLOOR_Y + 4);
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+
+        this.drawUtilityPoles(ctx);
+    }
+
+    drawUtilityPoles(ctx) {
+        ctx.save();
+        ctx.strokeStyle = '#080202';
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.75;
+        
+        for (let i = 0; i < this.utilityPoles.length - 1; i++) {
+            let p1 = this.utilityPoles[i];
+            let p2 = this.utilityPoles[i + 1];
+            
+            if (p2.x - p1.x < 300) {
+                let y1 = FLOOR_Y - p1.h + 5;
+                let y2 = FLOOR_Y - p2.h + 5;
+                ctx.beginPath();
+                ctx.moveTo(p1.x, y1);
+                ctx.quadraticCurveTo((p1.x + p2.x) / 2, Math.max(y1, y2) + 12, p2.x, y2);
+                ctx.stroke();
+            }
+        }
+
+        for (let p of this.utilityPoles) {
+            const px = Math.floor(p.x);
+            const py = Math.floor(FLOOR_Y - p.h);
+            
+            drawPixelRect(ctx, px - 1, py, 3, p.h, '#140606');
+            drawPixelRect(ctx, px, py, 1, p.h, '#2b1414'); 
+
+            if (p.h > 85) {
+                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#1c0d0d');
+                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#140606');
+                drawPixelRect(ctx, px - 2, py + 18, 1, 1, '#ff4d00');
+            }
+
+            if (p.crossarms) {
+                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#140606');
+                drawPixelRect(ctx, px - 6, py + 2, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 5, py + 2, 2, 2, '#ffffff');
+                
+                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#140606');
+                drawPixelRect(ctx, px - 4, py + 8, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 3, py + 8, 2, 2, '#ffffff');
+            } else {
+                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#140606');
+                drawPixelRect(ctx, px - 8, py + 4, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 6, py + 4, 2, 2, '#ffffff');
+            }
+        }
+        ctx.restore();
+    }
+}
+
+class Player {
+    constructor(particleSystem) {
+        this.ps = particleSystem;
+        this.reset();
+    }
+
+    reset() {
+        this.x = 45;
+        this.y = FLOOR_Y - 32;
+        this.w = 20;
+        this.h = 32;
+        this.vy = 0;
+        this.gravity = 0.45;
+        this.jumpForce = -7.5;
+        this.isGrounded = true;
+        this.jumpCount = 0;
+        this.animTimer = 0;
+        this.state = 'RUN'; 
+    }
+
+    jump() {
+        if (this.isGrounded || this.jumpCount < 2) {
+            this.vy = this.jumpForce;
+            this.isGrounded = false;
+            this.jumpCount++;
+            this.state = 'JUMP';
+            
+            for(let i=0; i<8; i++) {
+                this.ps.spawn(this.x + 4, this.y + 24, -1 - Math.random()*2, (Math.random()-0.5)*3, 15, PALETTE.neonCyan, 2);
+            }
+        }
+    }
+
+    update(dt) {
+        this.animTimer += dt * 12;
+
+        this.vy += this.gravity * dt * 60;
+        this.y += this.vy * dt * 60;
+
+        if (this.y >= FLOOR_Y - this.h) {
+            this.y = FLOOR_Y - this.h;
+            this.vy = 0;
+            
+            if (!this.isGrounded) {
+                this.isGrounded = true;
+                this.jumpCount = 0;
+                this.state = 'RUN';
+                for(let i=0; i<6; i++) {
+                    this.ps.spawn(this.x + 10, FLOOR_Y, (Math.random()-0.5)*4, -Math.random()*2, 12, '#8892b0', 2);
+                }
+            }
+        }
+
+        if (this.isGrounded && Math.random() > 0.7) {
+            this.ps.spawn(this.x, this.y + 16, -1, -0.5, 10, PALETTE.neonMagenta, 1);
+        }
+    }
+
+    draw(ctx) {
+        const px = Math.floor(this.x);
+        const py = Math.floor(this.y);
+        
+        let legOffset = 0;
+        let torsoBounce = 0;
+        if (this.isGrounded) {
+            legOffset = Math.sin(this.animTimer) * 4;
+            torsoBounce = Math.abs(Math.cos(this.animTimer)) * 2;
+        } else {
+            legOffset = this.vy < 0 ? 3 : -2; 
+        }
+
+        // 1. Back Hydraulic Leg Architecture
+        ctx.fillStyle = '#0f1224';
+        ctx.fillRect(px + 4, py + 18 + torsoBounce, 4, 8);
+        ctx.fillStyle = '#1d2242';
+        ctx.fillRect(px + 2 + (this.isGrounded ? -legOffset : 2), py + 24, 4, 8);
+
+        // 2. Heavy Steel Mech Torso & Plating Armor
+        ctx.fillStyle = '#2d355a';
+        ctx.fillRect(px + 2, py + 6 - torsoBounce, 16, 14);
+        ctx.fillStyle = '#414b7e'; 
+        ctx.fillRect(px + 4, py + 8 - torsoBounce, 12, 4);
+
+        // 3. Cybernetic Control Cockpit Head Canopy
+        ctx.fillStyle = '#171a33';
+        ctx.fillRect(px + 10, py - torsoBounce, 10, 8);
+        ctx.fillStyle = PALETTE.neonCyan;
+        ctx.fillRect(px + 16, py + 2 - torsoBounce, 4, 2);
+
+        // 4. Front Kinetic Leg Architecture
+        ctx.fillStyle = '#1d2242';
+        ctx.fillRect(px + 12, py + 18 + torsoBounce, 4, 8);
+        ctx.fillStyle = '#5260a4';
+        ctx.fillRect(px + 10 + (this.isGrounded ? legOffset : -2), py + 24, 5, 8);
+
+        // 5. Plasma Core Over-heat Reactor Vent (Center Core)
+        ctx.fillStyle = (Math.floor(this.animTimer) % 2 === 0) ? PALETTE.neonMagenta : '#a30036';
+        ctx.fillRect(px + 8, py + 12 - torsoBounce, 4, 4);
+    }
+
+    getHitbox() {
+        return { x: this.x + 4, y: this.y + 2, w: this.w - 6, h: this.h - 4 };
+    }
+}
+
+class WorldManager {
+    constructor(particleSystem) {
+        this.ps = particleSystem;
+        this.obstacles = [];
+        this.spawnTimer = 0;
+        this.minSpawnInterval = 90;
+    }
+
+    reset() {
+        this.obstacles = [];
+        this.spawnTimer = 0;
+    }
+
+    update(dt, speedMultiplier) {
+        this.spawnTimer += dt * 60;
+        
+        let currentInterval = Math.max(50, 130 - speedMultiplier * 15);
+        
+        if (this.spawnTimer >= currentInterval) {
+            this.spawnTimer = 0;
+            this.spawnObstacle();
+        }
+
+        for (let i = this.obstacles.length - 1; i >= 0; i--) {
+            let obs = this.obstacles[i];
+            obs.x -= 4.2 * speedMultiplier * dt * 60;
+            
+            if (obs.type === 'drone' && Math.random() > 0.6) {
+                this.ps.spawn(obs.x + obs.w, obs.y + obs.h/2, 1, 0, 8, PALETTE.neonCyan, 1);
+            }
+
+            if (obs.x + obs.w < 0) {
+                this.obstacles.splice(i, 1);
+            }
+        }
+    }
+
+    spawnObstacle() {
+        let randVal = Math.random();
+        let obs = {};
+
+        if (randVal < 0.45) {
+            obs = {
+                x: GAME_WIDTH + 20, y: FLOOR_Y - 22, w: 18, h: 22,
+                type: 'container', color: '#632512', trim: PALETTE.neonGold
+            };
+        } else if (randVal < 0.8) {
+            obs = {
+                x: GAME_WIDTH + 20, y: FLOOR_Y - 36, w: 12, h: 36,
+                type: 'barrier', color: '#172540', trim: PALETTE.neonMagenta
+            };
+        } else {
+            let droneAlt = FLOOR_Y - 48 - Math.random() * 25;
+            obs = {
+                x: GAME_WIDTH + 20, y: droneAlt, w: 16, h: 10,
+                type: 'drone', color: '#202538', trim: PALETTE.neonCyan
+            };
+        }
+        this.obstacles.push(obs);
+    }
+
+    draw(ctx) {
+        for (let obs of this.obstacles) {
+            const ox = Math.floor(obs.x);
+            const oy = Math.floor(obs.y);
+            
+            drawPixelRect(ctx, ox, oy, obs.w, obs.h, obs.color);
+            
+            if (obs.type === 'container') {
+                ctx.fillStyle = '#3a180d';
+                ctx.fillRect(ox + 2, oy + 2, obs.w - 4, 2);
+                ctx.fillRect(ox + 2, oy + obs.h - 4, obs.w - 4, 2);
+                ctx.fillStyle = obs.trim;
+                ctx.fillRect(ox + 4, oy + 8, 3, 3); 
+            } 
+            else if (obs.type === 'barrier') {
+                ctx.fillStyle = '#0d1626';
+                ctx.fillRect(ox + 3, oy, obs.w - 6, obs.h);
+                ctx.fillStyle = obs.trim;
+                ctx.globalAlpha = 0.7 + Math.sin(Date.now() * 0.02) * 0.2;
+                ctx.fillRect(ox + 5, oy + 4, obs.w - 10, obs.h - 12);
+                ctx.globalAlpha = 1.0;
+            } 
+            else if (obs.type === 'drone') {
+                // 补充无人机细节绘制
+                ctx.fillStyle = '#0b0d14';
+                ctx.fillRect(ox - 2, oy + 2, 4, 2); // 左翼
+                ctx.fillRect(ox + obs.w - 2, oy + 2, 4, 2); // 右翼
+                ctx.fillStyle = obs.trim; // 霓虹冰蓝核心指示灯
+                ctx.fillRect(ox + Math.floor(obs.w/2) - 1, oy + 4, 2, 2);
+            }
+        }
+    }
+}
