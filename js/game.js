@@ -116,36 +116,101 @@ function updatePlayer() {
 
 function drawPlayer() {
 
+    const x = player.x;
+    const y = player.y;
+
     ctx.save();
 
     ctx.shadowBlur = 18;
+    ctx.shadowColor = "#00d7ff";
+    ctx.strokeStyle = "#00d7ff";
+    ctx.lineWidth = 2;
 
-    ctx.shadowColor = "#00d5ff";
+    // Head
+    ctx.strokeRect(x + 8, y, 26, 20);
 
-    ctx.fillStyle = player.color;
+    // Eyes
+    ctx.fillStyle = "#00ffff";
+    ctx.fillRect(x + 14, y + 7, 4, 4);
+    ctx.fillRect(x + 24, y + 7, 4, 4);
 
-    ctx.fillRect(
+    // Body
+    ctx.strokeRect(x + 10, y + 20, 22, 24);
 
-        player.x,
+    // Legs
+    ctx.beginPath();
+    ctx.moveTo(x + 16, y + 44);
+    ctx.lineTo(x + 13, y + 60);
 
-        player.y,
+    ctx.moveTo(x + 26, y + 44);
+    ctx.lineTo(x + 29, y + 60);
 
-        player.width,
-
-        player.height
-
-    );
+    ctx.stroke();
 
     ctx.restore();
 
 }
 
+const buildings = [];
+
+for(let i=0;i<30;i++){
+
+    buildings.push({
+
+        x:i*120,
+
+        width:60+Math.random()*60,
+
+        height:80+Math.random()*180
+
+    });
+
+}
+
+ctx.fillStyle="#0b2746";
+
+ctx.fillRect(
+    b.x,
+    GROUND_Y-b.height,
+    b.width,
+    b.height
+);
+
+for(let y=0;y<canvas.height;y+=4){
+
+ctx.fillStyle="rgba(255,255,255,.02)";
+
+ctx.fillRect(
+
+0,
+
+y,
+
+canvas.width,
+
+1
+
+);
+
+}
+
+
 
 function spawnObstacle() {
 
     const width = 28 + Math.random() * 35;
-
     const height = 40 + Math.random() * 70;
+
+    const obstacleTypes = [
+        "firewall",
+        "fragment",
+        "noise"
+    ];
+
+    const type =
+        obstacleTypes[
+            Math.floor(Math.random() * obstacleTypes.length)
+        ];
 
     obstacles.push({
 
@@ -155,7 +220,9 @@ function spawnObstacle() {
 
         width,
 
-        height
+        height,
+
+        type
 
     });
 
@@ -165,9 +232,11 @@ function updateObstacles() {
 
     for (let i = obstacles.length - 1; i >= 0; i--) {
 
-        obstacles[i].x -= speed;
+        const obstacle = obstacles[i];
 
-        if (obstacles[i].x + obstacles[i].width < 0) {
+        obstacle.x -= speed;
+
+        if (obstacle.x + obstacle.width < 0) {
 
             obstacles.splice(i, 1);
 
@@ -179,33 +248,170 @@ function updateObstacles() {
 
 }
 
+
 function drawObstacles() {
 
     obstacles.forEach(o => {
 
         ctx.save();
 
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 20;
 
-        ctx.shadowColor = "#00bfff";
+        switch (o.type) {
 
-        ctx.fillStyle = "#008cff";
+            case "firewall":
+
+                ctx.fillStyle = "#ff3f63";
+                ctx.shadowColor = "#ff3f63";
+
+                break;
+
+            case "fragment":
+
+                ctx.fillStyle = "#00d8ff";
+                ctx.shadowColor = "#00d8ff";
+
+                break;
+
+            case "noise":
+
+                ctx.fillStyle = "#7a6bff";
+                ctx.shadowColor = "#7a6bff";
+
+                break;
+
+        }
 
         ctx.fillRect(
-
             o.x,
-
             o.y,
-
             o.width,
-
             o.height
-
         );
 
         ctx.restore();
 
     });
+
+}
+
+const stars = [];
+
+for (let i = 0; i < 120; i++) {
+
+    stars.push({
+
+        x: Math.random() * canvas.width,
+
+        y: Math.random() * canvas.height,
+
+        r: Math.random() * 2,
+
+        speed: 0.3 + Math.random()
+
+    });
+
+}
+
+let glitchTimer = 0;
+
+glitchTimer++;
+
+if(glitchTimer>600){
+
+    glitchTimer=0;
+
+}
+
+
+if(glitchTimer<15){
+
+    ctx.save();
+
+    ctx.globalAlpha=.08;
+
+    ctx.fillStyle="#00ffff";
+
+    ctx.fillRect(
+
+        Math.random()*canvas.width,
+
+        Math.random()*canvas.height,
+
+        200,
+
+        4
+
+    );
+
+    ctx.restore();
+
+}
+
+function drawBackground() {
+
+    const gradient = ctx.createLinearGradient(
+
+        0,
+
+        0,
+
+        0,
+
+        canvas.height
+
+    );
+
+    gradient.addColorStop(0, "#040916");
+    gradient.addColorStop(1, "#071c32");
+
+    ctx.fillStyle = gradient;
+
+    ctx.fillRect(
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+    for (const s of stars) {
+
+        s.x -= s.speed;
+
+        if (s.x < 0) {
+
+            s.x = canvas.width;
+
+            s.y = Math.random() * canvas.height;
+
+        }
+
+        ctx.beginPath();
+
+        ctx.fillStyle = "#8fdfff";
+
+        ctx.arc(
+
+            s.x,
+
+            s.y,
+
+            s.r,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+        ctx.fill();
+
+    }
 
 }
 
@@ -318,6 +524,90 @@ function drawHUD() {
 
 }
 
+const particles = [];
+particles.push({
+
+    x: player.x,
+
+    y: player.y + player.height / 2,
+
+    size: 5,
+
+    alpha: 1
+
+});
+
+function updateParticles() {
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+
+        const p = particles[i];
+
+        p.x -= 3;
+
+        p.alpha -= .03;
+
+        p.size *= .97;
+
+        if (p.alpha <= 0)
+
+            particles.splice(i,1);
+
+    }
+
+}
+function updateParticles() {
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+
+        const p = particles[i];
+
+        p.x -= 3;
+
+        p.alpha -= .03;
+
+        p.size *= .97;
+
+        if (p.alpha <= 0)
+
+            particles.splice(i,1);
+
+    }
+
+}
+function drawParticles() {
+
+    particles.forEach(p=>{
+
+        ctx.save();
+
+        ctx.globalAlpha = p.alpha;
+
+        ctx.fillStyle="#00d7ff";
+
+        ctx.beginPath();
+
+        ctx.arc(
+
+            p.x,
+
+            p.y,
+
+            p.size,
+
+            0,
+
+            Math.PI*2
+
+        );
+
+        ctx.fill();
+
+        ctx.restore();
+
+    });
+
+}
 
 function restart() {
 
@@ -343,6 +633,8 @@ function gameLoop() {
 
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
+    drawBackground();
+
     drawGround();
 
     updatePlayer();
@@ -356,6 +648,10 @@ function gameLoop() {
     collision();
 
     drawHUD();
+
+    updateParticles();
+    
+    drawParticles();
 
     timer++;
 
