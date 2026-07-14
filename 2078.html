@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CyberCore: Neon Run</title>
+    <link rel="stylesheet" href="game2.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="480" height="270"></canvas>
+        
+        <div class="scanlines"></div>
+        <div class="crt-vignette"></div>
+
+        <div id="ui-layer">
+            <div id="hud" class="hidden">
+                <div class="hud-box">
+                    <span class="label">DIST:</span> <span id="hud-score">00000</span>m
+                </div>
+                <div class="hud-box">
+                    <span class="label">HI:</span> <span id="hud-highscore">00000</span>m
+                </div>
+            </div>
+
+            <div id="screen-start" class="screen">
+                <h1 class="glitch-title">CYBER_CORE</h1>
+                <p class="subtitle">PROTOTYPE v0.84 // SUNSET_RUNNER</p>
+                <div class="instructions">
+                    <p>[SPACE] or [UP ARROW] to JUMP / DOUBLE-JUMP</p>
+                    <p class="mobile-note">Mobile: TAP anywhere to jump</p>
+                </div>
+                <button id="btn-start" class="cyber-btn">INITIALIZE MECH</button>
+            </div>
+
+            <div id="screen-gameover" class="screen hidden">
+                <h2 class="alert-title">MECH_CRITICAL</h2>
+                <p class="reason">COLLISION DETECTED // CORE OFFLINE</p>
+                <div class="stats-container">
+                    <p>DISTANCE: <span id="final-score" class="highlight">0</span>m</p>
+                    <p>BEST RECORD: <span id="final-highscore" class="highlight">0</span>m</p>
+                </div>
+                <button id="btn-restart" class="cyber-btn">REBOOT SYSTEM</button>
+            </div>
+        </div>
+    </div>
+    <script src="game2.js"></script>
+</body>
+</html>
