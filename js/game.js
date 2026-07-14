@@ -39,6 +39,27 @@ const player = {
 player.y = GROUND_Y - player.height;
 
 const obstacles = [];
+const buildings = [];
+
+for(let i = 0; i < 8; i++){
+
+    buildings.push({
+
+        x: i * 180,
+
+        width: 80 + Math.random() * 80,
+
+        height: 100 + Math.random() * 200,
+
+        neon: true,
+
+        color: Math.random() > 0.5
+            ? "#00d7ff"
+            : "#9b5cff"
+
+    });
+
+}
 
 function resize(){
 
