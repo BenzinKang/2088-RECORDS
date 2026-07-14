@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>2088 RECORDS | SYSTEM_RUNNER.exe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="play.css">
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    <div class="glitch-vignette"></div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="hud">
+            <div class="hud-panel left">
+                <div class="hud-label">SYSTEM STATUS</div>
+                <div class="hud-value status-good" id="sys-status">ONLINE</div>
+                <div class="hud-label" style="margin-top: 10px;">DATA CORE</div>
+                <div class="hud-value text-neon-blue" id="hud-data">0000</div>
+            </div>
+            <div class="hud-panel center">
+                <div class="brand-title">2088 RECORDS</div>
+                <div class="sub-brand">NEO-TOKYO CORE ENGINE v1.0.4</div>
+            </div>
+            <div class="hud-panel right">
+                <div class="hud-label">SCORE</div>
+                <div class="hud-value text-cyan" id="hud-score">000000</div>
+                <div class="hud-label" style="margin-top: 10px;">HI-SCORE</div>
+                <div class="hud-value text-purple" id="hud-hiscore">000000</div>
+            </div>
+        </div>
+
+        <div id="start-screen" class="overlay-screen">
+            <div class="glitch-title" data-text="NEO RUNNER 2088">NEO RUNNER 2088</div>
+            <p class="subtitle">2088 RECORDS HACKED SUB-SYSTEM</p>
+            <div class="panel-info">
+                <p>穿梭于新东京霓虹高空，收集音符与数据核心</p>
+                <p class="control-tip">电脑端: [ 空格键 / 方向键上 ] 跳跃 | 手机端: 点击屏幕跳跃</p>
+            </div>
+            <button id="start-btn" class="cyber-btn">INITIALIZE SYSTEM</button>
+        </div>
+
+        <div id="gameover-screen" class="overlay-screen hidden">
+            <div class="gameover-title">SYSTEM FAILURE</div>
+            <p class="gameover-subtitle">CONNECTION TERMINATED BY SYNTH-POLICE</p>
+            
+            <div class="results-box">
+                <div class="result-row">
+                    <span>SYNC SCORE:</span>
+                    <span id="final-score" class="text-cyan">0</span>
+                </div>
+                <div class="result-row">
+                    <span>DATA HARVESTED:</span>
+                    <span id="final-data" class="text-neon-blue">0</span>
+                </div>
+            </div>
+
+            <button id="restart-btn" class="cyber-btn flash">REBOOT SESSION</button>
+        </div>
+    </div>
+
+    <script src="play.js"></script>
+</body>
+</html>
