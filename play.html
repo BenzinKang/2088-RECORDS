@@ -1,69 +1,100 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2088 RECORDS | SYSTEM_RUNNER.exe</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="play.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>2088 RECORDS // HIDDEN SIGNAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="play.css">
 </head>
 <body>
-    <div class="crt-overlay"></div>
-    <div class="glitch-vignette"></div>
 
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+<div id="stage">
 
-        <div id="hud">
-            <div class="hud-panel left">
-                <div class="hud-label">SYSTEM STATUS</div>
-                <div class="hud-value status-good" id="sys-status">ONLINE</div>
-                <div class="hud-label" style="margin-top: 10px;">DATA CORE</div>
-                <div class="hud-value text-neon-blue" id="hud-data">0000</div>
-            </div>
-            <div class="hud-panel center">
-                <div class="brand-title">2088 RECORDS</div>
-                <div class="sub-brand">NEO-TOKYO CORE ENGINE v1.0.4</div>
-            </div>
-            <div class="hud-panel right">
-                <div class="hud-label">SCORE</div>
-                <div class="hud-value text-cyan" id="hud-score">000000</div>
-                <div class="hud-label" style="margin-top: 10px;">HI-SCORE</div>
-                <div class="hud-value text-purple" id="hud-hiscore">000000</div>
-            </div>
-        </div>
+  <!-- CRT / vignette / scanline overlays sit above the canvas -->
+  <canvas id="game" aria-label="2088 Cyber Runner"></canvas>
 
-        <div id="start-screen" class="overlay-screen">
-            <div class="glitch-title" data-text="NEO RUNNER 2088">NEO RUNNER 2088</div>
-            <p class="subtitle">2088 RECORDS HACKED SUB-SYSTEM</p>
-            <div class="panel-info">
-                <p>穿梭于新东京霓虹高空，收集音符与数据核心</p>
-                <p class="control-tip">电脑端: [ 空格键 / 方向键上 ] 跳跃 | 手机端: 点击屏幕跳跃</p>
-            </div>
-            <button id="start-btn" class="cyber-btn">INITIALIZE SYSTEM</button>
-        </div>
+  <div id="scanlines"></div>
+  <div id="vignette"></div>
+  <div id="glitchLayer"></div>
+  <div id="noise"></div>
 
-        <div id="gameover-screen" class="overlay-screen hidden">
-            <div class="gameover-title">SYSTEM FAILURE</div>
-            <p class="gameover-subtitle">CONNECTION TERMINATED BY SYNTH-POLICE</p>
-            
-            <div class="results-box">
-                <div class="result-row">
-                    <span>SYNC SCORE:</span>
-                    <span id="final-score" class="text-cyan">0</span>
-                </div>
-                <div class="result-row">
-                    <span>DATA HARVESTED:</span>
-                    <span id="final-data" class="text-neon-blue">0</span>
-                </div>
-            </div>
-
-            <button id="restart-btn" class="cyber-btn flash">REBOOT SESSION</button>
-        </div>
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-row hud-top">
+      <div class="hud-block">
+        <span class="hud-label">SCORE</span>
+        <span class="hud-value" id="scoreVal">000000</span>
+      </div>
+      <div class="hud-block hud-center">
+        <span class="hud-brand">2088 <em>RECORDS</em></span>
+        <span class="hud-sub">DATASTREAM // NEO-TOKYO SECTOR 7</span>
+      </div>
+      <div class="hud-block hud-right">
+        <span class="hud-label">HIGH SCORE</span>
+        <span class="hud-value" id="highVal">000000</span>
+      </div>
     </div>
 
-    <script src="play.js"></script>
+    <div class="hud-row hud-bottom">
+      <div class="status-block">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">SYSTEM STATUS: STANDBY</span>
+      </div>
+      <div class="combo-block" id="comboBlock">
+        <span id="comboText"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="startScreen" class="overlay-screen">
+    <div class="panel">
+      <div class="panel-eyebrow">// HIDDEN CHANNEL DETECTED</div>
+      <h1 class="panel-title">进入 <span>2088</span> 未来城市</h1>
+      <p class="panel-desc">
+        一名电子音乐信使正在穿越霓虹废墟都市，负责把最新音波带回地面电台。
+        躲开路障与巡逻机体，收集数据碎片与音符，把分数刷进 2088 的历史记录。
+      </p>
+      <div class="controls-row">
+        <div class="control-chip">
+          <span class="key">SPACE</span><span class="key alt">↑</span>
+          <span class="ctrl-label">跳跃 · JUMP</span>
+        </div>
+        <div class="control-chip mobile-only">
+          <span class="key tap">TAP</span>
+          <span class="ctrl-label">屏幕跳跃</span>
+        </div>
+      </div>
+      <button id="startBtn" class="neon-btn">ENTER THE CITY</button>
+      <div class="panel-footnote">2088 RECORDS © NEO CITY BROADCAST SYSTEM</div>
+    </div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div id="overScreen" class="overlay-screen hidden">
+    <div class="panel">
+      <div class="panel-eyebrow" id="overEyebrow">// SIGNAL LOST</div>
+      <h1 class="panel-title">连接<span>中断</span></h1>
+      <div class="over-stats">
+        <div class="over-stat">
+          <span class="hud-label">本次得分</span>
+          <span class="over-num" id="overScore">0</span>
+        </div>
+        <div class="over-stat">
+          <span class="hud-label">最高记录</span>
+          <span class="over-num accent" id="overHigh">0</span>
+        </div>
+      </div>
+      <button id="retryBtn" class="neon-btn">RECONNECT</button>
+      <div class="panel-footnote">按 SPACE / 点击屏幕 也可以重新连接</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="play.js"></script>
 </body>
 </html>
