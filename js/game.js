@@ -41,23 +41,78 @@ player.y = GROUND_Y - player.height;
 const obstacles = [];
 const buildings = [];
 
-for(let i = 0; i < 8; i++){
 
-    buildings.push({
+function createBuilding(x){
 
-        x: i * 180,
+    const width = 70 + Math.random() * 100;
+    const height = 120 + Math.random() * 220;
 
-        width: 80 + Math.random() * 80,
 
-        height: 100 + Math.random() * 200,
+    const windows = [];
 
-        neon: true,
 
-        color: Math.random() > 0.5
+    const rows = Math.floor(height / 18);
+    const cols = Math.floor(width / 18);
+
+
+    for(let r = 0; r < rows; r++){
+
+        for(let c = 0; c < cols; c++){
+
+            windows.push({
+
+                x:c,
+                y:r,
+
+                light:
+                    Math.random() > 0.35
+
+            });
+
+        }
+
+    }
+
+
+
+    return {
+
+        x:x,
+
+        width:width,
+
+        height:height,
+
+
+        type:
+            Math.floor(Math.random()*3),
+
+
+        neon:
+            Math.random()>0.4,
+
+
+        color:
+            Math.random()>0.5
             ? "#00d7ff"
-            : "#9b5cff"
+            : "#b44cff",
 
-    });
+
+        windows:windows
+
+    };
+
+}
+
+
+
+for(let i=0;i<10;i++){
+
+    buildings.push(
+        createBuilding(
+            i*180
+        )
+    );
 
 }
 
@@ -432,201 +487,364 @@ function drawPlayer() {
 
 }
 
-function drawBuildings() {
-
-    buildings.forEach(b => {
-
-        b.x -= speed * 0.2;
+function drawBuildings(){
 
 
-        if (b.x + b.width < 0) {
+    buildings.forEach(b=>{
 
-            b.x = canvas.width + Math.random() * 300;
 
-            b.height = 100 + Math.random() * 220;
+        b.x -= speed * 0.15;
 
-            b.width = 70 + Math.random() * 90;
 
-            // 随机楼属性
-            b.neon = Math.random() > 0.4;
-            b.color = Math.random() > 0.5
-                ? "#00d7ff"
-                : "#9b5cff";
+        if(b.x+b.width<0){
+
+
+            Object.assign(
+                b,
+                createBuilding(
+                    canvas.width + Math.random()*300
+                )
+            );
 
         }
 
 
-        const x = b.x;
-        const y = GROUND_Y - b.height;
+
+        const x=b.x;
+
+        const y=
+            GROUND_Y-b.height;
 
 
 
         ctx.save();
 
 
-        // ===== Building shadow =====
 
-        ctx.fillStyle = "#050b18";
-
-        ctx.fillRect(
-            x,
-            y,
-            b.width,
-            b.height
-        );
+        /*
+            BUILDING SHAPE
+        */
 
 
-
-        // ===== Glass reflection =====
-
-        ctx.fillStyle = "#091d35";
-
-        ctx.fillRect(
-            x + 5,
-            y + 5,
-            b.width - 10,
-            b.height - 10
-        );
+        ctx.fillStyle="#050b18";
 
 
-
-        // ===== Neon edge =====
-
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = b.color;
-
-        ctx.strokeStyle = b.color;
-
-        ctx.lineWidth = 2;
-
-        ctx.strokeRect(
-            x,
-            y,
-            b.width,
-            b.height
-        );
+        ctx.beginPath();
 
 
+        if(b.type===0){
 
-        ctx.shadowBlur = 0;
+            // 普通切角塔
 
+            ctx.moveTo(
+                x,
+                GROUND_Y
+            );
 
-
-        // ===== Windows =====
-
-        const rows = Math.floor(b.height / 18);
-        const cols = Math.floor(b.width / 18);
-
-
-        for(let r = 0; r < rows; r++){
-
-            for(let c = 0; c < cols; c++){
-
-                // 随机亮灯
-                if(Math.random() > 0.45){
-
-                    ctx.fillStyle =
-                        Math.random() > 0.7
-                        ? "#ff3df2"
-                        : "#00d7ff";
+            ctx.lineTo(
+                x,
+                y+20
+            );
 
 
-                    ctx.fillRect(
+            ctx.lineTo(
+                x+15,
+                y
+            );
 
-                        x + 10 + c * 18,
 
-                        y + 12 + r * 18,
+            ctx.lineTo(
+                x+b.width-15,
+                y
+            );
 
-                        6,
 
-                        5
+            ctx.lineTo(
+                x+b.width,
+                y+20
+            );
 
-                    );
 
-                }
+            ctx.lineTo(
+                x+b.width,
+                GROUND_Y
+            );
 
-            }
 
         }
 
 
 
-        // ===== Neon billboard =====
+        else if(b.type===1){
+
+
+            // 高科技斜顶楼
+
+
+            ctx.moveTo(
+                x,
+                GROUND_Y
+            );
+
+
+            ctx.lineTo(
+                x,
+                y+40
+            );
+
+
+            ctx.lineTo(
+                x+b.width*0.25,
+                y
+            );
+
+
+            ctx.lineTo(
+                x+b.width,
+                y+30
+            );
+
+
+            ctx.lineTo(
+                x+b.width,
+                GROUND_Y
+            );
+
+
+        }
+
+
+
+        else{
+
+
+            // 巨型广告塔
+
+
+            ctx.moveTo(
+                x,
+                GROUND_Y
+            );
+
+
+            ctx.lineTo(
+                x,
+                y
+            );
+
+
+            ctx.lineTo(
+                x+b.width,
+                y
+            );
+
+
+            ctx.lineTo(
+                x+b.width,
+                GROUND_Y
+            );
+
+
+        }
+
+
+        ctx.closePath();
+
+        ctx.fill();
+
+
+
+
+        /*
+            NEON EDGE
+        */
+
+
+        ctx.shadowBlur=15;
+
+        ctx.shadowColor=b.color;
+
+
+        ctx.strokeStyle=b.color;
+
+        ctx.lineWidth=2;
+
+
+        ctx.stroke();
+
+
+
+        ctx.shadowBlur=0;
+
+
+
+
+        /*
+            WINDOWS
+        */
+
+
+        ctx.fillStyle="#00d7ff";
+
+
+        b.windows.forEach(w=>{
+
+
+            if(!w.light)
+                return;
+
+
+
+            const wx =
+                x+12+w.x*18;
+
+
+            const wy =
+                y+15+w.y*18;
+
+
+
+            if(Math.random()>0.98){
+
+                ctx.fillStyle="#ff3df2";
+
+            }
+            else{
+
+                ctx.fillStyle="#00d7ff";
+
+            }
+
+
+
+            ctx.fillRect(
+
+                wx,
+
+                wy,
+
+                6,
+
+                4
+
+            );
+
+
+        });
+
+
+
+
+        /*
+            NEON SIGN
+        */
+
 
         if(b.neon){
 
-            ctx.shadowBlur = 20;
 
-            ctx.shadowColor = "#00ffff";
+            ctx.shadowBlur=20;
+
+            ctx.shadowColor="#00ffff";
+
 
             ctx.strokeStyle="#00ffff";
 
 
             ctx.strokeRect(
 
-                x + b.width/2 - 15,
+                x+b.width/2-20,
 
-                y + 40,
+                y+50,
 
-                30,
+                40,
 
-                15
+                18
 
             );
 
 
+
             ctx.fillStyle="#00ffff";
+
 
             ctx.fillRect(
 
-                x + b.width/2 - 10,
+                x+b.width/2-12,
 
-                y + 45,
+                y+57,
 
-                20,
+                24,
 
                 3
 
             );
 
+
         }
 
 
 
-        // ===== Rooftop antenna =====
 
-        if(Math.random() > 0.8){
+        /*
+            ANTENNA
+        */
+
+
+        if(b.height>220){
+
 
             ctx.strokeStyle="#00ffff";
 
+
             ctx.beginPath();
 
+
             ctx.moveTo(
+
                 x+b.width/2,
+
                 y
+
             );
 
+
             ctx.lineTo(
+
                 x+b.width/2,
-                y-25
+
+                y-30
+
             );
+
 
             ctx.stroke();
 
 
+
             ctx.fillStyle="#ff3df2";
+
 
             ctx.beginPath();
 
+
             ctx.arc(
+
                 x+b.width/2,
-                y-27,
+
+                y-33,
+
                 3,
+
                 0,
+
                 Math.PI*2
+
             );
 
+
             ctx.fill();
+
 
         }
 
@@ -635,7 +853,9 @@ function drawBuildings() {
         ctx.restore();
 
 
+
     });
+
 
 }
 
