@@ -140,31 +140,47 @@ class BackgroundSystem {
         }
     }
 
+   // 在 game.js 的 BackgroundSystem 类中找到并替换此函数
     drawSky(ctx) {
-        // Deep Sunset Multi-gradient Backing
+        // --- 1. 创建符合“合成器浪潮”风格的天空渐变 ---
+        // 顶部：深紫色 (171033) 
+        // 中部：强烈的霓虹粉紫色 (4c103e) 
+        // 城市线：温暖的橙色 (ff5500)
         let skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
-        skyGrad.addColorStop(0, PALETTE.skyTop);
-        skyGrad.addColorStop(0.4, PALETTE.skyMid);
-        skyGrad.addColorStop(0.75, PALETTE.skyBot);
-        skyGrad.addColorStop(1, PALETTE.sunGlow);
+        skyGrad.addColorStop(0, '#171033');    // 深紫 Synthwave Top
+        skyGrad.addColorStop(0.5, '#4c103e');  // 霓虹粉紫 Middle (新增)
+        skyGrad.addColorStop(1, '#ff5500');    // 温暖橙 Horizon (sunset warm glow)
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, GAME_WIDTH, FLOOR_Y);
 
-        // Sun disc setting at structural base
-        let sunX = GAME_WIDTH * 0.75;
-        let sunY = FLOOR_Y - 25;
-        let sunGrad = ctx.createRadialGradient(sunX, sunY, 2, sunX, sunY, 40);
-        sunGrad.addColorStop(0, PALETTE.sunCore);
-        sunGrad.addColorStop(0.3, PALETTE.sunGlow);
-        sunGrad.addColorStop(1, 'transparent');
+        // --- 2. 绘制巨大的合成器浪潮夕阳 ---
+        let sunX = GAME_WIDTH / 2; // 夕阳放在画面中央
+        let sunY = FLOOR_Y + 10;   // 夕阳低垂在城市后方
+        let sunRadius = 60;       // 巨大的太阳
+
+        // 夕阳核心：金色 (ffaa00) 到透明的径向渐变
+        let sunGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, sunRadius);
+        sunGrad.addColorStop(0, '#ffaa00');    // Golden Core
+        sunGrad.addColorStop(0.4, '#ff5500');  // Orange mid
+        sunGrad.addColorStop(1, 'transparent');// Edge blends out
+
         ctx.fillStyle = sunGrad;
         ctx.beginPath();
-        ctx.arc(sunX, sunY, 40, 0, Math.PI * 2);
+        // 绘制一个半圆夕阳，使其看起来正在落下
+        ctx.arc(sunX, sunY, sunRadius, Math.PI, Math.PI * 2); 
         ctx.fill();
+        
+        // 可选：给夕阳增加一个霓虹光晕 (Bloom Effect)
+        ctx.globalAlpha = 0.3; // 透明度
+        ctx.fillStyle = '#ff0055'; // 霓虹粉光晕
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, sunRadius + 20, Math.PI, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0; // 恢复透明度
 
-        // Atmospheric Pixel-Art Clouds
-        ctx.fillStyle = PALETTE.skyMid;
-        ctx.globalAlpha = 0.4;
+        // --- 3. 绘制大气层像素云（保持原样，但色彩会受夕阳影响） ---
+        ctx.fillStyle = '#171033'; // 云使用天空顶部色，形成剪影
+        ctx.globalAlpha = 0.3;
         const pSize = 4;
         for (let c of this.clouds) {
             for (let row = 0; row < c.pixels.length; row++) {
@@ -178,11 +194,14 @@ class BackgroundSystem {
         ctx.globalAlpha = 1.0;
     }
 
+    // 在 game.js 的 BackgroundSystem 类中找到并替换此函数
     drawCity(ctx) {
         const pSize = 2;
 
-        // 1. Far Far Background Silhouettes
-        ctx.fillStyle = PALETTE.cityDark;
+        // 1. Far Far Background Silhouettes (远景剪影)
+        // 增加一点透明度，让夕阳光线“渗”出来
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = PALETTE.cityDark; // 深蓝紫色剪影
         for (let b of this.bgBuildings) {
             let bY = FLOOR_Y - b.h;
             ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
@@ -191,19 +210,21 @@ class BackgroundSystem {
                 ctx.fillRect(Math.floor(b.x + b.w/2), Math.floor(bY - 12), 2, 12);
             }
         }
+        ctx.globalAlpha = 1.0;
 
-        // 2. Mid Skyline Architecture
+        // 2. Mid Skyline Architecture (中景建筑)
         for (let b of this.midBuildings) {
             let bY = FLOOR_Y - b.h;
             
-            // Core building structure shaded gradient
+            // 核心建筑结构：使用带有夕阳余晖的渐变色
+            // 从 cityMid (深紫) 渐变到更暗的 cityDark
             let bGrad = ctx.createLinearGradient(b.x, bY, b.x, FLOOR_Y);
-            bGrad.addColorStop(0, PALETTE.cityMid);
-            bGrad.addColorStop(1, PALETTE.cityDark);
+            bGrad.addColorStop(0, '#13142f'); // City Mid (稍微提亮一点)
+            bGrad.addColorStop(1, PALETTE.cityDark); // City Dark
             ctx.fillStyle = bGrad;
             ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
 
-            // Specialized Cyberpunk architecture features (Windows & Neon Matrix)
+            // Windows & Neon Matrix (保持原样)
             ctx.fillStyle = '#1e244a';
             let winSeed = b.seed;
             for (let wx = b.x + 6; wx < b.x + b.w - 6; wx += 8) {
@@ -216,14 +237,12 @@ class BackgroundSystem {
                 }
             }
 
-            // High Tech Hologram advertisements and side lines
+            // High Tech Neon advertisements (保持原样)
             if (b.neonColor) {
                 ctx.fillStyle = b.neonColor;
                 ctx.globalAlpha = 0.6;
-                // Vertical neon stripes down building edge
                 ctx.fillRect(Math.floor(b.x + 2), Math.floor(bY + 4), 2, Math.floor(b.h - 10));
                 
-                // Top accent sign boxes
                 if (b.type === 1) {
                     ctx.fillRect(Math.floor(b.x + b.w/2 - 8), Math.floor(bY + 4), 16, 6);
                 }
