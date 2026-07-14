@@ -200,6 +200,16 @@ canvas {
     transform: scale(0.95);
 }
 
+
+
+/* 让 <a> 标签的样式和原先的按钮完全一致 */
+a.cyber-btn {
+    text-decoration: none; /* 去掉下划线 */
+    display: inline-block; /* 允许设置宽高和对齐 */
+    text-align: center;    /* 文字居中 */
+    line-height: 1.2;      /* 调整文字行高 */
+}
+
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.9; }
