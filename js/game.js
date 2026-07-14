@@ -40,11 +40,13 @@ player.y = GROUND_Y - player.height;
 
 const obstacles = [];
 
-function resize() {
+function resize(){
 
     canvas.width = window.innerWidth;
 
     canvas.height = 500;
+
+    player.y = GROUND_Y - player.height;
 
 }
 
@@ -113,14 +115,14 @@ function updatePlayer() {
 
         particles.push({
 
-            x: player.x,
+            x: player.x + player.width / 2,
 
-            y: player.y + player.height / 2,
-    
+            y: player.y + player.height - 8,
+
             size: 5,
 
             alpha: 1
-    
+
         });
 
         if (particles.length > 80) {
@@ -220,21 +222,25 @@ function drawBuildings() {
 
 }
 
-for(let y=0;y<canvas.height;y+=4){
+function drawScanlines(){
 
-ctx.fillStyle="rgba(255,255,255,.02)";
+    ctx.fillStyle="rgba(255,255,255,.02)";
 
-ctx.fillRect(
+    for(let y=0;y<canvas.height;y+=4){
 
-0,
+        ctx.fillRect(
 
-y,
+            0,
 
-canvas.width,
+            y,
 
-1
+            canvas.width,
 
-);
+            1
+
+        );
+
+    }
 
 }
 
@@ -468,26 +474,20 @@ function drawBackground() {
 
 function collision() {
 
+    if (gameOver) return;
+
     for (const o of obstacles) {
 
         if (
 
             player.x < o.x + o.width &&
-
             player.x + player.width > o.x &&
-
             player.y < o.y + o.height &&
-
             player.y + player.height > o.y
 
         ) {
 
             gameOver = true;
-
-            document
-            .getElementById("gameover-screen")
-            .classList.add("active");
-
             running = false;
 
             if (score > highScore) {
@@ -495,14 +495,17 @@ function collision() {
                 highScore = score;
 
                 localStorage.setItem(
-
                     "signalRunnerHighScore",
-
                     highScore
-
                 );
 
             }
+
+            document
+                .getElementById("gameover-screen")
+                .classList.add("active");
+
+            return;
 
         }
 
@@ -641,26 +644,23 @@ function drawParticles() {
 function restart() {
 
     obstacles.length = 0;
-
     particles.length = 0;
 
     score = 0;
-
     speed = 8;
 
+    timer = 0;
+
     gameOver = false;
-
-    document
-    .getElementById("gameover-screen")
-    .classList.remove("active");
-
     running = true;
 
     player.y = GROUND_Y - player.height;
-
     player.velocityY = 0;
+    player.jumping = false;
 
-    timer = 0;
+    document
+        .getElementById("gameover-screen")
+        .classList.remove("active");
 
     requestAnimationFrame(gameLoop);
 
@@ -678,9 +678,9 @@ function gameLoop() {
 
     drawGlitch();
 
-    drawGround();
-
     drawBuildings();
+
+    drawGround();
 
     updatePlayer();
 
@@ -697,6 +697,8 @@ function gameLoop() {
     updateParticles();
     
     drawParticles();
+
+    drawScanlines();
 
     timer++;
 
