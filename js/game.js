@@ -251,7 +251,7 @@ function collision() {
 
 function drawGround() {
 
-    ctx.fillStyle = "#081f37";
+    ctx.fillStyle = "#071c32";
 
     ctx.fillRect(
 
@@ -265,7 +265,33 @@ function drawGround() {
 
     );
 
-    ctx.strokeStyle = "#00d5ff";
+    ctx.strokeStyle = "rgba(0,200,255,.25)";
+
+    for (let i = 0; i < canvas.width; i += 40) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(i, GROUND_Y);
+
+        ctx.lineTo(i, canvas.height);
+
+        ctx.stroke();
+
+    }
+
+    for (let y = GROUND_Y; y < canvas.height; y += 18) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(0, y);
+
+        ctx.lineTo(canvas.width, y);
+
+        ctx.stroke();
+
+    }
+
+    ctx.strokeStyle = "#00d7ff";
 
     ctx.lineWidth = 2;
 
