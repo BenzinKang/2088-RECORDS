@@ -81,66 +81,79 @@ class ParticleSystem {
 
 class BackgroundSystem {
     constructor() {
-        // 温暖色调的云彩
+        // 暖色调、不规则、写实风云彩
         this.clouds = [
-            { x: 30,  y: 20, w: 90,  h: 12, speed: 0.03, alpha: 0.15, color: '#e65c00' },
-            { x: 160, y: 45, w: 140, h: 18, speed: 0.015, alpha: 0.20, color: '#401824' },
-            { x: 280, y: 15, w: 100, h: 10, speed: 0.04, alpha: 0.12, color: '#ffaa00' },
-            { x: 400, y: 35, w: 120, h: 15, speed: 0.02, alpha: 0.18, color: '#401824' }
+            { x: 30,  y: 12, w: 110, h: 14, speed: 0.02, alpha: 0.18, color: '#ff6a00' },
+            { x: 190, y: 30, w: 160, h: 22, speed: 0.01, alpha: 0.22, color: '#b33600' },
+            { x: 340, y: 8,  w: 120, h: 12, speed: 0.03, alpha: 0.15, color: '#ffaa00' },
+            { x: 480, y: 25, w: 140, h: 18, speed: 0.015, alpha: 0.20, color: '#b33600' }
         ];
         
         this.rand = new SeededRandom(789);
         this.bgBuildings = [];
         this.midBuildings = [];
         this.utilityPoles = []; // 前景电线杆
+        this.smokeParticles = []; // 工厂烟雾粒子
         
-        // 动态生成的工厂烟雾粒子
-        this.smokeParticles = [];
+        // 独立远景工厂：让它安静地待在远方，有独立的烟囱
+        this.factories = [];
         
         this.generateParallaxSectors();
     }
 
     generateParallaxSectors() {
-        // 1. 远景高耸大楼（保持纯红棕色静态剪影，偶尔有静态细微灯光）
+        // 1. 远景高耸大楼（高度稍微降低，避开太阳核心区）
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 20 + this.rand.next() * 25;
-            let h = 70 + this.rand.next() * 80; 
+            let w = 18 + this.rand.next() * 20;
+            let h = 50 + this.rand.next() * 50; // 降低远景大楼，露出天空
             this.bgBuildings.push({ 
                 x: curX, 
                 w: w, 
                 h: h, 
                 seed: this.rand.next(),
-                hasSpire: this.rand.next() > 0.5 
+                hasSpire: this.rand.next() > 0.6 
             });
-            curX += w + 4;
+            curX += w + 6;
         }
 
-        // 2. 中景不规则建筑（加入烟囱、工厂和静态霓虹装饰）
+        // 2. 远景独立工厂（放置在远景和大楼之间）
+        let factX = 80;
+        while (factX < GAME_WIDTH + 300) {
+            this.factories.push({
+                x: factX,
+                w: 60 + this.rand.next() * 40,  // 较宽的工业厂房
+                h: 20 + this.rand.next() * 15,  // 矮厂房
+                chimneyH1: 35 + this.rand.next() * 15, // 细长烟囱1
+                chimneyH2: 45 + this.rand.next() * 15, // 细长烟囱2
+                seed: this.rand.next()
+            });
+            factX += 280 + this.rand.next() * 150; // 稀疏分布，不显拥挤
+        }
+
+        // 3. 中景大楼（整体比例调小、变矮，保证背后的巨型夕阳能完全露出来）
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 45 + this.rand.next() * 40; 
-            let h = 70 + this.rand.next() * 50; 
-            let isFactory = this.rand.next() > 0.7; // 30% 概率是带有烟囱的工厂
+            let w = 35 + this.rand.next() * 30; 
+            let h = 40 + this.rand.next() * 35; // 整体高度减小（原为 70-120，现为 40-75）
             
             this.midBuildings.push({
                 x: curX, 
                 w: w, 
                 h: h, 
                 seed: this.rand.next(),
-                isFactory: isFactory,
                 neonColor: this.rand.next() > 0.5 ? PALETTE.neonMagenta : PALETTE.neonGold,
-                // 建筑类型：0=阶梯大楼, 1=普通方形, 2=带烟囱工厂, 3=带天桥
-                buildingType: isFactory ? 2 : Math.floor(this.rand.next() * 3),
-                boardW: 10 + Math.floor(this.rand.next() * 10),
-                boardH: 25 + Math.floor(this.rand.next() * 20),
-                boardYOffset: 15 + Math.floor(this.rand.next() * 20),
-                blinkSpeed: 0.8 + this.rand.next() * 1.0  // 只有广告牌闪烁的速度
+                // 建筑类型：0=阶梯大楼, 1=普通方形, 2=带天桥倾斜楼
+                buildingType: Math.floor(this.rand.next() * 3),
+                boardW: 8 + Math.floor(this.rand.next() * 8), // 缩减广告牌尺寸配合小大楼
+                boardH: 18 + Math.floor(this.rand.next() * 15),
+                boardYOffset: 8 + Math.floor(this.rand.next() * 15),
+                blinkSpeed: 0.8 + this.rand.next() * 1.0
             });
-            curX += w + 15; 
+            curX += w + 20; 
         }
 
-        // 3. 前景电线杆
+        // 4. 前景电线杆
         curX = 100;
         while (curX < GAME_WIDTH + 300) {
             this.utilityPoles.push({
@@ -155,47 +168,60 @@ class BackgroundSystem {
     update(dt, speedMultiplier) {
         const baseSpeed = 2 * speedMultiplier;
         
-        // 缓慢的云朵飘动
+        // 云朵移动
         for (let c of this.clouds) {
             c.x -= c.speed * baseSpeed * dt * 30;
-            if (c.x + c.w < -20) c.x = GAME_WIDTH + 50;
+            if (c.x + c.w < -60) c.x = GAME_WIDTH + 60;
         }
         
         // 远景大楼移动
         for (let b of this.bgBuildings) {
-            b.x -= 0.06 * baseSpeed * dt * 60;
+            b.x -= 0.05 * baseSpeed * dt * 60;
             if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
         }
-        
-        // 中景大楼与工厂移动
-        for (let b of this.midBuildings) {
-            b.x -= 0.22 * baseSpeed * dt * 60;
-            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
 
-            // 如果是工厂，在移动时往空气中产生烟雾
-            if (b.isFactory && Math.random() < 0.03 * dt * 60) {
-                const chimneyX = b.x + b.w * 0.75;
-                const chimneyY = FLOOR_Y - b.h - 15; // 烟囱口位置
+        // 远景独立工厂移动
+        for (let f of this.factories) {
+            f.x -= 0.09 * baseSpeed * dt * 60;
+            if (f.x + f.w < 0) f.x += GAME_WIDTH + 300;
+
+            // 工厂的烟囱产生微小烟雾
+            if (Math.random() < 0.05 * dt * 60) {
+                const chimney1X = f.x + f.w * 0.35;
+                const chimney1Y = FLOOR_Y - f.chimneyH1;
+                const chimney2X = f.x + f.w * 0.7;
+                const chimney2Y = FLOOR_Y - f.chimneyH2;
+
+                // 随机选择一根烟囱冒烟
+                let tx = Math.random() > 0.5 ? chimney1X : chimney2X;
+                let ty = Math.random() > 0.5 ? chimney1Y : chimney2Y;
+
                 this.smokeParticles.push({
-                    x: chimneyX,
-                    y: chimneyY,
-                    vx: -1.0 - Math.random() * 0.5, // 往后飘
-                    vy: -0.3 - Math.random() * 0.3, // 往上飘
-                    size: 2 + Math.random() * 4,
-                    alpha: 0.4,
-                    life: 1.0 // 寿命
+                    x: tx,
+                    y: ty,
+                    vx: -0.8 - Math.random() * 0.4, // 顺着风微微往后飘
+                    vy: -0.3 - Math.random() * 0.3, // 向上散
+                    size: 1 + Math.random() * 2,    // 远景烟雾粒子较小
+                    alpha: 0.3,
+                    life: 1.0
                 });
             }
         }
+        
+        // 中景大楼移动
+        for (let b of this.midBuildings) {
+            b.x -= 0.22 * baseSpeed * dt * 60;
+            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
+        }
 
-        // 更新烟雾粒子
+        // 烟雾粒子物理更新
         for (let i = this.smokeParticles.length - 1; i >= 0; i--) {
             let p = this.smokeParticles[i];
             p.x += p.vx * dt * 60;
             p.y += p.vy * dt * 60;
-            p.size += 0.1 * dt * 60; // 烟雾慢慢扩散变大
-            p.alpha -= 0.01 * dt * 60; // 慢慢淡出
-            p.life -= 0.015 * dt * 60;
+            p.size += 0.05 * dt * 60; 
+            p.alpha -= 0.01 * dt * 60; 
+            p.life -= 0.012 * dt * 60;
             if (p.life <= 0 || p.alpha <= 0) {
                 this.smokeParticles.splice(i, 1);
             }
@@ -212,28 +238,29 @@ class BackgroundSystem {
     }
 
     drawSky(ctx) {
-        // 1. 温暖的黄昏暖橙色调渐变天空
+        // 1. 温暖的红橙色天顶渐变
         let skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
-        skyGrad.addColorStop(0, PALETTE.skyTop);    // 顶部极深红紫
-        skyGrad.addColorStop(0.5, PALETTE.skyMid);   // 中部温暖暗红
-        skyGrad.addColorStop(0.85, PALETTE.skyBot);  // 地平线温暖落日橙
-        skyGrad.addColorStop(1, '#ff8000');         // 最底部亮橙色
+        skyGrad.addColorStop(0, '#591a0c');    // 顶部红橙（阳光下的天顶余晖）
+        skyGrad.addColorStop(0.45, '#a1350d');  // 中上部明烈暗橙
+        skyGrad.addColorStop(0.8, '#e65c00');   // 温暖黄昏橙
+        skyGrad.addColorStop(1, '#ff8c1a');     // 地平线金黄落日
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, GAME_WIDTH, FLOOR_Y);
 
-        // 2. 温暖落日（金黄核心与暖橙光晕）
+        // 2. 震撼超大夕阳（放大尺寸，略微下移，营造夸张的史诗黄昏）
         let sunX = GAME_WIDTH / 2; 
-        let sunY = FLOOR_Y - 35;   
-        let sunRadius = 35;        
+        let sunY = FLOOR_Y - 5; // 稍微下移，让夕阳呈半落状态，极其壮丽
+        let sunRadius = 75;     // 大尺寸！原为28，现夸张至75
 
         ctx.save();
-        ctx.globalAlpha = 0.15;
-        let bloomGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, sunRadius + 25);
-        bloomGrad.addColorStop(0, PALETTE.sunGlow);
+        // 超宽广的夕阳光晕
+        ctx.globalAlpha = 0.25;
+        let bloomGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, sunRadius + 50);
+        bloomGrad.addColorStop(0, '#ff7700');
         bloomGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = bloomGrad;
         ctx.beginPath();
-        ctx.arc(sunX, sunY, sunRadius + 25, 0, Math.PI * 2);
+        ctx.arc(sunX, sunY, sunRadius + 50, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
@@ -244,44 +271,48 @@ class BackgroundSystem {
         ctx.clip();
 
         let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
-        sunGrad.addColorStop(0, PALETTE.sunCore); 
-        sunGrad.addColorStop(1, '#ff4500'); // 融入烈火橙
+        sunGrad.addColorStop(0, '#ffd11a'); // 顶部金灿发光
+        sunGrad.addColorStop(0.7, '#ff5500'); // 中部红橙
+        sunGrad.addColorStop(1, '#991f00');   // 底部融入暗红
 
         ctx.fillStyle = sunGrad;
         ctx.fillRect(sunX - sunRadius, sunY - sunRadius, sunRadius * 2, sunRadius * 2);
 
-        // 网格切空
+        // 太阳网格切线线
         ctx.fillStyle = skyGrad; 
-        for (let y = sunY - 5; y < sunY + sunRadius; y += 6) {
-            let currentBarWidth = Math.floor((y - (sunY - 5)) / 4.5) + 1;
-            ctx.fillRect(sunX - sunRadius, y, sunRadius * 2, currentBarWidth);
+        for (let y = sunY - sunRadius + 15; y < sunY + sunRadius; y += 7) {
+            let currentBarWidth = Math.floor((y - (sunY - sunRadius + 15)) / 7) + 1;
+            ctx.fillRect(sunX - sunRadius - 10, y, sunRadius * 2 + 20, currentBarWidth);
         }
         ctx.restore();
 
-        // 3. 温暖调云彩
+        // 3. 不规则写实叠云
         ctx.save();
         for (let c of this.clouds) {
             const cx = Math.floor(c.x);
             const cy = Math.floor(c.y);
+            const cw = c.w;
+            const ch = c.h;
             
             ctx.globalAlpha = c.alpha;
-            let cloudGrad = ctx.createLinearGradient(cx, cy, cx, cy + c.h);
+            let cloudGrad = ctx.createLinearGradient(cx, cy, cx, cy + ch);
             cloudGrad.addColorStop(0, c.color);
             cloudGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = cloudGrad;
-            
+
             ctx.beginPath();
-            ctx.arc(cx + c.w * 0.2, cy + c.h * 0.5, c.h * 0.5, 0, Math.PI * 2);
-            ctx.arc(cx + c.w * 0.5, cy + c.h * 0.4, c.h * 0.7, 0, Math.PI * 2);
-            ctx.arc(cx + c.w * 0.8, cy + c.h * 0.6, c.h * 0.5, 0, Math.PI * 2);
-            ctx.rect(cx + c.w * 0.2, cy, c.w * 0.6, c.h);
+            ctx.arc(cx + cw * 0.15, cy + ch * 0.6, ch * 0.45, 0, Math.PI * 2);
+            ctx.arc(cx + cw * 0.38, cy + ch * 0.35, ch * 0.75, 0, Math.PI * 2);
+            ctx.arc(cx + cw * 0.65, cy + ch * 0.5, ch * 0.6, 0, Math.PI * 2);
+            ctx.arc(cx + cw * 0.88, cy + ch * 0.7, ch * 0.3, 0, Math.PI * 2);
+            ctx.rect(cx + cw * 0.15, cy + ch * 0.2, cw * 0.7, ch * 0.8);
             ctx.closePath();
             ctx.fill();
 
-            // 温暖的高光边缘
-            ctx.globalAlpha = c.alpha * 1.3;
-            ctx.fillStyle = '#ffaa00';
-            ctx.fillRect(cx + c.w * 0.25, cy + c.h - 1.5, c.w * 0.5, 1);
+            // 亮边高光
+            ctx.globalAlpha = c.alpha * 1.5;
+            ctx.fillStyle = '#ffb366';
+            ctx.fillRect(cx + cw * 0.2, cy + ch - 1, cw * 0.55, 1);
         }
         ctx.restore();
     }
@@ -289,62 +320,92 @@ class BackgroundSystem {
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-        // 1. 远景高耸建筑（沉稳暗红棕色，无任何闪烁，营造静态纵深）
-        ctx.fillStyle = PALETTE.cityDark; 
+        // 1. 远景大楼（深红棕色静态剪影，不闪烁）
+        ctx.fillStyle = '#2b1411'; 
         for (let b of this.bgBuildings) {
             let bY = FLOOR_Y - b.h;
             ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
             
-            // 静态的微弱天线针，不闪烁
             if (b.hasSpire) {
-                ctx.fillStyle = '#201014';
-                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 10), 1, 10);
-                ctx.fillStyle = '#a83232'; // 极暗的红色指示灯
-                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 11), 1, 1);
+                ctx.fillStyle = '#1f0d0b';
+                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 9), 1, 9);
+                ctx.fillStyle = '#8f2d22'; 
+                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 10), 1, 1);
             }
         }
 
-        // 2. 中景不规则、红棕阴影色大楼与工厂
+        // 2. 独立绘制远景工厂与烟囱（放在远大楼前方、中景大楼后方）
+        ctx.fillStyle = '#2e1613'; // 偏暗的工业厂房阴影
+        for (let f of this.factories) {
+            let fx = Math.floor(f.x);
+            let fw = Math.floor(f.w);
+            let fh = Math.floor(f.h);
+            let fY = FLOOR_Y - fh;
+
+            // 绘制主厂房（带有一点锯齿形工业屋顶）
+            ctx.beginPath();
+            ctx.moveTo(fx, FLOOR_Y);
+            ctx.lineTo(fx, fY);
+            ctx.lineTo(fx + fw * 0.2, fY - 5);
+            ctx.lineTo(fx + fw * 0.4, fY);
+            ctx.lineTo(fx + fw * 0.6, fY - 5);
+            ctx.lineTo(fx + fw * 0.8, fY);
+            ctx.lineTo(fx + fw, fY);
+            ctx.lineTo(fx + fw, FLOOR_Y);
+            ctx.fill();
+
+            // 绘制烟囱1（细长）
+            let c1W = 4;
+            let c1X = Math.floor(fx + fw * 0.35 - c1W / 2);
+            ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1, c1W, f.chimneyH1);
+            // 烟囱1的红白相间工业圈圈纹理
+            ctx.fillStyle = '#9c2417';
+            ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1 + 4, c1W, 3);
+            ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1 + 12, c1W, 3);
+            ctx.fillStyle = '#2e1613';
+
+            // 绘制烟囱2（更细长）
+            let c2W = 3;
+            let c2X = Math.floor(fx + fw * 0.7 - c2W / 2);
+            ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2, c2W, f.chimneyH2);
+            ctx.fillStyle = '#9c2417';
+            ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2 + 3, c2W, 2);
+            ctx.fillStyle = '#2e1613';
+        }
+
+        // 3. 中景精致矮大楼群（高低错落，把大片的庞大夕阳露在上方和空隙中）
         for (let b of this.midBuildings) {
             const bx = Math.floor(b.x);
             const bw = Math.floor(b.w);
             const bh = Math.floor(b.h);
             const bY = Math.floor(FLOOR_Y - bh);
             
-            // 建筑暗部红棕色渐变
+            // 矮楼红棕色阴影渐变
             let bGrad = ctx.createLinearGradient(bx, bY, bx, FLOOR_Y);
-            bGrad.addColorStop(0, PALETTE.cityMid); 
-            bGrad.addColorStop(1, PALETTE.cityDark); 
+            bGrad.addColorStop(0, '#3d1b16'); 
+            bGrad.addColorStop(1, '#24100d'); 
             ctx.fillStyle = bGrad;
 
-            // 绘制主体
+            // 绘制矮楼剪影
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(bx, FLOOR_Y);
             
             if (b.buildingType === 0) {
-                // 阶梯式叠落大楼
-                ctx.lineTo(bx, bY + bh * 0.35);
-                ctx.lineTo(bx + 8, bY + bh * 0.35); 
-                ctx.lineTo(bx + 8, bY);
-                ctx.lineTo(bx + bw - 8, bY);
-                ctx.lineTo(bx + bw - 8, bY + bh * 0.45);
-                ctx.lineTo(bx + bw, bY + bh * 0.45);
+                // 矮阶梯大楼
+                ctx.lineTo(bx, bY + bh * 0.4);
+                ctx.lineTo(bx + 6, bY + bh * 0.4); 
+                ctx.lineTo(bx + 6, bY);
+                ctx.lineTo(bx + bw - 6, bY);
+                ctx.lineTo(bx + bw - 6, bY + bh * 0.5);
+                ctx.lineTo(bx + bw, bY + bh * 0.5);
             } else if (b.buildingType === 2) {
-                // 工厂造型：左侧是扁平厂房，右侧伸出一根细长管道烟囱
-                ctx.lineTo(bx, bY + 15);
-                ctx.lineTo(bx + bw * 0.65, bY + 15);
-                // 绘制高耸的烟囱
-                ctx.lineTo(bx + bw * 0.65, bY - 15);
-                ctx.lineTo(bx + bw * 0.85, bY - 15);
-                ctx.lineTo(bx + bw * 0.85, bY + 15);
-                ctx.lineTo(bx + bw, bY + 15);
-            } else if (b.buildingType === 3) {
-                // 倾斜切割型高楼
-                ctx.lineTo(bx, bY + 20);
+                // 带微型连廊天桥的大楼
+                ctx.lineTo(bx, bY + 10);
                 ctx.lineTo(bx + bw * 0.7, bY);
-                ctx.lineTo(bx + bw, bY + 12);
+                ctx.lineTo(bx + bw, bY + 8);
             } else {
+                // 普通方形矮楼
                 ctx.lineTo(bx, bY);
                 ctx.lineTo(bx + bw, bY);
             }
@@ -354,76 +415,56 @@ class BackgroundSystem {
             ctx.fill();
             ctx.restore();
 
-            // 绘制工厂烟囱的警示红环
-            if (b.buildingType === 2) {
-                ctx.fillStyle = '#ff3300';
-                ctx.fillRect(bx + bw * 0.65, bY - 10, Math.floor(bw * 0.2), 3);
-            }
-
-            // --- 2.1 静态窗户（只使用固定算法，不随时间闪烁，画面更静态） ---
+            // --- 3.1 静态小窗户灯（静态不闪，透出点点暖意） ---
             let winSeed = b.seed;
-            for (let wx = bx + 6; wx < bx + bw - 6; wx += 8) {
-                for (let wy = bY + 18; wy < FLOOR_Y - 10; wy += 14) {
+            for (let wx = bx + 5; wx < bx + bw - 5; wx += 7) {
+                for (let wy = bY + 12; wy < FLOOR_Y - 8; wy += 11) {
                     winSeed = (winSeed * 37 + 23) % 100;
-                    if (winSeed > 70) {
-                        // 静态透光：温暖的暗金色和少许红橙色
-                        ctx.fillStyle = winSeed > 88 ? '#ffd080' : '#d45500';
-                        ctx.fillRect(Math.floor(wx), Math.floor(wy), 2, 3);
+                    if (winSeed > 75) {
+                        ctx.fillStyle = winSeed > 90 ? '#ffd599' : '#b84a00';
+                        ctx.fillRect(Math.floor(wx), Math.floor(wy), 1.5, 2);
                     }
                 }
             }
 
-            // --- 2.2 霓虹大楼轮廓（完全静态常亮，不闪烁） ---
-            if (b.seed > 0.6 && b.buildingType !== 2) {
-                ctx.strokeStyle = PALETTE.neonCyan;
-                ctx.lineWidth = 1;
-                ctx.globalAlpha = 0.35; // 淡淡的常亮边缘发光
-                ctx.beginPath();
-                ctx.moveTo(bx + 2, FLOOR_Y);
-                ctx.lineTo(bx + 2, bY + 2);
-                ctx.lineTo(bx + bw - 2, bY + 2);
-                ctx.stroke();
-                ctx.globalAlpha = 1.0;
-            }
-
-            // --- 2.3 动态霓虹广告牌（允许闪烁，作为画面中唯一动感细节） ---
+            // --- 3.2 动态霓虹广告牌（极少数，只有它们会按照原本节奏呼吸闪烁） ---
             const isBlinking = Math.sin(time * b.blinkSpeed) > -0.3; 
-            if (isBlinking && (b.buildingType === 0 || b.buildingType === 3)) {
+            if (isBlinking && b.buildingType === 0) {
                 ctx.save();
                 const neonColor = b.neonColor;
                 ctx.shadowColor = neonColor;
-                ctx.shadowBlur = 2;
+                ctx.shadowBlur = 1.5;
 
-                let boardX = bx - 3; // 挂载在左侧
+                let boardX = bx - 2; 
                 let boardY = bY + b.boardYOffset;
                 
                 ctx.shadowBlur = 0;
-                drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#15080b');
+                drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#1c0a0c');
                 
                 ctx.strokeStyle = neonColor;
                 ctx.lineWidth = 1;
-                ctx.strokeRect(boardX + 1, boardY + 1, b.boardW - 2, b.boardH - 2);
+                ctx.strokeRect(boardX + 0.5, boardY + 0.5, b.boardW - 1, b.boardH - 1);
 
                 ctx.fillStyle = neonColor;
                 ctx.shadowColor = neonColor;
-                ctx.shadowBlur = 1.5;
-                for (let cy = boardY + 3; cy < boardY + b.boardH - 4; cy += 4) {
+                ctx.shadowBlur = 1;
+                for (let cy = boardY + 2; cy < boardY + b.boardH - 3; cy += 3) {
                     if (Math.sin(cy + time * 1.5) > -0.2) {
-                        ctx.fillRect(boardX + 2.5, cy, b.boardW - 5, 1);
+                        ctx.fillRect(boardX + 1.5, cy, b.boardW - 3, 1);
                     }
                 }
                 ctx.restore();
             }
         }
 
-        // 3. 绘制从工厂烟囱中飘出的烟雾粒子
+        // 4. 绘制远方烟囱冒出来的轻微白烟
         this.drawSmoke(ctx);
     }
 
     drawSmoke(ctx) {
         ctx.save();
         for (let p of this.smokeParticles) {
-            ctx.fillStyle = '#ffaa66'; // 带有一点落日橙光反射的灰色烟雾
+            ctx.fillStyle = '#ffa366'; // 远景轻灰橙
             ctx.globalAlpha = p.alpha;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -433,12 +474,12 @@ class BackgroundSystem {
     }
 
     drawForegroundGrid(ctx, worldX) {
-        // 1. 地板暗部（暖红黑色调）
-        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#1a0c10');
-        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#0d0508');
+        // 跑道暗部底色
+        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#1c0d0d');
+        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#0d0404');
 
-        // 2. 透视网格线
-        ctx.strokeStyle = '#261216';
+        // 跑道网格线
+        ctx.strokeStyle = '#2b1414';
         ctx.lineWidth = 1;
         let spacing = 18;
         let offset = (worldX * 1.5) % spacing;
@@ -450,22 +491,22 @@ class BackgroundSystem {
         }
         ctx.stroke();
 
-        // 3. 跑道边缘发光霓虹线（橙红霞光配色）
-        ctx.strokeStyle = '#ff5500';
-        ctx.globalAlpha = 0.4;
+        // 跑道边缘发光霓虹线（橙色）
+        ctx.strokeStyle = '#ff4d00';
+        ctx.globalAlpha = 0.45;
         ctx.beginPath();
         ctx.moveTo(0, FLOOR_Y + 4);
         ctx.lineTo(GAME_WIDTH, FLOOR_Y + 4);
         ctx.stroke();
         ctx.globalAlpha = 1.0;
 
-        // 4. 绘制前景电线杆
+        // 绘制前景电线杆
         this.drawUtilityPoles(ctx);
     }
 
     drawUtilityPoles(ctx) {
         ctx.save();
-        ctx.strokeStyle = '#0a0304';
+        ctx.strokeStyle = '#080202';
         ctx.lineWidth = 1;
         ctx.globalAlpha = 0.75;
         
@@ -487,25 +528,25 @@ class BackgroundSystem {
             const px = Math.floor(p.x);
             const py = Math.floor(FLOOR_Y - p.h);
             
-            drawPixelRect(ctx, px - 1, py, 3, p.h, '#14070a');
-            drawPixelRect(ctx, px, py, 1, p.h, '#261216'); 
+            drawPixelRect(ctx, px - 1, py, 3, p.h, '#140606');
+            drawPixelRect(ctx, px, py, 1, p.h, '#2b1414'); 
 
             if (p.h > 85) {
-                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#1a0c10');
-                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#14070a');
-                drawPixelRect(ctx, px - 2, py + 18, 1, 1, '#ff5500');
+                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#1c0d0d');
+                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#140606');
+                drawPixelRect(ctx, px - 2, py + 18, 1, 1, '#ff4d00');
             }
 
             if (p.crossarms) {
-                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#14070a');
+                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#140606');
                 drawPixelRect(ctx, px - 6, py + 2, 2, 2, '#ffffff');
                 drawPixelRect(ctx, px + 5, py + 2, 2, 2, '#ffffff');
                 
-                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#14070a');
+                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#140606');
                 drawPixelRect(ctx, px - 4, py + 8, 2, 2, '#ffffff');
                 drawPixelRect(ctx, px + 3, py + 8, 2, 2, '#ffffff');
             } else {
-                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#14070a');
+                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#140606');
                 drawPixelRect(ctx, px - 8, py + 4, 2, 2, '#ffffff');
                 drawPixelRect(ctx, px + 6, py + 4, 2, 2, '#ffffff');
             }
@@ -513,6 +554,8 @@ class BackgroundSystem {
         ctx.restore();
     }
 }
+
+
 class Player {
     constructor(particleSystem) {
         this.ps = particleSystem;
