@@ -90,73 +90,92 @@ class BackgroundSystem {
         this.rand = new SeededRandom(789);
         this.bgBuildings = [];
         this.midBuildings = [];
-        this.foreElements = [];
+        this.utilityPoles = []; // 新增：前景电线杆数据
         
         this.generateParallaxSectors();
     }
 
     generateParallaxSectors() {
-        // Background layer generation
+        // 1. 远景建筑（缩减尺寸以增强空间远近对比）
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 35 + this.rand.next() * 45;
-            let h = 80 + this.rand.next() * 90;
+            let w = 20 + this.rand.next() * 30; // 从 35-80 缩小到 20-50
+            let h = 45 + this.rand.next() * 55; // 从 80-170 缩小到 45-100
             this.bgBuildings.push({ x: curX, w: w, h: h, seed: this.rand.next() });
-            curX += w - 5; // Slight structural overlaps
+            curX += w - 3;
         }
-        // Middle layer generation
+
+        // 2. 中景建筑（整体高度压缩，使夕阳和桥梁露出来）
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 45 + this.rand.next() * 55;
-            let h = 110 + this.rand.next() * 80;
+            let w = 30 + this.rand.next() * 40; // 从 45-100 缩小到 30-70
+            let h = 70 + this.rand.next() * 50; // 从 110-190 缩小到 70-120
             this.midBuildings.push({
                 x: curX, w: w, h: h, 
                 type: Math.floor(this.rand.next() * 3),
                 neonColor: this.rand.next() > 0.4 ? (this.rand.next() > 0.5 ? PALETTE.neonCyan : PALETTE.neonMagenta) : null,
                 seed: this.rand.next()
             });
-            curX += w + 10;
+            curX += w + 15;
+        }
+
+        // 3. 生成前景电线杆（间距较大，移动速度快）
+        curX = 100;
+        while (curX < GAME_WIDTH + 300) {
+            this.utilityPoles.push({
+                x: curX,
+                h: 75 + Math.random() * 20, // 随机高度
+                crossarms: Math.random() > 0.3 // 是否带横梁
+            });
+            curX += 160 + Math.random() * 100; // 电线杆之间的间距
         }
     }
 
     update(dt, speedMultiplier) {
         const baseSpeed = 2 * speedMultiplier;
         
-        // Clouds translation
+        // 云朵移动
         for (let c of this.clouds) {
             c.x -= c.speed * baseSpeed * dt * 30;
             if (c.x < -40) c.x = GAME_WIDTH + 20;
         }
         
-        // Parallax horizontal shifts
+        // 远景移动（极慢）
         for (let b of this.bgBuildings) {
-            b.x -= 0.1 * baseSpeed * dt * 60;
+            b.x -= 0.08 * baseSpeed * dt * 60;
             if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
         }
         
+        // 中景移动（较慢）
         for (let b of this.midBuildings) {
-            b.x -= 0.35 * baseSpeed * dt * 60;
+            b.x -= 0.25 * baseSpeed * dt * 60;
             if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
+        }
+
+        // 前景电线杆移动（最快，与地板卷动一致，形成强烈的近景位移）
+        for (let p of this.utilityPoles) {
+            p.x -= 4.2 * speedMultiplier * dt * 60;
+            if (p.x < -50) {
+                p.x = GAME_WIDTH + 50 + Math.random() * 100;
+                p.h = 75 + Math.random() * 20;
+            }
         }
     }
 
-
- // 替换 game.js 中 BackgroundSystem 类的 drawSky 函数
     drawSky(ctx) {
         // 1. 创建 Synthwave 紫橙粉渐变天空
         let skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
-        skyGrad.addColorStop(0, '#171033');    // 深紫 Synthwave Top
-        skyGrad.addColorStop(0.5, '#4c103e');  // 霓虹粉紫 Middle
-        skyGrad.addColorStop(1, '#ff5500');    // 温暖橙 Horizon
+        skyGrad.addColorStop(0, '#171033');    
+        skyGrad.addColorStop(0.5, '#4c103e');  
+        skyGrad.addColorStop(1, '#ff5500');    
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, GAME_WIDTH, FLOOR_Y);
 
-        // 2. 绘制合成器浪潮巨大的太阳 (把太阳往上提，并添加复古横向切线效果)
+        // 2. 绘制合成器浪潮落日
         let sunX = GAME_WIDTH / 2; 
-        let sunY = FLOOR_Y - 45;   // 【修改】将太阳的Y轴大幅往上提，使其跃出地平线
-        let sunRadius = 45;        // 太阳半径
+        let sunY = FLOOR_Y - 45;   
+        let sunRadius = 45;        
 
-        // 绘制太阳发光底层 (Bloom)
         ctx.save();
         ctx.globalAlpha = 0.25;
         let bloomGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, sunRadius + 20);
@@ -168,33 +187,30 @@ class BackgroundSystem {
         ctx.fill();
         ctx.restore();
 
-        // 绘制太阳本体
         ctx.save();
-        // 限制绘制区域在一个圆形中
         ctx.beginPath();
         ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
         ctx.clip();
 
-        // 填充太阳渐变色
         let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
-        sunGrad.addColorStop(0, '#ffaa00'); // 顶部金黄
-        sunGrad.addColorStop(1, '#ff0055'); // 底部渐变霓虹粉
+        sunGrad.addColorStop(0, '#ffaa00'); 
+        sunGrad.addColorStop(1, '#ff0055'); 
 
         ctx.fillStyle = sunGrad;
         ctx.fillRect(sunX - sunRadius, sunY - sunRadius, sunRadius * 2, sunRadius * 2);
 
-        // --- 核心亮点：Synthwave 标志性的太阳水平切线 ---
-        // 我们用天空的渐变色在太阳上画横线，营造出复古合成器浪潮效果
         ctx.fillStyle = skyGrad; 
-        let barHeight = 2; // 切线高度
-        // 从太阳中下部开始切线，越往下切线越宽
+        let barHeight = 2; 
         for (let y = sunY - 10; y < sunY + sunRadius; y += 6) {
             let currentBarWidth = Math.floor((y - (sunY - 10)) / 4) + 1;
             ctx.fillRect(sunX - sunRadius, y, sunRadius * 2, currentBarWidth);
         }
         ctx.restore();
 
-        // 3. 绘制大气层像素云（保持原样）
+        // 3. 新增：背景跨海悬索巨桥（画在夕阳和云彩的前面，远景建筑的后面）
+        this.drawBackgroundBridge(ctx);
+
+        // 4. 绘制大气层像素云
         ctx.fillStyle = '#171033';
         ctx.globalAlpha = 0.3;
         const pSize = 4;
@@ -210,57 +226,88 @@ class BackgroundSystem {
         ctx.globalAlpha = 1.0;
     }
 
-    // 在 game.js 的 BackgroundSystem 类中找到并替换此函数
+    // 新增：绘制宏大的工业悬索桥剪影
+    drawBackgroundBridge(ctx) {
+        ctx.save();
+        ctx.globalAlpha = 0.25; // 淡淡的雾霭质感
+        ctx.strokeStyle = '#4c103e';
+        ctx.fillStyle = '#4c103e';
+        ctx.lineWidth = 1;
+
+        // 桥梁主路面
+        let bridgeY = FLOOR_Y - 20;
+        ctx.fillRect(0, bridgeY, GAME_WIDTH, 3);
+
+        // 两个巨大的主桥塔 (左右对称，直通云霄)
+        let tower1X = GAME_WIDTH * 0.15;
+        let tower2X = GAME_WIDTH * 0.85;
+        let towerHeight = 70;
+
+        // 桥塔 1
+        ctx.fillRect(tower1X, bridgeY - towerHeight, 6, towerHeight);
+        // 桥塔 2
+        ctx.fillRect(tower2X, bridgeY - towerHeight, 6, towerHeight);
+
+        // 悬索拉线 (用二次贝塞尔曲线绘制优雅的弧形电缆)
+        ctx.beginPath();
+        // 左主缆
+        ctx.moveTo(0, bridgeY);
+        ctx.quadraticCurveTo(tower1X / 2, bridgeY - 20, tower1X, bridgeY - towerHeight);
+        // 中间主索
+        ctx.quadraticCurveTo(GAME_WIDTH / 2, bridgeY - 10, tower2X, bridgeY - towerHeight);
+        // 右主缆
+        ctx.quadraticCurveTo((GAME_WIDTH + tower2X) / 2, bridgeY - 20, GAME_WIDTH, bridgeY);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
     drawCity(ctx) {
         const pSize = 2;
 
-        // 1. Far Far Background Silhouettes (远景剪影)
-        // 增加一点透明度，让夕阳光线“渗”出来
-        ctx.globalAlpha = 0.9;
-        ctx.fillStyle = PALETTE.cityDark; // 深蓝紫色剪影
+        // 1. 远景建筑（现在尺寸缩小，更精致地贴在地平线上）
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = PALETTE.cityDark; 
         for (let b of this.bgBuildings) {
             let bY = FLOOR_Y - b.h;
             ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
-            // Tiny geometric antennas
             if (b.seed > 0.6) {
-                ctx.fillRect(Math.floor(b.x + b.w/2), Math.floor(bY - 12), 2, 12);
+                ctx.fillRect(Math.floor(b.x + b.w/2), Math.floor(bY - 8), 1, 8); // 缩小天线
             }
         }
         ctx.globalAlpha = 1.0;
 
-        // 2. Mid Skyline Architecture (中景建筑)
+        // 2. 中景建筑
         for (let b of this.midBuildings) {
             let bY = FLOOR_Y - b.h;
             
-            // 核心建筑结构：使用带有夕阳余晖的渐变色
-            // 从 cityMid (深紫) 渐变到更暗的 cityDark
             let bGrad = ctx.createLinearGradient(b.x, bY, b.x, FLOOR_Y);
-            bGrad.addColorStop(0, '#13142f'); // City Mid (稍微提亮一点)
-            bGrad.addColorStop(1, PALETTE.cityDark); // City Dark
+            bGrad.addColorStop(0, '#13142f'); 
+            bGrad.addColorStop(1, PALETTE.cityDark); 
             ctx.fillStyle = bGrad;
             ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
 
-            // Windows & Neon Matrix (保持原样)
+            // Windows
             ctx.fillStyle = '#1e244a';
             let winSeed = b.seed;
-            for (let wx = b.x + 6; wx < b.x + b.w - 6; wx += 8) {
-                for (let wy = bY + 10; wy < FLOOR_Y - 15; wy += 14) {
+            for (let wx = b.x + 5; wx < b.x + b.w - 5; wx += 7) {
+                for (let wy = bY + 8; wy < FLOOR_Y - 10; wy += 12) {
                     winSeed = (winSeed * 31 + 17) % 100;
-                    if (winSeed > 65) {
-                        ctx.fillStyle = winSeed > 85 ? PALETTE.neonGold : '#3d4478';
-                        ctx.fillRect(Math.floor(wx), Math.floor(wy), 3, 5);
+                    if (winSeed > 70) {
+                        ctx.fillStyle = winSeed > 88 ? PALETTE.neonGold : '#2d3360';
+                        ctx.fillRect(Math.floor(wx), Math.floor(wy), 2, 4); // 窗户微型化
                     }
                 }
             }
 
-            // High Tech Neon advertisements (保持原样)
+            // 霓虹广告
             if (b.neonColor) {
                 ctx.fillStyle = b.neonColor;
-                ctx.globalAlpha = 0.6;
-                ctx.fillRect(Math.floor(b.x + 2), Math.floor(bY + 4), 2, Math.floor(b.h - 10));
+                ctx.globalAlpha = 0.5;
+                ctx.fillRect(Math.floor(b.x + 2), Math.floor(bY + 4), 1, Math.floor(b.h - 10));
                 
                 if (b.type === 1) {
-                    ctx.fillRect(Math.floor(b.x + b.w/2 - 8), Math.floor(bY + 4), 16, 6);
+                    ctx.fillRect(Math.floor(b.x + b.w/2 - 6), Math.floor(bY + 3), 12, 4);
                 }
                 ctx.globalAlpha = 1.0;
             }
@@ -268,17 +315,16 @@ class BackgroundSystem {
     }
 
     drawForegroundGrid(ctx, worldX) {
-        // Procedural floor concrete boundary
+        // 1. 绘制跑道地板底色
         drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#121424');
         drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#070914');
 
-        // Linear grid perspectives drawn procedurally via tracking game world offset
+        // 2. 跑道透视网格线
         ctx.strokeStyle = '#181b36';
         ctx.lineWidth = 1;
         let spacing = 18;
         let offset = (worldX * 1.5) % spacing;
 
-        // Vertical panel crosslines
         ctx.beginPath();
         for (let x = -offset; x < GAME_WIDTH; x += spacing) {
             ctx.moveTo(Math.floor(x), FLOOR_Y + 4);
@@ -286,7 +332,7 @@ class BackgroundSystem {
         }
         ctx.stroke();
 
-        // Horizontal neon tracking trim
+        // 3. 跑道上方霓虹边缘线
         ctx.strokeStyle = PALETTE.neonMagenta;
         ctx.globalAlpha = 0.4;
         ctx.beginPath();
@@ -294,6 +340,72 @@ class BackgroundSystem {
         ctx.lineTo(GAME_WIDTH, FLOOR_Y + 4);
         ctx.stroke();
         ctx.globalAlpha = 1.0;
+
+        // 4. 新增：绘制快速移动的前景电线杆和拉扯的电缆线
+        this.drawUtilityPoles(ctx);
+    }
+
+    // 新增：绘制高精细度像素电线杆与低垂的电线缆绳
+    drawUtilityPoles(ctx) {
+        ctx.save();
+        
+        // 绘制连接各个电线杆之间的低垂电线 (按顺序连线)
+        ctx.strokeStyle = '#080a14';
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.8;
+        
+        for (let i = 0; i < this.utilityPoles.length - 1; i++) {
+            let p1 = this.utilityPoles[i];
+            let p2 = this.utilityPoles[i + 1];
+            
+            // 只有当两个电线杆距离不是特别远时，拉一条低垂的二次贝塞尔曲线
+            if (p2.x - p1.x < 300) {
+                let y1 = FLOOR_Y - p1.h + 5;
+                let y2 = FLOOR_Y - p2.h + 5;
+                ctx.beginPath();
+                ctx.moveTo(p1.x, y1);
+                ctx.quadraticCurveTo((p1.x + p2.x) / 2, Math.max(y1, y2) + 12, p2.x, y2);
+                ctx.stroke();
+            }
+        }
+
+        // 绘制电线杆本体
+        for (let p of this.utilityPoles) {
+            const px = Math.floor(p.x);
+            const py = Math.floor(FLOOR_Y - p.h);
+            
+            // 杆身（深灰铁黑色）
+            drawPixelRect(ctx, px - 1, py, 3, p.h, '#0f1224');
+            drawPixelRect(ctx, px, py, 1, p.h, '#202644'); // 高光
+
+            // 变压器箱体 (经典工业细节)
+            if (p.h > 85) {
+                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#141830');
+                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#0f1224');
+                // 变压器上的小红点工作指示灯
+                drawPixelRect(ctx, px - 2, py + 18, 1, 1, PALETTE.neonMagenta);
+            }
+
+            // 顶部的 T 型架或横木
+            if (p.crossarms) {
+                // 上排横梁
+                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#0f1224');
+                // 两个白色的小瓷瓶绝缘子
+                drawPixelRect(ctx, px - 6, py + 2, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 5, py + 2, 2, 2, '#ffffff');
+                
+                // 下排横梁
+                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#0f1224');
+                drawPixelRect(ctx, px - 4, py + 8, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 3, py + 8, 2, 2, '#ffffff');
+            } else {
+                // 单个十字梁
+                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#0f1224');
+                drawPixelRect(ctx, px - 8, py + 4, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 6, py + 4, 2, 2, '#ffffff');
+            }
+        }
+        ctx.restore();
     }
 }
 
