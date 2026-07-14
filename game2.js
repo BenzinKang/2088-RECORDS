@@ -9,19 +9,19 @@ const GAME_WIDTH = 480;
 const GAME_HEIGHT = 270;
 const FLOOR_Y = 225;
 
-// 全新赛博幽蓝粉紫调色板
+// 温暖黄昏、红棕建筑与霓虹广告牌调色板
 const PALETTE = {
-    skyTop: '#060814',      // 深邃夜空蓝
-    skyMid: '#2c1654',      // 紫罗兰过渡带
-    skyBot: '#ff1493',      // 亮眼极光粉（地平线霞光）
-    sunGlow: '#ff007f',     // 霓虹粉光晕
-    sunCore: '#ffbb00',     // 金黄核心
-    neonCyan: '#00f3ff',    // 冰蓝霓虹
-    neonMagenta: '#ff007f', // 霓虹粉红
-    neonGold: '#ffbb00',    // 金橙色
-    cityDark: '#080a18',    // 最远景极暗蓝
-    cityMid: '#12142a',     // 远景紫黑
-    cityFore: '#1b1d3a'     // 中景蓝紫
+    skyTop: '#1a0c18',      // 极深红紫（夜空顶部）
+    skyMid: '#401824',      // 温暖暗红（过渡带）
+    skyBot: '#e65c00',      // 温暖落日橙（地平线）
+    sunGlow: '#ff7700',     // 橙色光晕
+    sunCore: '#ffcc00',     // 金黄太阳核心
+    neonCyan: '#00f3ff',    // 冰蓝霓虹（用于静态灯光）
+    neonMagenta: '#ff007f', // 霓虹粉红（广告牌闪烁）
+    neonGold: '#ffaa00',    // 金橙霓虹（广告牌闪烁）
+    cityDark: '#261216',    // 远景暗红棕（阳光阴影色）
+    cityMid: '#381a1f',     // 中景中红棕
+    cityFore: '#4a2228'     // 近景深红棕
 };
 
 // --- HELPER FUNCTIONS FOR PROCEDURAL PIXEL RENDERING ---
@@ -81,58 +81,63 @@ class ParticleSystem {
 
 class BackgroundSystem {
     constructor() {
-        // 重新设计云彩数据：x, y, 宽度, 高度, 移动速度, 不透明度, 以及多层叠色
+        // 温暖色调的云彩
         this.clouds = [
-            { x: 30,  y: 20, w: 90,  h: 12, speed: 0.04, alpha: 0.15, color: '#ff007f' },
-            { x: 160, y: 45, w: 140, h: 18, speed: 0.02, alpha: 0.20, color: '#441d60' },
-            { x: 280, y: 15, w: 100, h: 10, speed: 0.06, alpha: 0.12, color: '#ff007f' },
-            { x: 400, y: 35, w: 120, h: 15, speed: 0.03, alpha: 0.18, color: '#441d60' }
+            { x: 30,  y: 20, w: 90,  h: 12, speed: 0.03, alpha: 0.15, color: '#e65c00' },
+            { x: 160, y: 45, w: 140, h: 18, speed: 0.015, alpha: 0.20, color: '#401824' },
+            { x: 280, y: 15, w: 100, h: 10, speed: 0.04, alpha: 0.12, color: '#ffaa00' },
+            { x: 400, y: 35, w: 120, h: 15, speed: 0.02, alpha: 0.18, color: '#401824' }
         ];
         
         this.rand = new SeededRandom(789);
         this.bgBuildings = [];
         this.midBuildings = [];
-        this.utilityPoles = []; // 前景电线杆数据
+        this.utilityPoles = []; // 前景电线杆
+        
+        // 动态生成的工厂烟雾粒子
+        this.smokeParticles = [];
         
         this.generateParallaxSectors();
     }
 
     generateParallaxSectors() {
-        // 1. 远景薄雾建筑（高耸、林立的科幻尖塔群）
+        // 1. 远景高耸大楼（保持纯红棕色静态剪影，偶尔有静态细微灯光）
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 15 + this.rand.next() * 25;
-            let h = 60 + this.rand.next() * 70; // 更高耸
+            let w = 20 + this.rand.next() * 25;
+            let h = 70 + this.rand.next() * 80; 
             this.bgBuildings.push({ 
                 x: curX, 
                 w: w, 
                 h: h, 
                 seed: this.rand.next(),
-                hasSpire: this.rand.next() > 0.4 // 是否有尖端避雷针
+                hasSpire: this.rand.next() > 0.5 
             });
-            curX += w + 2;
+            curX += w + 4;
         }
 
-        // 2. 中景建筑（多样性结构重构：圆环塔、跨楼天桥、阶梯式堆叠）
+        // 2. 中景不规则建筑（加入烟囱、工厂和静态霓虹装饰）
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
             let w = 45 + this.rand.next() * 40; 
-            let h = 80 + this.rand.next() * 55; 
+            let h = 70 + this.rand.next() * 50; 
+            let isFactory = this.rand.next() > 0.7; // 30% 概率是带有烟囱的工厂
             
             this.midBuildings.push({
                 x: curX, 
                 w: w, 
                 h: h, 
                 seed: this.rand.next(),
-                neonColor: this.rand.next() > 0.4 ? PALETTE.neonMagenta : (this.rand.next() > 0.5 ? PALETTE.neonCyan : PALETTE.neonGold),
-                // 建筑类型：0=阶梯堆叠大楼, 1=楼顶带圆环科技塔, 2=侧边挂载广告牌, 3=带天桥连接楼
-                buildingType: Math.floor(this.rand.next() * 4),
-                boardW: 12 + Math.floor(this.rand.next() * 12),
-                boardH: 30 + Math.floor(this.rand.next() * 25),
-                boardYOffset: 10 + Math.floor(this.rand.next() * 25),
-                blinkSpeed: 0.6 + this.rand.next() * 1.2
+                isFactory: isFactory,
+                neonColor: this.rand.next() > 0.5 ? PALETTE.neonMagenta : PALETTE.neonGold,
+                // 建筑类型：0=阶梯大楼, 1=普通方形, 2=带烟囱工厂, 3=带天桥
+                buildingType: isFactory ? 2 : Math.floor(this.rand.next() * 3),
+                boardW: 10 + Math.floor(this.rand.next() * 10),
+                boardH: 25 + Math.floor(this.rand.next() * 20),
+                boardYOffset: 15 + Math.floor(this.rand.next() * 20),
+                blinkSpeed: 0.8 + this.rand.next() * 1.0  // 只有广告牌闪烁的速度
             });
-            curX += w + 18; 
+            curX += w + 15; 
         }
 
         // 3. 前景电线杆
@@ -150,22 +155,50 @@ class BackgroundSystem {
     update(dt, speedMultiplier) {
         const baseSpeed = 2 * speedMultiplier;
         
-        // 更加优雅缓慢的云朵飘动
+        // 缓慢的云朵飘动
         for (let c of this.clouds) {
             c.x -= c.speed * baseSpeed * dt * 30;
             if (c.x + c.w < -20) c.x = GAME_WIDTH + 50;
         }
         
-        // 远景移动
+        // 远景大楼移动
         for (let b of this.bgBuildings) {
             b.x -= 0.06 * baseSpeed * dt * 60;
             if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
         }
         
-        // 中景移动
+        // 中景大楼与工厂移动
         for (let b of this.midBuildings) {
             b.x -= 0.22 * baseSpeed * dt * 60;
             if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
+
+            // 如果是工厂，在移动时往空气中产生烟雾
+            if (b.isFactory && Math.random() < 0.03 * dt * 60) {
+                const chimneyX = b.x + b.w * 0.75;
+                const chimneyY = FLOOR_Y - b.h - 15; // 烟囱口位置
+                this.smokeParticles.push({
+                    x: chimneyX,
+                    y: chimneyY,
+                    vx: -1.0 - Math.random() * 0.5, // 往后飘
+                    vy: -0.3 - Math.random() * 0.3, // 往上飘
+                    size: 2 + Math.random() * 4,
+                    alpha: 0.4,
+                    life: 1.0 // 寿命
+                });
+            }
+        }
+
+        // 更新烟雾粒子
+        for (let i = this.smokeParticles.length - 1; i >= 0; i--) {
+            let p = this.smokeParticles[i];
+            p.x += p.vx * dt * 60;
+            p.y += p.vy * dt * 60;
+            p.size += 0.1 * dt * 60; // 烟雾慢慢扩散变大
+            p.alpha -= 0.01 * dt * 60; // 慢慢淡出
+            p.life -= 0.015 * dt * 60;
+            if (p.life <= 0 || p.alpha <= 0) {
+                this.smokeParticles.splice(i, 1);
+            }
         }
 
         // 前景电线杆移动
@@ -179,32 +212,32 @@ class BackgroundSystem {
     }
 
     drawSky(ctx) {
-        // 1. 创建高对比度的赛博渐变天空
+        // 1. 温暖的黄昏暖橙色调渐变天空
         let skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
-        skyGrad.addColorStop(0, PALETTE.skyTop);    // 顶部深邃黑蓝
-        skyGrad.addColorStop(0.55, PALETTE.skyMid);  // 中部紫罗兰
-        skyGrad.addColorStop(0.9, PALETTE.skyBot);   // 地平线极光粉
-        skyGrad.addColorStop(1, '#ff69b4');         // 最底部粉红霞光
+        skyGrad.addColorStop(0, PALETTE.skyTop);    // 顶部极深红紫
+        skyGrad.addColorStop(0.5, PALETTE.skyMid);   // 中部温暖暗红
+        skyGrad.addColorStop(0.85, PALETTE.skyBot);  // 地平线温暖落日橙
+        skyGrad.addColorStop(1, '#ff8000');         // 最底部亮橙色
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, GAME_WIDTH, FLOOR_Y);
 
-        // 2. 绘制合成器浪潮落日（降低亮度以配合冷色调，强化光晕）
+        // 2. 温暖落日（金黄核心与暖橙光晕）
         let sunX = GAME_WIDTH / 2; 
-        let sunY = FLOOR_Y - 40;   
-        let sunRadius = 40;        
+        let sunY = FLOOR_Y - 35;   
+        let sunRadius = 35;        
 
         ctx.save();
-        ctx.globalAlpha = 0.2;
-        let bloomGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, sunRadius + 30);
+        ctx.globalAlpha = 0.15;
+        let bloomGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, sunRadius + 25);
         bloomGrad.addColorStop(0, PALETTE.sunGlow);
         bloomGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = bloomGrad;
         ctx.beginPath();
-        ctx.arc(sunX, sunY, sunRadius + 30, 0, Math.PI * 2);
+        ctx.arc(sunX, sunY, sunRadius + 25, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // 太阳本体（带落日切线）
+        // 太阳本体
         ctx.save();
         ctx.beginPath();
         ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
@@ -212,38 +245,31 @@ class BackgroundSystem {
 
         let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
         sunGrad.addColorStop(0, PALETTE.sunCore); 
-        sunGrad.addColorStop(1, PALETTE.neonMagenta); 
+        sunGrad.addColorStop(1, '#ff4500'); // 融入烈火橙
 
         ctx.fillStyle = sunGrad;
         ctx.fillRect(sunX - sunRadius, sunY - sunRadius, sunRadius * 2, sunRadius * 2);
 
-        // 经典的网格切空效果
+        // 网格切空
         ctx.fillStyle = skyGrad; 
-        for (let y = sunY - 5; y < sunY + sunRadius; y += 5) {
-            let currentBarWidth = Math.floor((y - (sunY - 5)) / 4) + 1;
+        for (let y = sunY - 5; y < sunY + sunRadius; y += 6) {
+            let currentBarWidth = Math.floor((y - (sunY - 5)) / 4.5) + 1;
             ctx.fillRect(sunX - sunRadius, y, sunRadius * 2, currentBarWidth);
         }
         ctx.restore();
 
-        // 3. 背景跨海悬索巨桥
-        this.drawBackgroundBridge(ctx);
-
-        // 4. 精美层次叠云（模仿图片中晕染在紫红色天空中的云彩）
+        // 3. 温暖调云彩
         ctx.save();
         for (let c of this.clouds) {
             const cx = Math.floor(c.x);
             const cy = Math.floor(c.y);
             
-            // 绘制双重阴影以创造体积感与发光边缘
             ctx.globalAlpha = c.alpha;
-            
-            // 底层暗云（紫褐色）
             let cloudGrad = ctx.createLinearGradient(cx, cy, cx, cy + c.h);
             cloudGrad.addColorStop(0, c.color);
             cloudGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = cloudGrad;
             
-            // 绘制不规则多段胶囊体，形成云朵的堆积感
             ctx.beginPath();
             ctx.arc(cx + c.w * 0.2, cy + c.h * 0.5, c.h * 0.5, 0, Math.PI * 2);
             ctx.arc(cx + c.w * 0.5, cy + c.h * 0.4, c.h * 0.7, 0, Math.PI * 2);
@@ -252,103 +278,72 @@ class BackgroundSystem {
             ctx.closePath();
             ctx.fill();
 
-            // 亮色云边缘（粉红发光边缘）
-            ctx.globalAlpha = c.alpha * 1.5;
-            ctx.fillStyle = PALETTE.skyBot;
-            ctx.fillRect(cx + c.w * 0.25, cy + c.h - 2, c.w * 0.5, 1.5);
+            // 温暖的高光边缘
+            ctx.globalAlpha = c.alpha * 1.3;
+            ctx.fillStyle = '#ffaa00';
+            ctx.fillRect(cx + c.w * 0.25, cy + c.h - 1.5, c.w * 0.5, 1);
         }
-        ctx.restore();
-    }
-
-    drawBackgroundBridge(ctx) {
-        ctx.save();
-        ctx.globalAlpha = 0.2; // 薄雾笼罩
-        ctx.strokeStyle = '#321e56';
-        ctx.fillStyle = '#321e56';
-        ctx.lineWidth = 1;
-
-        let bridgeY = FLOOR_Y - 20;
-        ctx.fillRect(0, bridgeY, GAME_WIDTH, 2);
-
-        let tower1X = GAME_WIDTH * 0.18;
-        let tower2X = GAME_WIDTH * 0.82;
-        let towerHeight = 65;
-
-        ctx.fillRect(tower1X, bridgeY - towerHeight, 5, towerHeight);
-        ctx.fillRect(tower2X, bridgeY - towerHeight, 5, towerHeight);
-
-        ctx.beginPath();
-        ctx.moveTo(0, bridgeY);
-        ctx.quadraticCurveTo(tower1X / 2, bridgeY - 15, tower1X, bridgeY - towerHeight);
-        ctx.quadraticCurveTo(GAME_WIDTH / 2, bridgeY - 8, tower2X, bridgeY - towerHeight);
-        ctx.quadraticCurveTo((GAME_WIDTH + tower2X) / 2, bridgeY - 15, GAME_WIDTH, bridgeY);
-        ctx.stroke();
-
         ctx.restore();
     }
 
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-        // 1. 远景高耸大楼渲染 (淡蓝紫色，突出纵深感)
-        ctx.fillStyle = '#100f26'; 
+        // 1. 远景高耸建筑（沉稳暗红棕色，无任何闪烁，营造静态纵深）
+        ctx.fillStyle = PALETTE.cityDark; 
         for (let b of this.bgBuildings) {
             let bY = FLOOR_Y - b.h;
             ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
             
-            // 极细微的航空警示闪光
+            // 静态的微弱天线针，不闪烁
             if (b.hasSpire) {
-                // 绘制极长避雷针
-                ctx.fillStyle = '#1c1b3a';
-                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 12), 1, 12);
-                
-                // 顶部针尖红点闪烁
-                if (Math.floor(time + b.seed * 10) % 2 === 0) {
-                    ctx.fillStyle = '#ff0055';
-                    ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 13), 1, 1);
-                }
+                ctx.fillStyle = '#201014';
+                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 10), 1, 10);
+                ctx.fillStyle = '#a83232'; // 极暗的红色指示灯
+                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 11), 1, 1);
             }
         }
 
-        // 2. 中景不规则、丰富细节大楼群
+        // 2. 中景不规则、红棕阴影色大楼与工厂
         for (let b of this.midBuildings) {
             const bx = Math.floor(b.x);
             const bw = Math.floor(b.w);
             const bh = Math.floor(b.h);
             const bY = Math.floor(FLOOR_Y - bh);
             
-            // 建筑暗面渐变
+            // 建筑暗部红棕色渐变
             let bGrad = ctx.createLinearGradient(bx, bY, bx, FLOOR_Y);
-            bGrad.addColorStop(0, '#151433'); // 幽暗蓝紫
-            bGrad.addColorStop(1, '#090818'); 
+            bGrad.addColorStop(0, PALETTE.cityMid); 
+            bGrad.addColorStop(1, PALETTE.cityDark); 
             ctx.fillStyle = bGrad;
 
-            // --- 2.1 绘制不规则的主体外观 ---
+            // 绘制主体
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(bx, FLOOR_Y);
             
             if (b.buildingType === 0) {
-                // 阶梯式叠落大楼 (Step Structure)
-                ctx.lineTo(bx, bY + bh * 0.4);
-                ctx.lineTo(bx + 6, bY + bh * 0.4); 
-                ctx.lineTo(bx + 6, bY + 15);
-                ctx.lineTo(bx + bw - 6, bY + 15);
-                ctx.lineTo(bx + bw - 6, bY + bh * 0.5);
-                ctx.lineTo(bx + bw, bY + bh * 0.5);
-            } else if (b.buildingType === 1) {
-                // 顶部带圆环科技大楼 (Ring Spire Tower)
-                ctx.lineTo(bx, bY + 10);
-                ctx.lineTo(bx + bw * 0.25, bY + 10);
-                ctx.lineTo(bx + bw * 0.25, bY);
-                ctx.lineTo(bx + bw * 0.75, bY);
-                ctx.lineTo(bx + bw * 0.75, bY + 10);
-                ctx.lineTo(bx + bw, bY + 10);
+                // 阶梯式叠落大楼
+                ctx.lineTo(bx, bY + bh * 0.35);
+                ctx.lineTo(bx + 8, bY + bh * 0.35); 
+                ctx.lineTo(bx + 8, bY);
+                ctx.lineTo(bx + bw - 8, bY);
+                ctx.lineTo(bx + bw - 8, bY + bh * 0.45);
+                ctx.lineTo(bx + bw, bY + bh * 0.45);
+            } else if (b.buildingType === 2) {
+                // 工厂造型：左侧是扁平厂房，右侧伸出一根细长管道烟囱
+                ctx.lineTo(bx, bY + 15);
+                ctx.lineTo(bx + bw * 0.65, bY + 15);
+                // 绘制高耸的烟囱
+                ctx.lineTo(bx + bw * 0.65, bY - 15);
+                ctx.lineTo(bx + bw * 0.85, bY - 15);
+                ctx.lineTo(bx + bw * 0.85, bY + 15);
+                ctx.lineTo(bx + bw, bY + 15);
             } else if (b.buildingType === 3) {
                 // 倾斜切割型高楼
-                ctx.lineTo(bx, bY + 25);
-                ctx.lineTo(bx + bw * 0.6, bY);
-                ctx.lineTo(bx + bw, bY + 10);
+                ctx.lineTo(bx, bY + 20);
+                ctx.lineTo(bx + bw * 0.7, bY);
+                ctx.lineTo(bx + bw, bY + 12);
             } else {
                 ctx.lineTo(bx, bY);
                 ctx.lineTo(bx + bw, bY);
@@ -359,84 +354,91 @@ class BackgroundSystem {
             ctx.fill();
             ctx.restore();
 
-            // 特殊结构细节：圆环型霓虹发射塔
-            if (b.buildingType === 1) {
-                // 绘制顶部圆环
-                ctx.strokeStyle = b.neonColor;
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                ctx.arc(bx + bw * 0.5, bY + 5, 5, 0, Math.PI * 2);
-                ctx.stroke();
+            // 绘制工厂烟囱的警示红环
+            if (b.buildingType === 2) {
+                ctx.fillStyle = '#ff3300';
+                ctx.fillRect(bx + bw * 0.65, bY - 10, Math.floor(bw * 0.2), 3);
             }
 
-            // 特殊结构细节：跨楼连廊天桥（如果右侧有邻接建筑）
-            if (b.buildingType === 3 && b.seed > 0.4) {
-                ctx.fillStyle = '#1c1b3a';
-                // 绘制一条横跨出去的空中金属天桥
-                ctx.fillRect(bx + bw, bY + Math.floor(bh * 0.3), 25, 4);
-                ctx.strokeStyle = PALETTE.neonCyan;
-                ctx.lineWidth = 0.5;
-                // 天桥上的发光指示线
-                ctx.beginPath();
-                ctx.moveTo(bx + bw, bY + Math.floor(bh * 0.3) + 1);
-                ctx.lineTo(bx + bw + 25, bY + Math.floor(bh * 0.3) + 1);
-                ctx.stroke();
-            }
-
-            // --- 2.2 窗户格栅与点阵灯（蓝白交织透光） ---
+            // --- 2.1 静态窗户（只使用固定算法，不随时间闪烁，画面更静态） ---
             let winSeed = b.seed;
-            for (let wx = bx + 6; wx < bx + bw - 6; wx += 7) {
-                for (let wy = bY + 16; wy < FLOOR_Y - 15; wy += 12) {
-                    winSeed = (winSeed * 31 + 17) % 100;
-                    if (winSeed > 68) {
-                        // 蓝白色和粉红的透光窗户
-                        ctx.fillStyle = winSeed > 88 ? '#ffffff' : (winSeed > 78 ? '#00f3ff' : '#ff007f');
+            for (let wx = bx + 6; wx < bx + bw - 6; wx += 8) {
+                for (let wy = bY + 18; wy < FLOOR_Y - 10; wy += 14) {
+                    winSeed = (winSeed * 37 + 23) % 100;
+                    if (winSeed > 70) {
+                        // 静态透光：温暖的暗金色和少许红橙色
+                        ctx.fillStyle = winSeed > 88 ? '#ffd080' : '#d45500';
                         ctx.fillRect(Math.floor(wx), Math.floor(wy), 2, 3);
                     }
                 }
             }
 
-            // --- 2.3 霓虹广告招牌 ---
-            const isBlinking = Math.sin(time * b.blinkSpeed) > -0.4; 
-            if (isBlinking) {
+            // --- 2.2 霓虹大楼轮廓（完全静态常亮，不闪烁） ---
+            if (b.seed > 0.6 && b.buildingType !== 2) {
+                ctx.strokeStyle = PALETTE.neonCyan;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.35; // 淡淡的常亮边缘发光
+                ctx.beginPath();
+                ctx.moveTo(bx + 2, FLOOR_Y);
+                ctx.lineTo(bx + 2, bY + 2);
+                ctx.lineTo(bx + bw - 2, bY + 2);
+                ctx.stroke();
+                ctx.globalAlpha = 1.0;
+            }
+
+            // --- 2.3 动态霓虹广告牌（允许闪烁，作为画面中唯一动感细节） ---
+            const isBlinking = Math.sin(time * b.blinkSpeed) > -0.3; 
+            if (isBlinking && (b.buildingType === 0 || b.buildingType === 3)) {
                 ctx.save();
                 const neonColor = b.neonColor;
                 ctx.shadowColor = neonColor;
-                ctx.shadowBlur = 3;
+                ctx.shadowBlur = 2;
 
-                // 悬挂式竖型霓虹灯牌
-                if (b.buildingType === 2 || b.buildingType === 3) {
-                    let boardX = bx - 4; // 挂在左侧边缘
-                    let boardY = bY + b.boardYOffset;
-                    
-                    ctx.shadowBlur = 0;
-                    drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#020308');
-                    
-                    ctx.strokeStyle = neonColor;
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(boardX + 1, boardY + 1, b.boardW - 2, b.boardH - 2);
+                let boardX = bx - 3; // 挂载在左侧
+                let boardY = bY + b.boardYOffset;
+                
+                ctx.shadowBlur = 0;
+                drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#15080b');
+                
+                ctx.strokeStyle = neonColor;
+                ctx.lineWidth = 1;
+                ctx.strokeRect(boardX + 1, boardY + 1, b.boardW - 2, b.boardH - 2);
 
-                    ctx.fillStyle = neonColor;
-                    ctx.shadowColor = neonColor;
-                    ctx.shadowBlur = 2;
-                    for (let cy = boardY + 3; cy < boardY + b.boardH - 4; cy += 5) {
-                        if (Math.sin(cy + time) > -0.3) {
-                            ctx.fillRect(boardX + 3, cy, b.boardW - 6, 1.5);
-                        }
+                ctx.fillStyle = neonColor;
+                ctx.shadowColor = neonColor;
+                ctx.shadowBlur = 1.5;
+                for (let cy = boardY + 3; cy < boardY + b.boardH - 4; cy += 4) {
+                    if (Math.sin(cy + time * 1.5) > -0.2) {
+                        ctx.fillRect(boardX + 2.5, cy, b.boardW - 5, 1);
                     }
-                } 
+                }
                 ctx.restore();
             }
         }
+
+        // 3. 绘制从工厂烟囱中飘出的烟雾粒子
+        this.drawSmoke(ctx);
+    }
+
+    drawSmoke(ctx) {
+        ctx.save();
+        for (let p of this.smokeParticles) {
+            ctx.fillStyle = '#ffaa66'; // 带有一点落日橙光反射的灰色烟雾
+            ctx.globalAlpha = p.alpha;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
     }
 
     drawForegroundGrid(ctx, worldX) {
-        // 1. 跑道地板暗部底色
-        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#100f24');
-        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#050410');
+        // 1. 地板暗部（暖红黑色调）
+        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#1a0c10');
+        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#0d0508');
 
         // 2. 透视网格线
-        ctx.strokeStyle = '#181232';
+        ctx.strokeStyle = '#261216';
         ctx.lineWidth = 1;
         let spacing = 18;
         let offset = (worldX * 1.5) % spacing;
@@ -448,22 +450,22 @@ class BackgroundSystem {
         }
         ctx.stroke();
 
-        // 3. 跑道边缘发光霓虹线（极光粉色，呼应天空地平线）
-        ctx.strokeStyle = PALETTE.neonMagenta;
-        ctx.globalAlpha = 0.5;
+        // 3. 跑道边缘发光霓虹线（橙红霞光配色）
+        ctx.strokeStyle = '#ff5500';
+        ctx.globalAlpha = 0.4;
         ctx.beginPath();
         ctx.moveTo(0, FLOOR_Y + 4);
         ctx.lineTo(GAME_WIDTH, FLOOR_Y + 4);
         ctx.stroke();
         ctx.globalAlpha = 1.0;
 
-        // 4. 绘制前景电线杆和拉扯的电缆线
+        // 4. 绘制前景电线杆
         this.drawUtilityPoles(ctx);
     }
 
     drawUtilityPoles(ctx) {
         ctx.save();
-        ctx.strokeStyle = '#04030a';
+        ctx.strokeStyle = '#0a0304';
         ctx.lineWidth = 1;
         ctx.globalAlpha = 0.75;
         
@@ -485,25 +487,25 @@ class BackgroundSystem {
             const px = Math.floor(p.x);
             const py = Math.floor(FLOOR_Y - p.h);
             
-            drawPixelRect(ctx, px - 1, py, 3, p.h, '#0b0a1a');
-            drawPixelRect(ctx, px, py, 1, p.h, '#1e1c3a'); 
+            drawPixelRect(ctx, px - 1, py, 3, p.h, '#14070a');
+            drawPixelRect(ctx, px, py, 1, p.h, '#261216'); 
 
             if (p.h > 85) {
-                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#100f24');
-                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#0b0a1a');
-                drawPixelRect(ctx, px - 2, py + 18, 1, 1, PALETTE.neonMagenta);
+                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#1a0c10');
+                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#14070a');
+                drawPixelRect(ctx, px - 2, py + 18, 1, 1, '#ff5500');
             }
 
             if (p.crossarms) {
-                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#0b0a1a');
+                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#14070a');
                 drawPixelRect(ctx, px - 6, py + 2, 2, 2, '#ffffff');
                 drawPixelRect(ctx, px + 5, py + 2, 2, 2, '#ffffff');
                 
-                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#0b0a1a');
+                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#14070a');
                 drawPixelRect(ctx, px - 4, py + 8, 2, 2, '#ffffff');
                 drawPixelRect(ctx, px + 3, py + 8, 2, 2, '#ffffff');
             } else {
-                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#0b0a1a');
+                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#14070a');
                 drawPixelRect(ctx, px - 8, py + 4, 2, 2, '#ffffff');
                 drawPixelRect(ctx, px + 6, py + 4, 2, 2, '#ffffff');
             }
