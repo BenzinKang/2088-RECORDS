@@ -1513,22 +1513,33 @@ class GameEngine {
         requestAnimationFrame((t) => this.loop(t));
     }
 
-    initEvents() {
-        // 动作触发（跳跃）
-        const handleJump = (e) => {
-            if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return;
-            if (this.gameState === STATES.RUNNING) {
-                this.player.jump();
-                if (e.cancelable) e.preventDefault();
-            }
-        };
-        window.addEventListener("keydown", handleJump);
-        this.canvas.addEventListener("touchstart", handleJump, { passive: false });
+initEvents() {
+    // 动作触发（跳跃）
+    const handleJump = (e) => {
+        // 如果是键盘事件，只允许空格键和上方向键
+        if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return;
+        
+        // 【新增手机端过滤】如果点击的是游戏界面里的按钮（如开始/重启系统按钮），则交由按钮自己的事件处理，不触发跳跃
+        if (e.target && e.target.classList.contains('cyber-btn')) return;
 
-        // 按钮监听器
-        this.ui.btnStart.addEventListener("click", () => this.startGame());
-        this.ui.btnRestart.addEventListener("click", () => this.startGame());
-    }
+        // 只有在游戏运行状态下才允许跳跃
+        if (this.gameState === STATES.RUNNING) {
+            this.player.jump();
+            if (e.cancelable) e.preventDefault(); // 阻止手机端默认的双击放大或滚动行为
+        }
+    };
+
+    // 键盘监听不变
+    window.addEventListener("keydown", handleJump);
+    
+    // 【修改】将原本 canvas 的监听，改为全局 window 或游戏大容器监听
+    // 这样只要触碰手机屏幕任意位置（除按钮外），都能触发跳跃
+    window.addEventListener("touchstart", handleJump, { passive: false });
+
+    // 按钮监听器保持不变
+    this.ui.btnStart.addEventListener("click", () => this.startGame());
+    this.ui.btnRestart.addEventListener("click", () => this.startGame());
+}
 
     resetUI() {
         this.ui.hudHighscore.textContent = String(this.highscore).padStart(5, '0');
