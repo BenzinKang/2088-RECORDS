@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIGNAL RUNNER | 2088 RECORDS</title>
+
+    <meta name="description" content="2088 RECORDS Signal Runner">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="background-grid"></div>
+<div class="background-stars"></div>
+
+<main class="game-wrapper">
+
+    <!-- HUD -->
+    <header class="hud">
+
+        <div class="hud-left">
+
+            <div class="hud-title">
+                SIGNAL
+            </div>
+
+            <div class="hud-block">
+
+                <span class="label">
+                    Distance
+                </span>
+
+                <span id="distance">
+                    0 Units
+                </span>
+
+            </div>
+
+            <div class="hud-block">
+
+                <span class="label">
+                    Speed
+                </span>
+
+                <span id="speed">
+                    1.0x
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="hud-right">
+
+            <div class="hud-title">
+                HIGH SCORE
+            </div>
+
+            <div id="highscore">
+                0
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- Canvas -->
+
+    <section class="canvas-container">
+
+        <canvas id="gameCanvas"></canvas>
+
+    </section>
+
+</main>
+
+<!-- Start Screen -->
+
+<section id="start-screen" class="overlay active">
+
+    <div class="overlay-box">
+
+        <div class="system-tag">
+            2088 RECORDS
+        </div>
+
+        <h1>
+            SIGNAL RUNNER
+        </h1>
+
+        <p class="subtitle">
+            A SIMULATION OF THE LAST TRANSMISSION
+        </p>
+
+        <p class="description">
+
+            In the year 2088, the final signal is trying
+            to escape corruption.
+
+            Avoid firewalls, corrupted data,
+            and electromagnetic interference.
+
+            Stay online for as long as possible.
+
+        </p>
+
+        <button id="startButton">
+
+            CONNECT
+
+        </button>
+
+        <div class="controls">
+
+            SPACE / ↑ / TAP
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Pause -->
+
+<section id="pause-screen" class="overlay">
+
+    <div class="overlay-box">
+
+        <h2>
+
+            SIGNAL PAUSED
+
+        </h2>
+
+        <button id="resumeButton">
+
+            RESUME
+
+        </button>
+
+    </div>
+
+</section>
+
+<!-- Game Over -->
+
+<section id="gameover-screen" class="overlay">
+
+    <div class="overlay-box">
+
+        <div class="system-tag">
+
+            CONNECTION LOST
+
+        </div>
+
+        <h2>
+
+            SIGNAL LOST
+
+        </h2>
+
+        <div class="result">
+
+            Distance
+
+            <span id="final-distance">
+
+                0
+
+            </span>
+
+        </div>
+
+        <div class="result">
+
+            High Score
+
+            <span id="final-highscore">
+
+                0
+
+            </span>
+
+        </div>
+
+        <button id="restartButton">
+
+            RECONNECT
+
+        </button>
+
+    </div>
+
+</section>
+
+<script src="js/game.js"></script>
+
+</body>
+</html>
