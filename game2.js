@@ -320,7 +320,7 @@ class BackgroundSystem {
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-// 1. 远景窄楼（【已改良】融入4种动态楼顶形状，并保持深邃的暗黑剪影）
+// 1. 远景窄楼（【彻底修复版】严格闭合每栋楼的路径，确保颜色绝不跑偏）
         ctx.fillStyle = '#0a0b10'; 
         for (let b of this.bgBuildings) {
             let bx = Math.floor(b.x);
@@ -328,11 +328,10 @@ class BackgroundSystem {
             let bh = Math.floor(b.h);
             let bY = FLOOR_Y - bh;
 
-            // 根据每个楼独有的 seed 分配地标屋顶类型
             let landmarkType = Math.floor((b.seed * 100) % 4);
 
             ctx.save();
-            ctx.beginPath();
+            ctx.beginPath(); // 开启当前大楼的独立路径
             ctx.moveTo(bx, FLOOR_Y);
 
             if (landmarkType === 1) {
@@ -342,18 +341,22 @@ class BackgroundSystem {
                 ctx.lineTo(bx + bw * 0.6, bY);
                 ctx.lineTo(bx + bw * 0.6, bY + bh * 0.5);
                 ctx.lineTo(bx + bw, FLOOR_Y);
+                ctx.closePath();
                 ctx.fill();
 
+                // 球体部分单独作为一个独立路径填充，防止污染
                 ctx.beginPath();
                 ctx.arc(bx + bw * 0.5, bY + bh * 0.25, bw * 0.4, 0, Math.PI * 2); 
                 ctx.arc(bx + bw * 0.5, bY + bh * 0.5, bw * 0.5, 0, Math.PI * 2); 
+                ctx.closePath();
                 ctx.fill();
             } 
             else if (landmarkType === 2) {
-                // 2. 流线渐进收缩顶（尖塔感）
+                // 2. 流线渐进收缩顶
                 ctx.lineTo(bx, bY + bh * 0.6);
                 ctx.bezierCurveTo(bx + bw * 0.1, bY + bh * 0.3, bx + bw * 0.2, bY + bh * 0.1, bx + bw * 0.5, bY);
                 ctx.bezierCurveTo(bx + bw * 0.8, bY + bh * 0.1, bx + bw * 0.9, bY + bh * 0.3, bx + bw, FLOOR_Y);
+                ctx.closePath();
                 ctx.fill();
             }
             else if (landmarkType === 3) {
@@ -362,6 +365,7 @@ class BackgroundSystem {
                 ctx.lineTo(bx + bw * 0.7, bY);
                 ctx.lineTo(bx + bw, bY + bh * 0.1);
                 ctx.lineTo(bx + bw, FLOOR_Y);
+                ctx.closePath();
                 ctx.fill();
             }
             else {
@@ -377,9 +381,21 @@ class BackgroundSystem {
                 ctx.lineTo(bx + bw * 0.8, bY + bh * 0.3);
                 ctx.lineTo(bx + bw, bY + bh * 0.3);
                 ctx.lineTo(bx + bw, FLOOR_Y);
+                ctx.closePath();
                 ctx.fill();
             }
-            ctx.restore();
+            ctx.restore(); // 弹出当前大楼的状态栈
+            
+            // 远景极细避雷针与航空灯（不受大楼路径填充影响）
+            if (b.hasSpire) {
+                ctx.save();
+                ctx.fillStyle = '#050508';
+                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 10), 1, 10);
+                ctx.fillStyle = '#ff1100'; 
+                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 11), 1, 1);
+                ctx.restore();
+            }
+        }
             
             // 远景极细避雷针与航空灯
             if (b.hasSpire) {
