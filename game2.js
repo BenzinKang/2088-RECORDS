@@ -96,7 +96,7 @@ class BackgroundSystem {
         this.houses = [];      
         this.streetSigns = []; 
 
-        // 超前景数据数组 (删除黑色描边，改为高细节日系建筑与路灯)
+        // 超前景数据数组
         this.foregroundAssets = []; 
         
         this.generateParallaxSectors();
@@ -235,17 +235,17 @@ class BackgroundSystem {
             curX += 160 + Math.random() * 100;
         }
 
-        // 5. 【重构】超前景生活化资产 (包含现实色调住宅、多彩雨棚车库、独立超前景路灯)
+        // 5. 【重构与改进】超前景生活化及街景摆设资产层
         curX = 30;
-        // 墙面主调改用柔和现实的淡米黄、水泥青灰、浅木灰调
-        const fgWallColors = ['#ece5db', '#dfdfdb', '#e2dacb', '#cbd2d6']; 
-        const fgRoofColors = ['#464f59', '#555452', '#393f4d']; // 青灰瓦、深灰瓦
-        const awningColors = ['#1a73e8', '#e65c00', '#00b377', '#d93025']; // 晴空蓝、暖橙、复古绿
+        // 调暗墙体和屋顶配色，使其融入黄昏
+        const fgWallColors = ['#beb8b0', '#b0b0ad', '#b5aea2', '#a1a6aa']; 
+        const fgRoofColors = ['#30373d', '#3e3d3b', '#262c36']; 
+        const awningColors = ['#1650a2', '#b34700', '#008055', '#a1241b']; 
 
         while (curX < GAME_WIDTH + 500) {
-            let isHouse = this.rand.next() > 0.35; // 65%生成带车库住宅，35%生成独立超前景现代弧形路灯
+            let roll = this.rand.next();
 
-            if (isHouse) {
+            if (roll < 0.45) { // 住宅
                 let w = 60 + this.rand.next() * 20; 
                 let h = 35 + this.rand.next() * 15; 
                 this.foregroundAssets.push({
@@ -258,19 +258,47 @@ class BackgroundSystem {
                     awningColor: awningColors[Math.floor(this.rand.next() * awningColors.length)],
                     garageSide: this.rand.next() > 0.5 ? 'LEFT' : 'RIGHT', 
                     garageOpen: this.rand.next() > 0.4, 
-                    roofType: this.rand.next() > 0.5 ? 'SLOPE' : 'FLAT', // 斜屋顶或现代平顶一户建
+                    roofType: this.rand.next() > 0.5 ? 'SLOPE' : 'FLAT', 
                     seed: this.rand.next()
                 });
-                curX += w + 120 + this.rand.next() * 120;
-            } else {
-                // 独立超前景高挑路灯
+                curX += w + 80 + this.rand.next() * 80;
+            } else if (roll < 0.65) { // 独立前景高挑路灯
                 this.foregroundAssets.push({
                     type: 'STREET_LAMP',
                     x: curX,
                     h: 70 + this.rand.next() * 15,
                     lightColor: '#ffdd88'
                 });
-                curX += 180 + this.rand.next() * 150;
+                curX += 70 + this.rand.next() * 60;
+            } else if (roll < 0.75) { // 新增：红色消防栓
+                this.foregroundAssets.push({
+                    type: 'HYDRANT',
+                    x: curX
+                });
+                curX += 45 + this.rand.next() * 45;
+            } else if (roll < 0.85) { // 新增：街边小垃圾桶
+                this.foregroundAssets.push({
+                    type: 'TRASH_CAN',
+                    x: curX,
+                    style: this.rand.next() > 0.5 ? 'METAL' : 'PLASTIC'
+                });
+                curX += 45 + this.rand.next() * 45;
+            } else if (roll < 0.93) { // 新增：堆放的纸箱
+                this.foregroundAssets.push({
+                    type: 'BOXES',
+                    x: curX,
+                    count: 1 + Math.floor(this.rand.next() * 2)
+                });
+                curX += 50 + this.rand.next() * 50;
+            } else { // 新增：街边小型立式动态霓虹广告牌
+                this.foregroundAssets.push({
+                    type: 'BILLBOARD',
+                    x: curX,
+                    w: 12 + Math.floor(this.rand.next() * 6),
+                    h: 22 + Math.floor(this.rand.next() * 10),
+                    neonColor: this.rand.next() > 0.5 ? PALETTE.neonMagenta : PALETTE.neonCyan
+                });
+                curX += 65 + this.rand.next() * 60;
             }
         }
     }
@@ -373,7 +401,7 @@ class BackgroundSystem {
             }
         }
 
-        // 超前景超速资产移动 (路灯与超精细住宅)
+        // 超前景资产移动
         for (let asset of this.foregroundAssets) {
             asset.x -= 4.8 * speedMultiplier * dt * 60;
             if (asset.x < -120) {
@@ -915,7 +943,7 @@ class BackgroundSystem {
         // 2. 渲染前景电线杆 (保持原有剪影图层关系)
         this.drawUtilityPoles(ctx);
 
-        // 3. 【重点改动】在最前端渲染无黑边、现实色调的超前景高精细日系一户建住宅与现代路灯
+        // 3. 【全新改动】在最前端渲染无黑边、高精细日系一户建住宅群、现代路灯以及各类丰富的街景摆设
         this.drawForegroundAssets(ctx);
     }
 
@@ -1003,30 +1031,26 @@ class BackgroundSystem {
         ctx.restore();
     }
 
-    // 【全新重构方法】绘制无黑边、高细节、现实生活化日系一户建住宅群与超前景独立路灯
+    // 【全新重构】绘制无纯黑描边、现实环境色调的前景摆设
     drawForegroundAssets(ctx) {
         ctx.save();
+        const time = Date.now() * 0.002;
+
         for (let asset of this.foregroundAssets) {
             let ax = Math.floor(asset.x);
 
-            // ================== 分支 1：独立高挑前景弧形路灯 ==================
+            // ================== 1. 独立高挑前景弧形路灯 ==================
             if (asset.type === 'STREET_LAMP') {
                 let ay = Math.floor(FLOOR_Y - asset.h);
-                
-                // 1. 灯柱部分 (无纯黑描边，使用深钛灰色做质感)
-                ctx.fillStyle = '#2f3542';
+                ctx.fillStyle = '#232830'; // 灰钢质感灯柱
                 ctx.fillRect(ax, ay, 2, asset.h);
-                
-                // 2. 弯曲弧形灯头
-                ctx.fillRect(ax - 3, ay, 4, 2);
+                ctx.fillRect(ax - 3, ay, 4, 2); // 灯罩弧顶
                 ctx.fillRect(ax - 5, ay + 1, 3, 2);
                 
-                // 3. 灯泡核心发光点
-                ctx.fillStyle = '#fff3cd';
+                ctx.fillStyle = '#fff3cd'; // 灯泡
                 ctx.fillRect(ax - 5, ay + 3, 2, 2);
 
-                // 4. 路灯淡黄色微弱发光晕 (大光圈环境氛围)
-                ctx.save();
+                ctx.save(); // 发光晕
                 ctx.globalAlpha = 0.12;
                 let lampGlow = ctx.createRadialGradient(ax - 4, ay + 4, 1, ax - 4, ay + 4, 14);
                 lampGlow.addColorStop(0, asset.lightColor);
@@ -1036,25 +1060,132 @@ class BackgroundSystem {
                 ctx.arc(ax - 4, ay + 4, 14, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
-                
-                continue; // 渲染完路灯直接跳过后面房屋部分
+                continue;
             }
 
-            // ================== 分支 2：现实生活化日系一户建住宅 ==================
+            // ================== 2. 新增：红色消防栓 ==================
+            if (asset.type === 'HYDRANT') {
+                let hy = FLOOR_Y - 11;
+                // 主体结构（避开大黑框，使用红棕暗色与亮红色区分光影）
+                ctx.fillStyle = '#8a1111'; // 暗部红
+                ctx.fillRect(ax, hy + 2, 6, 9);
+                ctx.fillStyle = '#e62e2e'; // 亮部红
+                ctx.fillRect(ax + 1, hy + 2, 2, 9);
+                
+                // 顶部帽子
+                ctx.fillStyle = '#8a1111';
+                ctx.fillRect(ax, hy, 6, 2);
+                ctx.fillStyle = '#e62e2e';
+                ctx.fillRect(ax + 2, hy - 1, 2, 1); // 顶阀突起
+                
+                // 左右侧边出水口阀门
+                ctx.fillStyle = '#ffd700'; // 铜黄色阀
+                ctx.fillRect(ax - 1, hy + 4, 1, 2);
+                ctx.fillRect(ax + 6, hy + 4, 1, 2);
+                ctx.fillStyle = '#b38600';
+                ctx.fillRect(ax + 2, hy + 5, 2, 2); // 正面喷水口
+                continue;
+            }
+
+            // ================== 3. 新增：纸皮箱堆 ==================
+            if (asset.type === 'BOXES') {
+                let by = FLOOR_Y;
+                // 底部大纸箱
+                ctx.fillStyle = '#6e4726'; // 纸箱暗调
+                ctx.fillRect(ax, by - 10, 11, 10);
+                ctx.fillStyle = '#9e6d42'; // 亮调
+                ctx.fillRect(ax + 1, by - 9, 9, 8);
+                // 封箱胶带细节
+                ctx.fillStyle = '#3c2410'; 
+                ctx.fillRect(ax + 4, by - 10, 3, 10);
+                ctx.fillRect(ax, by - 5, 11, 1);
+
+                // 如果有多个箱子，在上面斜放一个小一点的
+                if (asset.count > 1) {
+                    ctx.fillStyle = '#54361b';
+                    ctx.fillRect(ax + 2, by - 16, 7, 6);
+                    ctx.fillStyle = '#855b36';
+                    ctx.fillRect(ax + 3, by - 15, 5, 5);
+                    ctx.fillStyle = '#fff9e6'; // 白底快递单贴纸
+                    ctx.fillRect(ax + 4, by - 13, 2, 2);
+                }
+                continue;
+            }
+
+            // ================== 4. 新增：分类垃圾桶 ==================
+            if (asset.type === 'TRASH_CAN') {
+                let ty = FLOOR_Y - 13;
+                if (asset.style === 'METAL') {
+                    // 金属垃圾桶（钛灰质感）
+                    ctx.fillStyle = '#2f3542';
+                    ctx.fillRect(ax, ty, 8, 13);
+                    ctx.fillStyle = '#747d8c'; // 金属反光层
+                    ctx.fillRect(ax + 1, ty + 1, 6, 12);
+                    // 凹槽线条
+                    ctx.fillStyle = '#2f3542';
+                    ctx.fillRect(ax + 2, ty + 3, 1, 10);
+                    ctx.fillRect(ax + 5, ty + 3, 1, 10);
+                    // 桶盖提手
+                    ctx.fillStyle = '#a4b0be';
+                    ctx.fillRect(ax + 2, ty - 1, 4, 1);
+                } else {
+                    // 日式塑料可回收垃圾桶（深蓝色/绿色调）
+                    ctx.fillStyle = '#1c3144'; // 桶身
+                    ctx.fillRect(ax, ty + 2, 9, 11);
+                    ctx.fillStyle = '#007acc'; // 可回收标志浅蓝背景
+                    ctx.fillRect(ax + 2, ty + 5, 5, 5);
+                    ctx.fillStyle = '#ffffff'; // 中间一小点白色标志
+                    ctx.fillRect(ax + 4, ty + 7, 1, 1);
+
+                    // 桶盖（弧形）
+                    ctx.fillStyle = '#2d5a7b';
+                    ctx.fillRect(ax - 1, ty, 11, 2);
+                    ctx.fillStyle = '#1c3144';
+                    ctx.fillRect(ax + 2, ty - 2, 5, 2); // 投入口
+                }
+                continue;
+            }
+
+            // ================== 5. 新增：街边立式动态广告牌 ==================
+            if (asset.type === 'BILLBOARD') {
+                let by = FLOOR_Y - asset.h;
+                let bw = asset.w;
+                let bh = asset.h;
+
+                // 黑色金属支架与外框
+                ctx.fillStyle = '#1a1d20';
+                ctx.fillRect(ax, by, bw, bh);
+                ctx.fillRect(ax + Math.floor(bw/2) - 1, by + bh, 3, FLOOR_Y - (by + bh)); // 立柱
+
+                // 广告牌显示区
+                ctx.fillStyle = '#0b0c10';
+                ctx.fillRect(ax + 2, by + 2, bw - 4, bh - 6);
+
+                // 动态霓虹灯画面闪烁（利用 Math.sin 模拟霓虹广告效果）
+                if (Math.sin(time + ax) > -0.2) {
+                    ctx.fillStyle = asset.neonColor;
+                    // 绘制一横一竖或一个像素图案
+                    ctx.fillRect(ax + 4, by + 4, bw - 8, 2);
+                    ctx.fillRect(ax + Math.floor(bw/2) - 1, by + 8, 2, bh - 16);
+                }
+                continue;
+            }
+
+            // ================== 6. 现实生活化日系一户建住宅 ==================
             let aw = Math.floor(asset.w);
             let ah = Math.floor(asset.h);
             let ay = Math.floor(FLOOR_Y - ah);
 
-            // 住宅墙体渐变（调浅色彩：顶部受夕阳辉映，底部微暗，避开死板纯黑边框）
+            // 渐变墙体（顶部稍暗、底部自然沉底暗化，营造温暖黄昏的真实遮阴感）
             let houseGrad = ctx.createLinearGradient(ax, ay, ax, FLOOR_Y);
             houseGrad.addColorStop(0, asset.wallColor);
-            houseGrad.addColorStop(1, '#9e9991'); // 仅作自然的环境闭塞微弱变暗
+            houseGrad.addColorStop(1, '#66615a'); // 自然的地面沉降微暗
             ctx.fillStyle = houseGrad;
             ctx.fillRect(ax, ay, aw, ah);
 
             let roofH = Math.floor(ah * 0.25);
 
-            // 1. 现实风格瓦屋顶绘制
+            // 1. 现实风格瓦屋顶
             ctx.fillStyle = asset.roofColor;
             if (asset.roofType === 'SLOPE') {
                 ctx.beginPath();
@@ -1064,90 +1195,81 @@ class BackgroundSystem {
                 ctx.closePath();
                 ctx.fill();
             } else {
-                // 现代平顶房一户建 (带有水泥质感的双层阶梯平顶)
+                // 阶梯式平顶一户建
                 ctx.fillRect(ax - 1, ay, aw + 2, 3);
-                ctx.fillStyle = '#2f3640';
+                ctx.fillStyle = '#20252b';
                 ctx.fillRect(ax + 4, ay - 2, aw - 8, 2);
             }
 
-            // 2. 车库细节（带细密条纹压痕的铝合金卷帘门）
+            // 2. 车库细节（带条纹卷帘门）
             let garageW = Math.floor(aw * 0.42);
             let garageH = Math.floor(ah * 0.6);
             let garageX = (asset.garageSide === 'LEFT') ? ax + 4 : ax + aw - garageW - 4;
             let garageY = FLOOR_Y - garageH;
 
             if (asset.garageOpen) {
-                // 半开放车库内部（堆放杂物深影感）
-                ctx.fillStyle = '#1e1c1a';
+                // 车库内部深影
+                ctx.fillStyle = '#141211';
                 ctx.fillRect(garageX, garageY, garageW, garageH);
-                // 边缘的结构框架柱
-                ctx.fillStyle = '#7a7671';
+                ctx.fillStyle = '#5c5955';
                 ctx.fillRect(garageX, garageY, 2, garageH);
                 ctx.fillRect(garageX + garageW - 2, garageY, 2, garageH);
             } else {
-                // 带有细密百叶金属线的卷帘门
-                ctx.fillStyle = '#ced6e0'; // 浅银灰色
+                // 铝合金卷帘门
+                ctx.fillStyle = '#a0a8b3'; 
                 ctx.fillRect(garageX, garageY, garageW, garageH);
-                ctx.fillStyle = '#747d8c'; // 阴影线条
+                ctx.fillStyle = '#575e69'; 
                 for (let gy = garageY + 3; gy < garageY + garageH; gy += 3) {
                     ctx.fillRect(garageX, gy, garageW, 1);
                 }
             }
 
-            // 3. 多彩帆布雨棚（日系街道特有，悬挂在窗户上方）
+            // 3. 多彩帆布遮阳雨棚
             let winX = (asset.garageSide === 'LEFT') ? ax + aw - Math.floor(aw * 0.48) : ax + 6;
             let winY = ay + roofH + 3;
             let winW = Math.floor(aw * 0.38);
             let winH = Math.floor(ah * 0.35);
 
-            // 窗户框本身
-            ctx.fillStyle = '#2f3542';
+            // 窗户框及微光
+            ctx.fillStyle = '#20252b';
             ctx.fillRect(winX, winY, winW, winH);
-            ctx.fillStyle = '#ffeaa7'; // 暖光窗户内部
+            ctx.fillStyle = '#ffe082'; // 柔和温黄窗内光
             ctx.fillRect(winX + 1, winY + 1, winW - 2, winH - 2);
-            // 窗格横纵十字线
-            ctx.fillStyle = '#57606f';
+            ctx.fillStyle = '#3e4a59'; // 十字窗棂
             ctx.fillRect(winX + Math.floor(winW/2), winY, 1, winH);
             ctx.fillRect(winX, winY + Math.floor(winH/2), winW, 1);
 
-            // 搭建双色相间的彩色遮阳雨棚
+            // 彩色雨棚
             let awningY = winY - 2;
             ctx.fillStyle = asset.awningColor;
             ctx.fillRect(winX - 2, awningY, winW + 4, 3);
-            ctx.fillStyle = '#ffffff'; // 白色间隔条纹
+            ctx.fillStyle = '#ffffff'; 
             for (let stripeX = winX - 2; stripeX < winX + winW + 2; stripeX += 5) {
                 ctx.fillRect(stripeX, awningY, 2, 3);
             }
 
-            // 4. 门口生活小物件：红色日系小邮筒/挂壁快递箱
+            // 4. 门口红色信箱
             let boxX = (asset.garageSide === 'LEFT') ? garageX + garageW + 3 : garageX - 6;
-            ctx.fillStyle = '#d63031'; // 经典的日系信箱鲜红色
+            ctx.fillStyle = '#b31c1c'; 
             ctx.fillRect(boxX, FLOOR_Y - 12, 4, 6);
-            ctx.fillStyle = '#2f3542'; // 信箱立柱支撑杆
+            ctx.fillStyle = '#2f3542'; 
             ctx.fillRect(boxX + 1, FLOOR_Y - 6, 1, 6);
 
-            // 5. 门口墙面上张贴的各种彩色小报纸/传单宣传贴纸（极具市井烟火气）
+            // 5. 墙面贴纸
             let paperX = (asset.garageSide === 'LEFT') ? ax + aw - 12 : ax + garageW + 6;
             let paperY = FLOOR_Y - 14;
-            
-            // 贴纸1号：淡黄色单页小广告
-            ctx.fillStyle = '#fff200';
+            ctx.fillStyle = '#fce4ec'; 
             ctx.fillRect(paperX, paperY, 4, 5);
-            // 贴纸2号：淡青蓝色通告
-            ctx.fillStyle = '#00a8ff';
+            ctx.fillStyle = '#e3f2fd'; 
             ctx.fillRect(paperX + 5, paperY + 2, 3, 6);
-            // 贴纸3号：小粉红传单
-            ctx.fillStyle = '#ff78cb';
-            ctx.fillRect(paperX + 2, paperY + 6, 3, 4);
 
-            // 6. 房顶晾衣杆或现代空调室外机细节
+            // 6. 空调外机
             if (asset.seed > 0.5) {
-                // 生成一楼外墙挂载的白色空调室外机
                 let acX = winX + 2;
                 let acY = FLOOR_Y - 8;
-                ctx.fillStyle = '#f1f2f6';
+                ctx.fillStyle = '#cfd8dc';
                 ctx.fillRect(acX, acY, 8, 6);
-                ctx.fillStyle = '#747d8c'; // 室外机风扇圆孔细节
+                ctx.fillStyle = '#78909c'; 
                 ctx.fillRect(acX + 1, acY + 1, 3, 4);
             }
         }
@@ -1349,7 +1471,7 @@ class WorldManager {
 }
 
 // ============================================================================
-// --- GAME ENGINE CORE CORE / STATE CONTROLLER (补齐部分) ---
+// --- GAME ENGINE CORE / STATE CONTROLLER ---
 // ============================================================================
 
 class GameEngine {
