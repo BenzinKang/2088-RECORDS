@@ -81,7 +81,7 @@ class ParticleSystem {
 
 class BackgroundSystem {
     constructor() {
-        // 暖色调、写实风云彩
+        // 暖色调、不规则写实叠云
         this.clouds = [
             { x: 30,  y: 12, w: 110, h: 14, speed: 0.02, alpha: 0.18, color: '#ff6a00' },
             { x: 190, y: 30, w: 160, h: 22, speed: 0.01, alpha: 0.22, color: '#b33600' },
@@ -96,23 +96,43 @@ class BackgroundSystem {
         this.smokeParticles = []; // 工厂烟雾粒子
         this.factories = []; // 远景独立工厂
         
+        // 重新加入的高架桥车流粒子 (x, speed, width, color)
+        this.highwayTraffic = [];
+        this.initTraffic();
+
         this.generateParallaxSectors();
     }
 
+    initTraffic() {
+        // 在高架桥上随机生成车流光迹
+        for (let i = 0; i < 12; i++) {
+            this.highwayTraffic.push({
+                x: Math.random() * GAME_WIDTH,
+                yOffset: -1 + Math.random() * 3, // 桥面高度微调分道
+                speed: 1.5 + Math.random() * 2.5, // 不同的车速
+                length: 8 + Math.random() * 15, // 车灯光轨长度
+                color: Math.random() > 0.4 ? '#ff2a00' : '#00ffff' // 尾灯红，前灯蓝绿
+            });
+        }
+    }
+
     generateParallaxSectors() {
-        // 1. 远景高耸大楼（变细、变密，突出林立感）
+        // 1. 最远处高楼重构：陆家嘴现代感 + 赛博朋克超高层（扭曲塔、东方明珠球体、高塔避雷针）
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 12 + this.rand.next() * 14; // 大幅变细（原18-38，现12-26）
-            let h = 50 + this.rand.next() * 55; 
+            let w = 14 + this.rand.next() * 16; // 维持苗条
+            let h = 65 + this.rand.next() * 70; // 稍微拉高，突显超现代地标的存在感
+            
             this.bgBuildings.push({ 
                 x: curX, 
                 w: w, 
                 h: h, 
                 seed: this.rand.next(),
-                hasSpire: this.rand.next() > 0.4 // 拥有避雷针的概率提高
+                // 远景地标风格：0=普通高塔, 1=仿东方明珠球体塔, 2=仿上海中心旋转塔, 3=赛博悬空天线大厦
+                landmarkType: Math.floor(this.rand.next() * 4),
+                hasSpire: this.rand.next() > 0.3
             });
-            curX += w + 8; // 间距更紧密
+            curX += w + 12; // 间距错落
         }
 
         // 2. 远景独立工厂
@@ -126,14 +146,14 @@ class BackgroundSystem {
                 chimneyH2: 45 + this.rand.next() * 15, 
                 seed: this.rand.next()
             });
-            factX += 280 + this.rand.next() * 150; 
+            factX += 300 + this.rand.next() * 150; 
         }
 
-        // 3. 中景多元化写字楼群（大楼变细，融入经典的国际商业区屋顶形状）
+        // 3. 中景多元化现代写字楼群（保持矮小比例，给大夕阳和高架桥腾出视觉空间）
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 24 + this.rand.next() * 18; // 大幅变细（原35-65，现24-42）
-            let h = 40 + this.rand.next() * 38; 
+            let w = 24 + this.rand.next() * 18; 
+            let h = 35 + this.rand.next() * 30; // 适当矮化
             
             this.midBuildings.push({
                 x: curX, 
@@ -141,20 +161,14 @@ class BackgroundSystem {
                 h: h, 
                 seed: this.rand.next(),
                 neonColor: this.rand.next() > 0.5 ? PALETTE.neonMagenta : PALETTE.neonGold,
-                // 建筑类型：
-                // 0 = 阶梯收缩塔（纽约帝国大厦风）
-                // 1 = 顶部镂空圆孔塔（上海环球金融中心风）
-                // 2 = 不对称斜尖顶
-                // 3 = 双子联合写字楼（东京东京都厅风）
                 buildingType: Math.floor(this.rand.next() * 4),
-                // 屋顶天线类型：0=无, 1=中央避雷针, 2=双耳天线, 3=雷达锅
                 antennaType: Math.floor(this.rand.next() * 4),
                 boardW: 6 + Math.floor(this.rand.next() * 6), 
                 boardH: 15 + Math.floor(this.rand.next() * 12),
                 boardYOffset: 6 + Math.floor(this.rand.next() * 12),
                 blinkSpeed: 0.8 + this.rand.next() * 1.0
             });
-            curX += w + 22; 
+            curX += w + 24; 
         }
 
         // 4. 前景电线杆
@@ -178,10 +192,10 @@ class BackgroundSystem {
             if (c.x + c.w < -60) c.x = GAME_WIDTH + 60;
         }
         
-        // 远景大楼移动
+        // 远景大楼移动 (慢速)
         for (let b of this.bgBuildings) {
             b.x -= 0.05 * baseSpeed * dt * 60;
-            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
+            if (b.x + b.w < -50) b.x += GAME_WIDTH + 200;
         }
 
         // 远景独立工厂移动
@@ -210,10 +224,19 @@ class BackgroundSystem {
             }
         }
         
+        // 高架桥上的粒子车流移动 (比背景稍微快，呈极速穿梭感)
+        for (let car of this.highwayTraffic) {
+            car.x -= car.speed * dt * 60 * 0.8;
+            if (car.x + car.length < 0) {
+                car.x = GAME_WIDTH + 10;
+                car.speed = 1.5 + Math.random() * 2.5;
+            }
+        }
+
         // 中景大楼移动
         for (let b of this.midBuildings) {
             b.x -= 0.22 * baseSpeed * dt * 60;
-            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
+            if (b.x + b.w < -50) b.x += GAME_WIDTH + 200;
         }
 
         // 烟雾粒子物理更新
@@ -229,7 +252,7 @@ class BackgroundSystem {
             }
         }
 
-        // 前景电线杆移动
+        // 前景电线杆移动 (最快)
         for (let p of this.utilityPoles) {
             p.x -= 4.2 * speedMultiplier * dt * 60;
             if (p.x < -50) {
@@ -320,23 +343,74 @@ class BackgroundSystem {
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-        // 1. 远景窄楼（深红棕色静态剪影）
-        ctx.fillStyle = '#2b1411'; 
+        // 1. 远景高耸摩天大楼（未来风 + 上海陆家嘴科技地标剪影）
+        ctx.fillStyle = '#220e0c'; // 相比中景更深、带点冷紫红的剪影色
         for (let b of this.bgBuildings) {
-            let bY = FLOOR_Y - b.h;
-            ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
+            let bx = Math.floor(b.x);
+            let bw = Math.floor(b.w);
+            let bh = Math.floor(b.h);
+            let bY = FLOOR_Y - bh;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(bx, FLOOR_Y);
+
+            if (b.landmarkType === 1) {
+                // 仿东方明珠塔式：主体极细，带有双层发光几何舱球体
+                ctx.lineTo(bx + bw * 0.4, bY + bh * 0.6);
+                ctx.lineTo(bx + bw * 0.4, bY); // 中央主高针
+                ctx.lineTo(bx + bw * 0.6, bY);
+                ctx.lineTo(bx + bw * 0.6, bY + bh * 0.6);
+                ctx.lineTo(bx + bw, FLOOR_Y);
+                ctx.fill();
+
+                // 绘制两个球体
+                ctx.beginPath();
+                ctx.arc(bx + bw * 0.5, bY + bh * 0.3, bw * 0.35, 0, Math.PI * 2); // 上球
+                ctx.arc(bx + bw * 0.5, bY + bh * 0.6, bw * 0.45, 0, Math.PI * 2); // 下大球
+                ctx.fill();
+            } 
+            else if (b.landmarkType === 2) {
+                // 上海中心旋转流线造型：流线型阶梯向外及向内曲折
+                ctx.lineTo(bx, bY + bh * 0.7);
+                ctx.bezierCurveTo(bx + bw * 0.1, bY + bh * 0.4, bx + bw * 0.2, bY + bh * 0.2, bx + bw * 0.4, bY);
+                ctx.lineTo(bx + bw * 0.6, bY);
+                ctx.bezierCurveTo(bx + bw * 0.8, bY + bh * 0.2, bx + bw * 0.9, bY + bh * 0.4, bx + bw, FLOOR_Y);
+                ctx.fill();
+            }
+            else if (b.landmarkType === 3) {
+                // 赛博悬挂广告架大楼：顶端往两侧延伸出长长的水平天幕横条
+                ctx.lineTo(bx, bY + bh * 0.25);
+                ctx.lineTo(bx - 3, bY + bh * 0.25); // 水平天幕延伸
+                ctx.lineTo(bx - 3, bY + bh * 0.12);
+                ctx.lineTo(bx + bw + 3, bY + bh * 0.12);
+                ctx.lineTo(bx + bw + 3, bY + bh * 0.25);
+                ctx.lineTo(bx + bw, bY + bh * 0.25);
+                ctx.lineTo(bx + bw, FLOOR_Y);
+                ctx.fill();
+            }
+            else {
+                // 经典收敛形科技写字楼
+                ctx.lineTo(bx + bw * 0.15, bY + bh * 0.3);
+                ctx.lineTo(bx + bw * 0.35, bY);
+                ctx.lineTo(bx + bw * 0.65, bY);
+                ctx.lineTo(bx + bw * 0.85, bY + bh * 0.3);
+                ctx.lineTo(bx + bw, FLOOR_Y);
+                ctx.fill();
+            }
+            ctx.restore();
             
-            // 远景极细避雷针
+            // 航空常亮红灯
             if (b.hasSpire) {
-                ctx.fillStyle = '#1f0d0b';
-                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 10), 1, 10);
-                ctx.fillStyle = '#8f2d22'; 
-                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 11), 1, 1);
+                ctx.fillStyle = '#170605';
+                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 12), 1, 12);
+                ctx.fillStyle = '#ff1100'; 
+                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 13), 1, 1);
             }
         }
 
-        // 2. 独立远景工厂与烟囱
-        ctx.fillStyle = '#2e1613'; 
+        // 2. 独立远景工厂与烟囱 (层级高一点，遮盖部分大楼)
+        ctx.fillStyle = '#2a110f'; 
         for (let f of this.factories) {
             let fx = Math.floor(f.x);
             let fw = Math.floor(f.w);
@@ -360,7 +434,7 @@ class BackgroundSystem {
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1, c1W, f.chimneyH1);
             ctx.fillStyle = '#9c2417';
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1 + 4, c1W, 3);
-            ctx.fillStyle = '#2e1613';
+            ctx.fillStyle = '#2a110f';
 
             // 烟囱2
             let c2W = 3;
@@ -368,10 +442,10 @@ class BackgroundSystem {
             ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2, c2W, f.chimneyH2);
             ctx.fillStyle = '#9c2417';
             ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2 + 3, c2W, 2);
-            ctx.fillStyle = '#2e1613';
+            ctx.fillStyle = '#2a110f';
         }
 
-        // 3. 中景多元化现代写字楼群（大楼更瘦、房顶结构丰富）
+        // 3. 中景精致现代写字楼
         for (let b of this.midBuildings) {
             const bx = Math.floor(b.x);
             const bw = Math.floor(b.w);
@@ -383,13 +457,13 @@ class BackgroundSystem {
             bGrad.addColorStop(1, '#24100d'); 
             ctx.fillStyle = bGrad;
 
-            // --- 3.1 绘制各具特色的写字楼屋顶形状 ---
+            // 绘制中景建筑形状
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(bx, FLOOR_Y);
             
             if (b.buildingType === 0) {
-                // 帝国大厦风格：逐层向内收缩的尖顶
+                // 纽约收缩尖顶风
                 ctx.lineTo(bx, bY + bh * 0.4);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.4);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.2);
@@ -401,21 +475,21 @@ class BackgroundSystem {
                 ctx.lineTo(bx + bw * 0.8, bY + bh * 0.4);
                 ctx.lineTo(bx + bw, bY + bh * 0.4);
             } else if (b.buildingType === 1) {
-                // 上海环球金融中心风格：屋顶圆孔斜截面 (先画完轮廓，稍后在内部画镂空)
+                // 环球中心圆孔斜切
                 ctx.lineTo(bx, bY + 12);
                 ctx.lineTo(bx + bw * 0.15, bY);
                 ctx.lineTo(bx + bw * 0.85, bY);
                 ctx.lineTo(bx + bw, bY + 12);
             } else if (b.buildingType === 2) {
-                // 东京现代斜坡折角大楼：优雅的不对称斜屋顶
+                // 不对称折角屋顶
                 ctx.lineTo(bx, bY + 18);
                 ctx.lineTo(bx + bw * 0.6, bY);
                 ctx.lineTo(bx + bw, bY + 4);
             } else if (b.buildingType === 3) {
-                // 都厅双子大楼：两个挺拔的高塔合并，中间有低矮连廊
+                // 东京双子写字楼
                 ctx.lineTo(bx, bY);
                 ctx.lineTo(bx + bw * 0.35, bY);
-                ctx.lineTo(bx + bw * 0.35, bY + 12); // 中间凹下
+                ctx.lineTo(bx + bw * 0.35, bY + 12);
                 ctx.lineTo(bx + bw * 0.65, bY + 12);
                 ctx.lineTo(bx + bw * 0.65, bY);
                 ctx.lineTo(bx + bw, bY);
@@ -426,33 +500,25 @@ class BackgroundSystem {
             ctx.fill();
             ctx.restore();
 
-            // 针对上海环球金融中心风格（1号楼）额外扣出屋顶的标志性“镂空圆孔”
+            // 环球大圆孔扣空
             if (b.buildingType === 1) {
                 ctx.save();
-                ctx.globalCompositeOperation = 'destination-out'; // 使用橡皮擦模式擦除圆形
+                ctx.globalCompositeOperation = 'destination-out';
                 ctx.beginPath();
                 ctx.arc(bx + bw * 0.5, bY + 8, 3.5, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
             }
 
-            // --- 3.2 绘制大楼顶部的天线与避雷针设备 ---
+            // 楼顶精致天线避雷针
             ctx.save();
             ctx.strokeStyle = '#1f0d0b';
             ctx.lineWidth = 1;
-            
             if (b.antennaType === 1) {
-                // 1. 中央细长天线
                 let ax = Math.floor(bx + bw * 0.5);
-                ctx.beginPath();
-                ctx.moveTo(ax, bY);
-                ctx.lineTo(ax, bY - 14);
-                ctx.stroke();
-                // 针尖微弱常亮航空灯
-                ctx.fillStyle = '#ff3300';
-                ctx.fillRect(ax, bY - 15, 1, 1);
+                ctx.beginPath(); ctx.moveTo(ax, bY); ctx.lineTo(ax, bY - 14); ctx.stroke();
+                ctx.fillStyle = '#ff3300'; ctx.fillRect(ax, bY - 15, 1, 1);
             } else if (b.antennaType === 2) {
-                // 2. 左右对称双天线
                 let ax1 = Math.floor(bx + bw * 0.25);
                 let ax2 = Math.floor(bx + bw * 0.75);
                 ctx.beginPath();
@@ -460,18 +526,15 @@ class BackgroundSystem {
                 ctx.moveTo(ax2, bY); ctx.lineTo(ax2, bY - 10);
                 ctx.stroke();
             } else if (b.antennaType === 3) {
-                // 3. 雷达卫星锅/网状圆弧
                 ctx.fillStyle = '#1f0d0b';
-                ctx.beginPath();
-                ctx.arc(bx + bw * 0.5, bY - 3, 4, Math.PI, 0); // 半圆弧
-                ctx.stroke();
-                ctx.fillRect(Math.floor(bx + bw * 0.5) - 0.5, bY - 3, 1, 3); // 支架
+                ctx.beginPath(); ctx.arc(bx + bw * 0.5, bY - 3, 4, Math.PI, 0); ctx.stroke();
+                ctx.fillRect(Math.floor(bx + bw * 0.5) - 0.5, bY - 3, 1, 3);
             }
             ctx.restore();
 
-            // --- 3.3 静态密集的摩天楼窗格（常亮橙黄点，不闪烁） ---
+            // 楼栋常亮金火窗户 (变细大楼对应的密集光斑)
             let winSeed = b.seed;
-            for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) { // 窗户排布也随着大楼变窄而更密集
+            for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) {
                 for (let wy = bY + 16; wy < FLOOR_Y - 8; wy += 11) {
                     winSeed = (winSeed * 37 + 23) % 100;
                     if (winSeed > 72) {
@@ -481,7 +544,7 @@ class BackgroundSystem {
                 }
             }
 
-            // --- 3.4 动态霓虹广告牌（仅在对称梯形和双子塔大楼侧边闪烁，维持整体静态） ---
+            // 动态霓虹广告牌
             const isBlinking = Math.sin(time * b.blinkSpeed) > -0.3; 
             if (isBlinking && (b.buildingType === 0 || b.buildingType === 3)) {
                 ctx.save();
@@ -511,8 +574,56 @@ class BackgroundSystem {
             }
         }
 
-        // 4. 绘制远方工厂冒出的烟雾
+        // 4. 绘制从工厂飘出的轻微白烟
         this.drawSmoke(ctx);
+
+        // 5. 重新加入的空中高架桥 (Viaduct) - 层级位于中景大楼与前景之间
+        this.drawViaduct(ctx);
+    }
+
+    drawViaduct(ctx) {
+        const bridgeY = FLOOR_Y - 14; // 高架桥架空在路面之上 14 像素
+        const bridgeH = 4;
+
+        ctx.save();
+        // 1. 绘制高架桥立柱支撑架 (每120像素摆一根结实的承重柱)
+        ctx.fillStyle = '#170605'; // 极暗的剪影轮廓
+        for (let x = 0; x < GAME_WIDTH + 100; x += 120) {
+            // 将立柱固定在地面
+            drawPixelRect(ctx, x + 50, bridgeY + 3, 8, FLOOR_Y - bridgeY, '#120404');
+            drawPixelRect(ctx, x + 52, bridgeY + 3, 4, FLOOR_Y - bridgeY, '#1a0807');
+        }
+
+        // 2. 绘制桥面主体 (横贯全屏的双轨桥面)
+        drawPixelRect(ctx, 0, bridgeY, GAME_WIDTH, bridgeH, '#1c0807');
+        drawPixelRect(ctx, 0, bridgeY + bridgeH, GAME_WIDTH, 1, '#100303'); // 底边暗线
+
+        // 3. 绘制桥面保护栏护栏的发光霓虹灯条（赛博朋克经典荧光线）
+        ctx.strokeStyle = '#00ffcc'; // 荧光青绿发光霓虹护栏
+        ctx.globalAlpha = 0.3;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, bridgeY + 1);
+        ctx.lineTo(GAME_WIDTH, bridgeY + 1);
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+
+        // 4. 绘制高架桥上极速穿梭的车流光轨（流体尾灯）
+        for (let car of this.highwayTraffic) {
+            let cx = Math.floor(car.x);
+            let cy = Math.floor(bridgeY + car.yOffset);
+            
+            ctx.save();
+            ctx.globalAlpha = 0.75;
+            let carGrad = ctx.createLinearGradient(cx, cy, cx + car.length, cy);
+            carGrad.addColorStop(0, 'transparent'); // 尾部渐变淡出
+            carGrad.addColorStop(1, car.color);    // 车头最亮
+            
+            ctx.fillStyle = carGrad;
+            ctx.fillRect(cx, cy, car.length, 1.2);
+            ctx.restore();
+        }
+        ctx.restore();
     }
 
     drawSmoke(ctx) {
@@ -528,9 +639,11 @@ class BackgroundSystem {
     }
 
     drawForegroundGrid(ctx, worldX) {
+        // 地板底色
         drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#1c0d0d');
         drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#0d0404');
 
+        // 地面网格
         ctx.strokeStyle = '#2b1414';
         ctx.lineWidth = 1;
         let spacing = 18;
@@ -543,6 +656,7 @@ class BackgroundSystem {
         }
         ctx.stroke();
 
+        // 霓虹发光线
         ctx.strokeStyle = '#ff4d00';
         ctx.globalAlpha = 0.45;
         ctx.beginPath();
@@ -551,6 +665,7 @@ class BackgroundSystem {
         ctx.stroke();
         ctx.globalAlpha = 1.0;
 
+        // 绘制前景电线杆 (它们会遮挡中景和高架桥，增强纵深空间感)
         this.drawUtilityPoles(ctx);
     }
 
