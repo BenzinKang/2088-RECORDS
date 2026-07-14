@@ -80,7 +80,7 @@ class ParticleSystem {
 }
 class BackgroundSystem {
     constructor() {
-        // 温暖黄昏、不规则写实叠云
+        // 暖色调、写实风云彩
         this.clouds = [
             { x: 30,  y: 12, w: 110, h: 14, speed: 0.02, alpha: 0.18, color: '#ff6a00' },
             { x: 190, y: 30, w: 160, h: 22, speed: 0.01, alpha: 0.22, color: '#b33600' },
@@ -91,43 +91,27 @@ class BackgroundSystem {
         this.rand = new SeededRandom(789);
         this.bgBuildings = [];
         this.midBuildings = [];
-        this.utilityPoles = []; 
-        this.smokeParticles = []; 
-        this.factories = []; 
+        this.utilityPoles = []; // 前景电线杆
+        this.smokeParticles = []; // 工厂烟雾粒子
+        this.factories = []; // 远景独立工厂
         
-        this.highwayTraffic = [];
-        this.initTraffic();
         this.generateParallaxSectors();
     }
 
-    initTraffic() {
-        for (let i = 0; i < 12; i++) {
-            this.highwayTraffic.push({
-                x: Math.random() * GAME_WIDTH,
-                yOffset: -1 + Math.random() * 3, 
-                speed: 1.5 + Math.random() * 2.5, 
-                length: 8 + Math.random() * 15, 
-                color: Math.random() > 0.4 ? '#ff2a00' : '#00ffff' 
-            });
-        }
-    }
-
     generateParallaxSectors() {
-        // 1. 最远处高楼重构
+        // 1. 远景高耸大楼（变细、变密，突出林立感）
         let curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 14 + this.rand.next() * 16; 
-            let h = 65 + this.rand.next() * 70; 
-            
+            let w = 12 + this.rand.next() * 14; // 大幅变细（原18-38，现12-26）
+            let h = 50 + this.rand.next() * 55; 
             this.bgBuildings.push({ 
                 x: curX, 
                 w: w, 
                 h: h, 
                 seed: this.rand.next(),
-                landmarkType: Math.floor(this.rand.next() * 4),
-                hasSpire: this.rand.next() > 0.3
+                hasSpire: this.rand.next() > 0.4 // 拥有避雷针的概率提高
             });
-            curX += w + 12; 
+            curX += w + 8; // 间距更紧密
         }
 
         // 2. 远景独立工厂
@@ -141,14 +125,14 @@ class BackgroundSystem {
                 chimneyH2: 45 + this.rand.next() * 15, 
                 seed: this.rand.next()
             });
-            factX += 300 + this.rand.next() * 150; 
+            factX += 280 + this.rand.next() * 150; 
         }
 
-        // 3. 中景多元化现代写字楼群
+        // 3. 中景多元化写字楼群（大楼变细，融入经典的国际商业区屋顶形状）
         curX = -50;
         while (curX < GAME_WIDTH + 200) {
-            let w = 24 + this.rand.next() * 18; 
-            let h = 35 + this.rand.next() * 30; 
+            let w = 24 + this.rand.next() * 18; // 大幅变细（原35-65，现24-42）
+            let h = 40 + this.rand.next() * 38; 
             
             this.midBuildings.push({
                 x: curX, 
@@ -156,14 +140,20 @@ class BackgroundSystem {
                 h: h, 
                 seed: this.rand.next(),
                 neonColor: this.rand.next() > 0.5 ? PALETTE.neonMagenta : PALETTE.neonGold,
+                // 建筑类型：
+                // 0 = 阶梯收缩塔（纽约帝国大厦风）
+                // 1 = 顶部镂空圆孔塔（上海环球金融中心风）
+                // 2 = 不对称斜尖顶
+                // 3 = 双子联合写字楼（东京东京都厅风）
                 buildingType: Math.floor(this.rand.next() * 4),
+                // 屋顶天线类型：0=无, 1=中央避雷针, 2=双耳天线, 3=雷达锅
                 antennaType: Math.floor(this.rand.next() * 4),
                 boardW: 6 + Math.floor(this.rand.next() * 6), 
                 boardH: 15 + Math.floor(this.rand.next() * 12),
                 boardYOffset: 6 + Math.floor(this.rand.next() * 12),
                 blinkSpeed: 0.8 + this.rand.next() * 1.0
             });
-            curX += w + 24; 
+            curX += w + 22; 
         }
 
         // 4. 前景电线杆
@@ -190,7 +180,7 @@ class BackgroundSystem {
         // 远景大楼移动
         for (let b of this.bgBuildings) {
             b.x -= 0.05 * baseSpeed * dt * 60;
-            if (b.x + b.w < -50) b.x += GAME_WIDTH + 200;
+            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
         }
 
         // 远景独立工厂移动
@@ -198,6 +188,7 @@ class BackgroundSystem {
             f.x -= 0.09 * baseSpeed * dt * 60;
             if (f.x + f.w < 0) f.x += GAME_WIDTH + 300;
 
+            // 烟雾产生
             if (Math.random() < 0.05 * dt * 60) {
                 const chimney1X = f.x + f.w * 0.35;
                 const chimney1Y = FLOOR_Y - f.chimneyH1;
@@ -207,31 +198,24 @@ class BackgroundSystem {
                 let ty = Math.random() > 0.5 ? chimney1Y : chimney2Y;
 
                 this.smokeParticles.push({
-                    x: tx, y: ty,
+                    x: tx,
+                    y: ty,
                     vx: -0.8 - Math.random() * 0.4, 
                     vy: -0.3 - Math.random() * 0.3, 
                     size: 1 + Math.random() * 2,    
-                    alpha: 0.3, life: 1.0
+                    alpha: 0.3,
+                    life: 1.0
                 });
             }
         }
         
-        // 高架桥上的车流移动
-        for (let car of this.highwayTraffic) {
-            car.x -= car.speed * dt * 60 * 0.8;
-            if (car.x + car.length < 0) {
-                car.x = GAME_WIDTH + 10;
-                car.speed = 1.5 + Math.random() * 2.5;
-            }
-        }
-
         // 中景大楼移动
         for (let b of this.midBuildings) {
             b.x -= 0.22 * baseSpeed * dt * 60;
-            if (b.x + b.w < -50) b.x += GAME_WIDTH + 200;
+            if (b.x + b.w < 0) b.x += GAME_WIDTH + 200;
         }
 
-        // 烟雾粒子更新
+        // 烟雾粒子物理更新
         for (let i = this.smokeParticles.length - 1; i >= 0; i--) {
             let p = this.smokeParticles[i];
             p.x += p.vx * dt * 60;
@@ -280,11 +264,10 @@ class BackgroundSystem {
         ctx.fill();
         ctx.restore();
 
-        // --- 【核心修复】使用独立的局部 Canvas 状态，防止太阳切线穿透到大楼背景上 ---
         ctx.save();
         ctx.beginPath();
         ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
-        ctx.clip(); // 将接下来的横线硬性裁剪在太阳圆圈内
+        ctx.clip();
 
         let sunGrad = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
         sunGrad.addColorStop(0, '#ffd11a'); 
@@ -294,13 +277,13 @@ class BackgroundSystem {
         ctx.fillStyle = sunGrad;
         ctx.fillRect(sunX - sunRadius, sunY - sunRadius, sunRadius * 2, sunRadius * 2);
 
-        // 太阳内部网格切线
+        // 太阳网格切线
         ctx.fillStyle = skyGrad; 
         for (let y = sunY - sunRadius + 15; y < sunY + sunRadius; y += 7) {
             let currentBarWidth = Math.floor((y - (sunY - sunRadius + 15)) / 7) + 1;
             ctx.fillRect(sunX - sunRadius - 10, y, sunRadius * 2 + 20, currentBarWidth);
         }
-        ctx.restore(); // 完美恢复状态，确保切线不会干扰后续图层
+        ctx.restore();
 
         // 3. 不规则写实叠云
         ctx.save();
@@ -336,69 +319,23 @@ class BackgroundSystem {
     drawCity(ctx) {
         const time = Date.now() * 0.003; 
 
-        // 1. 远景高耸摩天大楼（【核心修改】改用冷调深黑灰 `#0a0b10`，彻底斩断红色视觉残留）
-        ctx.fillStyle = '#0a0b10'; 
+        // 1. 远景窄楼（深红棕色静态剪影）
+        ctx.fillStyle = '#2b1411'; 
         for (let b of this.bgBuildings) {
-            let bx = Math.floor(b.x);
-            let bw = Math.floor(b.w);
-            let bh = Math.floor(b.h);
-            let bY = FLOOR_Y - bh;
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(bx, FLOOR_Y);
-
-            if (b.landmarkType === 1) {
-                ctx.lineTo(bx + bw * 0.4, bY + bh * 0.6);
-                ctx.lineTo(bx + bw * 0.4, bY); 
-                ctx.lineTo(bx + bw * 0.6, bY);
-                ctx.lineTo(bx + bw * 0.6, bY + bh * 0.6);
-                ctx.lineTo(bx + bw, FLOOR_Y);
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(bx + bw * 0.5, bY + bh * 0.3, bw * 0.35, 0, Math.PI * 2); 
-                ctx.arc(bx + bw * 0.5, bY + bh * 0.6, bw * 0.45, 0, Math.PI * 2); 
-                ctx.fill();
-            } 
-            else if (b.landmarkType === 2) {
-                ctx.lineTo(bx, bY + bh * 0.7);
-                ctx.bezierCurveTo(bx + bw * 0.1, bY + bh * 0.4, bx + bw * 0.2, bY + bh * 0.2, bx + bw * 0.4, bY);
-                ctx.lineTo(bx + bw * 0.6, bY);
-                ctx.bezierCurveTo(bx + bw * 0.8, bY + bh * 0.2, bx + bw * 0.9, bY + bh * 0.4, bx + bw, FLOOR_Y);
-                ctx.fill();
-            }
-            else if (b.landmarkType === 3) {
-                ctx.lineTo(bx, bY + bh * 0.25);
-                ctx.lineTo(bx - 3, bY + bh * 0.25); 
-                ctx.lineTo(bx - 3, bY + bh * 0.12);
-                ctx.lineTo(bx + bw + 3, bY + bh * 0.12);
-                ctx.lineTo(bx + bw + 3, bY + bh * 0.25);
-                ctx.lineTo(bx + bw, bY + bh * 0.25);
-                ctx.lineTo(bx + bw, FLOOR_Y);
-                ctx.fill();
-            }
-            else {
-                ctx.lineTo(bx + bw * 0.15, bY + bh * 0.3);
-                ctx.lineTo(bx + bw * 0.35, bY);
-                ctx.lineTo(bx + bw * 0.65, bY);
-                ctx.lineTo(bx + bw * 0.85, bY + bh * 0.3);
-                ctx.lineTo(bx + bw, FLOOR_Y);
-                ctx.fill();
-            }
-            ctx.restore();
+            let bY = FLOOR_Y - b.h;
+            ctx.fillRect(Math.floor(b.x), Math.floor(bY), Math.floor(b.w), Math.floor(b.h));
             
-            // 航空红灯
+            // 远景极细避雷针
             if (b.hasSpire) {
-                ctx.fillStyle = '#050508';
-                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 12), 1, 12);
-                ctx.fillStyle = '#ff1100'; 
-                ctx.fillRect(Math.floor(bx + bw / 2), Math.floor(bY - 13), 1, 1);
+                ctx.fillStyle = '#1f0d0b';
+                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 10), 1, 10);
+                ctx.fillStyle = '#8f2d22'; 
+                ctx.fillRect(Math.floor(b.x + b.w / 2), Math.floor(bY - 11), 1, 1);
             }
         }
 
-        // 2. 独立远景工厂与烟囱 (【核心修改】同步改成极深暗色 `#07080c`)
-        ctx.fillStyle = '#07080c'; 
+        // 2. 独立远景工厂与烟囱
+        ctx.fillStyle = '#2e1613'; 
         for (let f of this.factories) {
             let fx = Math.floor(f.x);
             let fw = Math.floor(f.w);
@@ -420,20 +357,20 @@ class BackgroundSystem {
             let c1W = 4;
             let c1X = Math.floor(fx + fw * 0.35 - c1W / 2);
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1, c1W, f.chimneyH1);
-            ctx.fillStyle = '#3a110e'; // 略微调暗工业细节圈
+            ctx.fillStyle = '#9c2417';
             ctx.fillRect(c1X, FLOOR_Y - f.chimneyH1 + 4, c1W, 3);
-            ctx.fillStyle = '#07080c';
+            ctx.fillStyle = '#2e1613';
 
             // 烟囱2
             let c2W = 3;
             let c2X = Math.floor(fx + fw * 0.7 - c2W / 2);
             ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2, c2W, f.chimneyH2);
-            ctx.fillStyle = '#3a110e';
+            ctx.fillStyle = '#9c2417';
             ctx.fillRect(c2X, FLOOR_Y - f.chimneyH2 + 3, c2W, 2);
-            ctx.fillStyle = '#07080c';
+            ctx.fillStyle = '#2e1613';
         }
 
-        // 3. 中景现代写字楼 
+        // 3. 中景多元化现代写字楼群（大楼更瘦、房顶结构丰富）
         for (let b of this.midBuildings) {
             const bx = Math.floor(b.x);
             const bw = Math.floor(b.w);
@@ -441,15 +378,17 @@ class BackgroundSystem {
             const bY = Math.floor(FLOOR_Y - bh);
             
             let bGrad = ctx.createLinearGradient(bx, bY, bx, FLOOR_Y);
-            bGrad.addColorStop(0, '#190807'); 
-            bGrad.addColorStop(1, '#0f0302'); 
+            bGrad.addColorStop(0, '#3d1b16'); 
+            bGrad.addColorStop(1, '#24100d'); 
             ctx.fillStyle = bGrad;
 
+            // --- 3.1 绘制各具特色的写字楼屋顶形状 ---
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(bx, FLOOR_Y);
             
             if (b.buildingType === 0) {
+                // 帝国大厦风格：逐层向内收缩的尖顶
                 ctx.lineTo(bx, bY + bh * 0.4);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.4);
                 ctx.lineTo(bx + bw * 0.2, bY + bh * 0.2);
@@ -461,18 +400,21 @@ class BackgroundSystem {
                 ctx.lineTo(bx + bw * 0.8, bY + bh * 0.4);
                 ctx.lineTo(bx + bw, bY + bh * 0.4);
             } else if (b.buildingType === 1) {
+                // 上海环球金融中心风格：屋顶圆孔斜截面 (先画完轮廓，稍后在内部画镂空)
                 ctx.lineTo(bx, bY + 12);
                 ctx.lineTo(bx + bw * 0.15, bY);
                 ctx.lineTo(bx + bw * 0.85, bY);
                 ctx.lineTo(bx + bw, bY + 12);
             } else if (b.buildingType === 2) {
+                // 东京现代斜坡折角大楼：优雅的不对称斜屋顶
                 ctx.lineTo(bx, bY + 18);
                 ctx.lineTo(bx + bw * 0.6, bY);
                 ctx.lineTo(bx + bw, bY + 4);
             } else if (b.buildingType === 3) {
+                // 都厅双子大楼：两个挺拔的高塔合并，中间有低矮连廊
                 ctx.lineTo(bx, bY);
                 ctx.lineTo(bx + bw * 0.35, bY);
-                ctx.lineTo(bx + bw * 0.35, bY + 12);
+                ctx.lineTo(bx + bw * 0.35, bY + 12); // 中间凹下
                 ctx.lineTo(bx + bw * 0.65, bY + 12);
                 ctx.lineTo(bx + bw * 0.65, bY);
                 ctx.lineTo(bx + bw, bY);
@@ -483,24 +425,33 @@ class BackgroundSystem {
             ctx.fill();
             ctx.restore();
 
+            // 针对上海环球金融中心风格（1号楼）额外扣出屋顶的标志性“镂空圆孔”
             if (b.buildingType === 1) {
                 ctx.save();
-                ctx.globalCompositeOperation = 'destination-out';
+                ctx.globalCompositeOperation = 'destination-out'; // 使用橡皮擦模式擦除圆形
                 ctx.beginPath();
                 ctx.arc(bx + bw * 0.5, bY + 8, 3.5, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
             }
 
-            // 楼顶天线避雷针
+            // --- 3.2 绘制大楼顶部的天线与避雷针设备 ---
             ctx.save();
-            ctx.strokeStyle = '#0f0404';
+            ctx.strokeStyle = '#1f0d0b';
             ctx.lineWidth = 1;
+            
             if (b.antennaType === 1) {
+                // 1. 中央细长天线
                 let ax = Math.floor(bx + bw * 0.5);
-                ctx.beginPath(); ctx.moveTo(ax, bY); ctx.lineTo(ax, bY - 14); ctx.stroke();
-                ctx.fillStyle = '#ff3300'; ctx.fillRect(ax, bY - 15, 1, 1);
+                ctx.beginPath();
+                ctx.moveTo(ax, bY);
+                ctx.lineTo(ax, bY - 14);
+                ctx.stroke();
+                // 针尖微弱常亮航空灯
+                ctx.fillStyle = '#ff3300';
+                ctx.fillRect(ax, bY - 15, 1, 1);
             } else if (b.antennaType === 2) {
+                // 2. 左右对称双天线
                 let ax1 = Math.floor(bx + bw * 0.25);
                 let ax2 = Math.floor(bx + bw * 0.75);
                 ctx.beginPath();
@@ -508,25 +459,28 @@ class BackgroundSystem {
                 ctx.moveTo(ax2, bY); ctx.lineTo(ax2, bY - 10);
                 ctx.stroke();
             } else if (b.antennaType === 3) {
-                ctx.fillStyle = '#0f0404';
-                ctx.beginPath(); ctx.arc(bx + bw * 0.5, bY - 3, 4, Math.PI, 0); ctx.stroke();
-                ctx.fillRect(Math.floor(bx + bw * 0.5) - 0.5, bY - 3, 1, 3);
+                // 3. 雷达卫星锅/网状圆弧
+                ctx.fillStyle = '#1f0d0b';
+                ctx.beginPath();
+                ctx.arc(bx + bw * 0.5, bY - 3, 4, Math.PI, 0); // 半圆弧
+                ctx.stroke();
+                ctx.fillRect(Math.floor(bx + bw * 0.5) - 0.5, bY - 3, 1, 3); // 支架
             }
             ctx.restore();
 
-            // 楼栋窗户
+            // --- 3.3 静态密集的摩天楼窗格（常亮橙黄点，不闪烁） ---
             let winSeed = b.seed;
-            for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) {
+            for (let wx = bx + 4; wx < bx + bw - 4; wx += 6) { // 窗户排布也随着大楼变窄而更密集
                 for (let wy = bY + 16; wy < FLOOR_Y - 8; wy += 11) {
                     winSeed = (winSeed * 37 + 23) % 100;
                     if (winSeed > 72) {
-                        ctx.fillStyle = winSeed > 90 ? '#ffbf66' : '#9e3f00'; 
+                        ctx.fillStyle = winSeed > 90 ? '#ffd599' : '#b84a00';
                         ctx.fillRect(Math.floor(wx), Math.floor(wy), 1.2, 2);
                     }
                 }
             }
 
-            // 动态霓虹广告牌
+            // --- 3.4 动态霓虹广告牌（仅在对称梯形和双子塔大楼侧边闪烁，维持整体静态） ---
             const isBlinking = Math.sin(time * b.blinkSpeed) > -0.3; 
             if (isBlinking && (b.buildingType === 0 || b.buildingType === 3)) {
                 ctx.save();
@@ -538,7 +492,7 @@ class BackgroundSystem {
                 let boardY = bY + b.boardYOffset;
                 
                 ctx.shadowBlur = 0;
-                drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#0c0405'); 
+                drawPixelRect(ctx, boardX, boardY, b.boardW, b.boardH, '#1c0a0c');
                 
                 ctx.strokeStyle = neonColor;
                 ctx.lineWidth = 1;
@@ -556,51 +510,8 @@ class BackgroundSystem {
             }
         }
 
-        // 4. 绘制白烟
+        // 4. 绘制远方工厂冒出的烟雾
         this.drawSmoke(ctx);
-
-        // 5. 空中高架桥 
-        this.drawViaduct(ctx);
-    }
-
-    drawViaduct(ctx) {
-        const bridgeY = FLOOR_Y - 14; 
-        const bridgeH = 4;
-
-        ctx.save();
-        ctx.fillStyle = '#0b0202'; 
-        for (let x = 0; x < GAME_WIDTH + 100; x += 120) {
-            drawPixelRect(ctx, x + 50, bridgeY + 3, 8, FLOOR_Y - bridgeY, '#0b0202');
-            drawPixelRect(ctx, x + 52, bridgeY + 3, 4, FLOOR_Y - bridgeY, '#120404');
-        }
-
-        drawPixelRect(ctx, 0, bridgeY, GAME_WIDTH, bridgeH, '#120404');
-        drawPixelRect(ctx, 0, bridgeY + bridgeH, GAME_WIDTH, 1, '#080101'); 
-
-        ctx.strokeStyle = '#00e6b8'; 
-        ctx.globalAlpha = 0.3;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(0, bridgeY + 1);
-        ctx.lineTo(GAME_WIDTH, bridgeY + 1);
-        ctx.stroke();
-        ctx.globalAlpha = 1.0;
-
-        for (let car of this.highwayTraffic) {
-            let cx = Math.floor(car.x);
-            let cy = Math.floor(bridgeY + car.yOffset);
-            
-            ctx.save();
-            ctx.globalAlpha = 0.75;
-            let carGrad = ctx.createLinearGradient(cx, cy, cx + car.length, cy);
-            carGrad.addColorStop(0, 'transparent'); 
-            carGrad.addColorStop(1, car.color);    
-            
-            ctx.fillStyle = carGrad;
-            ctx.fillRect(cx, cy, car.length, 1.2);
-            ctx.restore();
-        }
-        ctx.restore();
     }
 
     drawSmoke(ctx) {
@@ -616,10 +527,10 @@ class BackgroundSystem {
     }
 
     drawForegroundGrid(ctx, worldX) {
-        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#140808');
-        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#080202');
+        drawPixelRect(ctx, 0, FLOOR_Y, GAME_WIDTH, 4, '#1c0d0d');
+        drawPixelRect(ctx, 0, FLOOR_Y + 4, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y, '#0d0404');
 
-        ctx.strokeStyle = '#1a0c0c';
+        ctx.strokeStyle = '#2b1414';
         ctx.lineWidth = 1;
         let spacing = 18;
         let offset = (worldX * 1.5) % spacing;
@@ -631,8 +542,8 @@ class BackgroundSystem {
         }
         ctx.stroke();
 
-        ctx.strokeStyle = '#d43f00'; 
-        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = '#ff4d00';
+        ctx.globalAlpha = 0.45;
         ctx.beginPath();
         ctx.moveTo(0, FLOOR_Y + 4);
         ctx.lineTo(GAME_WIDTH, FLOOR_Y + 4);
@@ -644,9 +555,9 @@ class BackgroundSystem {
 
     drawUtilityPoles(ctx) {
         ctx.save();
-        ctx.strokeStyle = '#050101';
+        ctx.strokeStyle = '#080202';
         ctx.lineWidth = 1;
-        ctx.globalAlpha = 0.8;
+        ctx.globalAlpha = 0.75;
         
         for (let i = 0; i < this.utilityPoles.length - 1; i++) {
             let p1 = this.utilityPoles[i];
@@ -666,27 +577,27 @@ class BackgroundSystem {
             const px = Math.floor(p.x);
             const py = Math.floor(FLOOR_Y - p.h);
             
-            drawPixelRect(ctx, px - 1, py, 3, p.h, '#0c0303');
-            drawPixelRect(ctx, px, py, 1, p.h, '#1c0c0c'); 
+            drawPixelRect(ctx, px - 1, py, 3, p.h, '#140606');
+            drawPixelRect(ctx, px, py, 1, p.h, '#2b1414'); 
 
             if (p.h > 85) {
-                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#140808');
-                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#0c0303');
-                drawPixelRect(ctx, px - 2, py + 18, 1, 1, '#b83a00');
+                drawPixelRect(ctx, px - 4, py + 15, 5, 8, '#1c0d0d');
+                drawPixelRect(ctx, px - 3, py + 16, 3, 6, '#140606');
+                drawPixelRect(ctx, px - 2, py + 18, 1, 1, '#ff4d00');
             }
 
             if (p.crossarms) {
-                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#0c0303');
-                drawPixelRect(ctx, px - 6, py + 2, 2, 2, '#cccccc');
-                drawPixelRect(ctx, px + 5, py + 2, 2, 2, '#cccccc');
+                drawPixelRect(ctx, px - 8, py + 4, 17, 2, '#140606');
+                drawPixelRect(ctx, px - 6, py + 2, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 5, py + 2, 2, 2, '#ffffff');
                 
-                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#0c0303');
-                drawPixelRect(ctx, px - 4, py + 8, 2, 2, '#cccccc');
-                drawPixelRect(ctx, px + 3, py + 8, 2, 2, '#cccccc');
+                drawPixelRect(ctx, px - 6, py + 10, 13, 2, '#140606');
+                drawPixelRect(ctx, px - 4, py + 8, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 3, py + 8, 2, 2, '#ffffff');
             } else {
-                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#0c0303');
-                drawPixelRect(ctx, px - 8, py + 4, 2, 2, '#cccccc');
-                drawPixelRect(ctx, px + 6, py + 4, 2, 2, '#cccccc');
+                drawPixelRect(ctx, px - 10, py + 6, 21, 2, '#140606');
+                drawPixelRect(ctx, px - 8, py + 4, 2, 2, '#ffffff');
+                drawPixelRect(ctx, px + 6, py + 4, 2, 2, '#ffffff');
             }
         }
         ctx.restore();
