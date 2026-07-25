@@ -96,7 +96,7 @@ const Main = (() => {
       if (subject === "demo")
         recipient = "CYBERPUNK2088_DEMO@163.com";
       else if (subject === "website")
-        recipient = "3579386804@qq.com";
+        recipient = "celesnicamusic08@gmail.com";
       else
         recipient = "CYBERPUNK2088@126.COM";
 
