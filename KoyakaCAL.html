@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -5124,9 +5123,183 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 .stereo-body{padding:2px 14px 13px;border-top:1px dashed var(--border)}
 .stereo-card:not(.open) .stereo-body{display:none}
 
+
+
+
+/* ===== 运行方式选择 + 引导模式(向导) ===== */
+.hidden{display:none!important}
+.mode-screen,.guide-screen{position:fixed;inset:0;z-index:900;background:var(--bg);overflow:auto;padding:28px}
+.mode-screen{display:flex;align-items:center;justify-content:center}
+.mode-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:38px 32px;width:min(660px,calc(100vw - 48px));text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.mode-title{font-size:28px;font-weight:700;margin:0 0 10px}
+.mode-sub{color:var(--muted);font-size:15px;margin:0 0 30px}
+.mode-btns{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+.mode-btn{border:1px solid var(--border);background:var(--button-bg);color:var(--text);border-radius:16px;padding:22px 34px;font-size:18px;font-weight:600;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;min-width:230px}
+.mode-btn:hover{transform:translateY(-3px);border-color:var(--accent2);box-shadow:0 14px 34px rgba(0,0,0,.25)}
+body.theme-light .mode-btn:hover{box-shadow:0 14px 30px rgba(0,0,0,.10)}
+.mode-note{color:var(--muted);font-size:12.5px;margin-top:24px;line-height:1.7}
+.back-floating{position:fixed;top:12px;left:12px;z-index:700;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;padding:8px 14px;font:inherit;font-size:13px;cursor:pointer}
+.back-floating:hover{border-color:var(--accent2)}
+.guide-screen{z-index:910}
+.guide-inner{max-width:900px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px 30px 30px}
+.guide-head{display:flex;align-items:center;gap:14px;border-bottom:1px dashed var(--border);padding-bottom:12px;margin-bottom:18px}
+.guide-head b{font-size:17px}
+.guide-step{color:var(--accent);font-size:13px;margin-left:auto}
+.guide-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:22px}
+.guide-actions button,button.big-cta{border:1px solid var(--border);border-radius:11px;background:var(--button-bg);color:var(--text);padding:11px 26px;font:inherit;font-size:15px;cursor:pointer}
+button.primary{background:var(--primary-btn);border-color:var(--accent2)}
+.guide-text p{font-size:14.5px;line-height:1.9;color:var(--text);margin:0 0 10px}
+.guide-status{font-size:12.5px;color:var(--muted);margin-top:14px;min-height:18px}
+.guide-status.err{color:var(--err)}
+.guide-h2{font-size:15px;font-weight:700;margin:0 0 12px;color:var(--text)}
+.sub-sec{border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:14px 0}
+.sub-sec-title{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:10px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.row2{grid-template-columns:1fr}}
+.ro-item{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--input)}
+.ro-item .ro-l{font-size:12px;color:var(--muted);margin-bottom:5px}
+.ro-val{font-size:13.5px;color:var(--text);word-break:break-all;min-height:18px}
+.au-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
+@media (max-width:760px){.au-grid{grid-template-columns:1fr}}
+.lv-live{font-family:&quot;SF Mono&quot;,Menlo,Consolas,monospace;font-size:12px;color:var(--run);min-height:20px;margin-top:10px}
+.hint-note{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:6px}
+.cur-cal{font-size:11.5px;color:var(--muted);margin-top:4px;word-break:break-all}
+
+
+/* ===== 引导模式弹窗(处理中 / 手动修改 / 未合并完成) ===== */
+.gd-modal{position:fixed;inset:0;z-index:955;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,visibility .16s ease;overflow:auto}
+.gd-modal.show{opacity:1;visibility:visible;pointer-events:auto}
+.gd-dialog{width:min(980px,calc(100vw - 36px));max-height:calc(100vh - 40px);overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.gd-dialog.gd-small{width:min(420px,calc(100vw - 36px))}
+.gd-head{display:flex;align-items:center;gap:12px;border-bottom:1px dashed var(--border);padding-bottom:10px;margin-bottom:14px}
+.gd-head b{font-size:16px}
+.gd-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.gd-text{font-size:14.5px;line-height:1.8;color:var(--text)}
+.g3slot{margin-top:6px}
+
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
+
+
+&lt;!-- 运行方式选择:半自动 / 引导 --&gt;
+&lt;div class=&quot;mode-screen&quot; id=&quot;modeScreen&quot;&gt;
+  &lt;div class=&quot;mode-card&quot;&gt;
+    &lt;div class=&quot;mode-title&quot;&gt;REW 自动化处理&lt;/div&gt;
+    &lt;div class=&quot;mode-sub&quot;&gt;请选择本次运行方式&lt;/div&gt;
+    &lt;div class=&quot;mode-btns&quot;&gt;
+      &lt;button class=&quot;mode-btn&quot; id=&quot;btnModeSemi&quot;&gt;半自动模式&lt;/button&gt;
+      &lt;button class=&quot;mode-btn&quot; id=&quot;btnModeGuide&quot;&gt;引导模式&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;mode-note&quot;&gt;半自动模式：直接进入完整流程面板。&lt;br&gt;引导模式：分四步确认测量并自动完成 EQ 修正流程。&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 半自动模式的返回按钮(左上角,点击回到运行方式选择) --&gt;
+&lt;button class=&quot;back-floating&quot; id=&quot;btnBackSemi&quot; style=&quot;display:none&quot;&gt;← 返回&lt;/button&gt;
+
+&lt;!-- 引导模式向导(4 步) --&gt;
+&lt;div class=&quot;guide-screen hidden&quot; id=&quot;guideScreen&quot;&gt;
+  &lt;div class=&quot;guide-inner&quot;&gt;
+    &lt;div class=&quot;guide-head&quot;&gt;
+      &lt;button id=&quot;btnGuideBack&quot;&gt;← 返回&lt;/button&gt;
+      &lt;b&gt;引导模式&lt;/b&gt;
+      &lt;span class=&quot;guide-step&quot; id=&quot;guideStepLabel&quot;&gt;第 1/4 步&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 第 1 页 --&gt;
+    &lt;div class=&quot;guide-page&quot; id=&quot;guideP1&quot;&gt;
+      &lt;div class=&quot;guide-text&quot;&gt;
+        &lt;p&gt;校准开始前，请确保 REW 已打开且版本号不低于 5.40。&lt;/p&gt;
+        &lt;p&gt;请将测量麦放置于听音位上，确保测量麦咪头高度与音箱高音单元齐平且两只音箱距离听音位距离相等。建议将音箱放置于与听音位成等边三角形的位置上并内倾 30°。&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;guide-status&quot; id=&quot;p1RwStatus&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;guide-actions&quot;&gt;&lt;button class=&quot;primary&quot; id=&quot;btnG1Next&quot;&gt;下一步&lt;/button&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 第 2 页 --&gt;
+    &lt;div class=&quot;guide-page hidden&quot; id=&quot;guideP2&quot;&gt;
+      &lt;div class=&quot;guide-text&quot;&gt;
+        &lt;p&gt;请正确设置 REW 的音频输入与输出设备，并进入 REW 依次测量 L+R 通道、L 通道、R 通道。&lt;/p&gt;
+        &lt;p&gt;我们推荐使用 128k 以上的长度。&lt;/p&gt;
+        &lt;p&gt;测量时请远离麦克风。&lt;/p&gt;
+        &lt;p&gt;因通过 API 控制 REW 以进行自动化扫频测量需要 Pro 升级版授权，本步需要用户手动进入 REW 软件发起扫频。扫频完成后返回该页面处理测量结果。&lt;/p&gt;
+        &lt;p&gt;若已完成测量请跳过本步。&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;guide-actions&quot;&gt;
+        &lt;button id=&quot;btnG2Prev&quot;&gt;上一步&lt;/button&gt;
+        &lt;button class=&quot;primary&quot; id=&quot;btnG2Next&quot;&gt;下一步&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 第 3 页:确认测量结果(载入&quot;选择测量结果&quot;卡片) --&gt;
+    &lt;div class=&quot;guide-page hidden&quot; id=&quot;guideP3&quot;&gt;
+      &lt;div class=&quot;guide-h2&quot;&gt;请确认您的测量结果：&lt;/div&gt;
+      &lt;div id=&quot;g3slot&quot; class=&quot;g3slot&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;guide-actions&quot;&gt;
+        &lt;button id=&quot;btnG3Prev&quot;&gt;上一步&lt;/button&gt;
+        &lt;button class=&quot;primary&quot; id=&quot;btnG3Next&quot;&gt;下一步&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 第 4 页 --&gt;
+    &lt;div class=&quot;guide-page hidden&quot; id=&quot;guideP4&quot;&gt;
+      &lt;div class=&quot;guide-text&quot;&gt;
+        &lt;p&gt;已自动计算合适的低频截止与斜率，若需手动修改请点击修改，无需修改则直接点击进入下一步&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;guide-status&quot; id=&quot;p4Status&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;guide-actions&quot;&gt;
+        &lt;button id=&quot;btnG4Prev&quot;&gt;上一步&lt;/button&gt;
+        &lt;button id=&quot;btnG4Mod&quot;&gt;点击修改&lt;/button&gt;
+        &lt;button class=&quot;primary&quot; id=&quot;btnG4Next&quot;&gt;下一步&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 提示弹窗 --&gt;
+&lt;div class=&quot;gd-modal&quot; id=&quot;gdAlertModal&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;gd-dialog gd-small&quot;&gt;
+    &lt;div class=&quot;gd-text&quot; id=&quot;gdAlertText&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;gd-actions&quot;&gt;&lt;button class=&quot;primary&quot; id=&quot;gdAlertOk&quot;&gt;确定&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 手动修改弹窗(载入 EQ 目标曲线设置 + 曲线运算 卡片) --&gt;
+&lt;div class=&quot;gd-modal&quot; id=&quot;gdModifyModal&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;gd-dialog&quot;&gt;
+    &lt;div class=&quot;gd-head&quot;&gt;&lt;b&gt;手动修改 EQ 目标设置 / 曲线运算&lt;/b&gt;&lt;/div&gt;
+    &lt;div id=&quot;gdModifyBody&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;hint-note&quot;&gt;低频截止/斜率等以绿框手动锁定的值不会被自动分析覆盖。&lt;/div&gt;
+    &lt;div class=&quot;gd-actions&quot;&gt;&lt;button class=&quot;primary&quot; id=&quot;btnGdModOk&quot;&gt;完成修改&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 处理中弹窗 --&gt;
+&lt;div class=&quot;gd-modal&quot; id=&quot;gdProcModal&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;gd-dialog gd-small&quot; style=&quot;text-align:center&quot;&gt;
+    &lt;div class=&quot;gd-text&quot; style=&quot;font-size:17px;font-weight:700&quot;&gt;处理中…&lt;/div&gt;
+    &lt;div class=&quot;hint-note&quot; style=&quot;margin-top:8px&quot;&gt;正在一键执行完整流程，请稍候。处理完成后将弹出导出窗口。&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 未合并 IR 完成弹窗 --&gt;
+&lt;div class=&quot;gd-modal&quot; id=&quot;gdFinishModal&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;gd-dialog&quot;&gt;
+    &lt;div class=&quot;gd-head&quot;&gt;&lt;b&gt;处理完成&lt;/b&gt;&lt;/div&gt;
+    &lt;div class=&quot;gd-text&quot;&gt;流程已完成（未合并 IR）。请选择导出方式下载结果，或点击“返回”回到运行方式选择界面。&lt;/div&gt;
+    &lt;div class=&quot;gd-actions&quot; style=&quot;justify-content:center;margin-top:18px&quot;&gt;
+      &lt;button id=&quot;gdFinMono&quot;&gt;导出单声道 L+R…&lt;/button&gt;
+      &lt;button id=&quot;gdFinStereo&quot;&gt;导出立体声 L/R…&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;gd-actions&quot; style=&quot;justify-content:center&quot;&gt;
+      &lt;button id=&quot;gdFinClearMono&quot; title=&quot;仅清除 L+R 单声道运算产生的数据,L/R 保留&quot;&gt;清空 L+R 过程数据&lt;/button&gt;
+      &lt;button id=&quot;gdFinClearLr&quot; title=&quot;仅清除 L/R 立体声运算产生的数据,L+R 保留&quot;&gt;清空 L/R 过程数据&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;gd-actions&quot;&gt;&lt;button id=&quot;gdFinishBack&quot;&gt;返回&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
 &lt;div class=&quot;wrap&quot;&gt;
   &lt;h1&gt;REW 自动化处理&lt;/h1&gt;
   &lt;div class=&quot;sub&quot;&gt;通过 REW REST API (localhost:4735) 操作，运行前请确保REW为V5.40或以上版本并已打开&lt;/div&gt;
@@ -5161,14 +5334,14 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 
   &lt;!-- ① 选测量 --&gt;
   &lt;div class=&quot;card&quot;&gt;
-    &lt;h2&gt;&lt;span class=&quot;stepno&quot;&gt;1&lt;/span&gt;选择测量结果 &lt;span class=&quot;badge&quot; id=&quot;b1&quot;&gt;待选择&lt;/span&gt;&lt;/h2&gt;
+    &lt;h2&gt;选择测量结果 &lt;span class=&quot;badge&quot; id=&quot;b1&quot;&gt;待选择&lt;/span&gt;&lt;/h2&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;button class=&quot;ghost&quot; id=&quot;btnLoad&quot;&gt;刷新测量列表&lt;/button&gt;
       &lt;label&gt;L+R 测量&lt;/label&gt;
       &lt;select id=&quot;measSel&quot; style=&quot;min-width:280px&quot;&gt;&lt;option value=&quot;&quot;&gt;— 请先连接并加载 —&lt;/option&gt;&lt;/select&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;stereo-card open&quot; id=&quot;stereoCard&quot;&gt;
-      &lt;button class=&quot;stereo-head&quot; id=&quot;stereoHead&quot; type=&quot;button&quot; aria-expanded=&quot;true&quot;&gt;
+    &lt;div class=&quot;stereo-card&quot; id=&quot;stereoCard&quot;&gt;
+      &lt;button class=&quot;stereo-head&quot; id=&quot;stereoHead&quot; type=&quot;button&quot; aria-expanded=&quot;false&quot;&gt;
         &lt;span class=&quot;stereo-title&quot;&gt;立体声模式（将同时计算 L+R 单声道低频修正 与 L/R 立体声中高频修正）&lt;/span&gt;
         &lt;span class=&quot;stereo-arrow&quot;&gt;▶&lt;/span&gt;
       &lt;/button&gt;
@@ -5186,7 +5359,7 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 
   &lt;!-- ② 目标设置 --&gt;
   &lt;div class=&quot;card&quot;&gt;
-    &lt;h2&gt;&lt;span class=&quot;stepno&quot;&gt;2&lt;/span&gt;EQ 目标曲线设置 &lt;span class=&quot;badge&quot; id=&quot;b2&quot;&gt;未应用&lt;/span&gt;&lt;/h2&gt;
+    &lt;h2&gt;EQ 目标曲线设置 &lt;span class=&quot;badge&quot; id=&quot;b2&quot;&gt;未应用&lt;/span&gt;&lt;/h2&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;label&gt;扬声器类型&lt;/label&gt;
       &lt;select id=&quot;shape&quot;&gt;&lt;/select&gt;
@@ -5202,7 +5375,7 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 
   &lt;!-- ③ 目标电平 --&gt;
   &lt;div class=&quot;card&quot;&gt;
-    &lt;h2&gt;&lt;span class=&quot;stepno&quot;&gt;3&lt;/span&gt;根据频响曲线计算目标电平 &lt;span class=&quot;badge&quot; id=&quot;b3&quot;&gt;未计算&lt;/span&gt;&lt;/h2&gt;
+    &lt;h2&gt;根据频响曲线计算目标电平 &lt;span class=&quot;badge&quot; id=&quot;b3&quot;&gt;未计算&lt;/span&gt;&lt;/h2&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;button id=&quot;btnCalcLevel&quot;&gt;计算目标电平&lt;/button&gt;
       &lt;span&gt;REW 计算结果:&lt;span class=&quot;val&quot; id=&quot;targetLevel&quot;&gt;—&lt;/span&gt; dB&lt;/span&gt;
@@ -5212,7 +5385,7 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 
   &lt;!-- ④ 生成目标测量 --&gt;
   &lt;div class=&quot;card&quot;&gt;
-    &lt;h2&gt;&lt;span class=&quot;stepno&quot;&gt;4&lt;/span&gt;基于目标曲线生成新测量 &lt;span class=&quot;badge&quot; id=&quot;b4&quot;&gt;未生成&lt;/span&gt;&lt;/h2&gt;
+    &lt;h2&gt;基于目标曲线生成新测量 &lt;span class=&quot;badge&quot; id=&quot;b4&quot;&gt;未生成&lt;/span&gt;&lt;/h2&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;button id=&quot;btnGenTarget&quot;&gt;生成目标测量&lt;/button&gt;
       &lt;span class=&quot;pill&quot; id=&quot;targetPill&quot; style=&quot;display:none&quot;&gt;&lt;/span&gt;
@@ -5222,7 +5395,7 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 
   &lt;!-- ⑤ 最小相位副本 --&gt;
   &lt;div class=&quot;card&quot;&gt;
-    &lt;h2&gt;&lt;span class=&quot;stepno&quot;&gt;5&lt;/span&gt;生成测量数据的最小相位副本 &lt;span class=&quot;badge&quot; id=&quot;b5&quot;&gt;未生成&lt;/span&gt;&lt;/h2&gt;
+    &lt;h2&gt;生成测量数据的最小相位副本 &lt;span class=&quot;badge&quot; id=&quot;b5&quot;&gt;未生成&lt;/span&gt;&lt;/h2&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;span class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;pCal&quot; checked&gt;include cal&lt;/span&gt;
       &lt;span class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;pLf&quot;&gt;append LF tail&lt;/span&gt;
@@ -5239,11 +5412,11 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 
   &lt;!-- ⑥ 曲线运算 --&gt;
   &lt;div class=&quot;card&quot;&gt;
-    &lt;h2&gt;&lt;span class=&quot;stepno&quot;&gt;6&lt;/span&gt;曲线运算 &lt;span class=&quot;badge&quot; id=&quot;b6&quot;&gt;未执行&lt;/span&gt;&lt;/h2&gt;
+    &lt;h2&gt;曲线运算 &lt;span class=&quot;badge&quot; id=&quot;b6&quot;&gt;未执行&lt;/span&gt;&lt;/h2&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;label&gt;处理下限频率&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;divLower&quot; style=&quot;width:80px&quot; placeholder=&quot;可选&quot; title=&quot;默认自动跟随第 2 步 EQ 低频截止(数值与绿框锁定状态实时联动);可直接输入覆盖,Cmd+点击切换锁定&quot;&gt; Hz
-      &lt;label&gt;分频点&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;divXover&quot; style=&quot;width:70px&quot; value=&quot;200&quot; title=&quot;立体声分频点(默认 200 Hz,可自定义):单声道 L+R 分支的处理上限、立体声 L/R 分支的处理下限、合并导出时 Merge 的频率均取此值&quot;&gt; Hz
-      &lt;label&gt;处理上限频率&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;divUpper&quot; style=&quot;width:80px&quot; placeholder=&quot;可选&quot;&gt; Hz
+      &lt;span class=&quot;xover-ctl&quot; id=&quot;xoverCtl&quot;&gt;&lt;label&gt;分频点&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;divXover&quot; style=&quot;width:70px&quot; value=&quot;200&quot; title=&quot;立体声分频点(默认 200 Hz,可自定义):单声道 L+R 分支的处理上限、立体声 L/R 分支的处理下限、合并导出时 Merge 的频率均取此值&quot;&gt; Hz&lt;/span&gt;
+      &lt;label&gt;处理上限频率&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;divUpper&quot; style=&quot;width:130px&quot; placeholder=&quot;可选&quot;&gt; Hz
       &lt;button id=&quot;btnArith&quot;&gt;执行 Target / A-m&lt;/button&gt;
       &lt;label class=&quot;chk&quot; title=&quot;取消勾选则不限制增益(不发送 maxGain 参数)&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;maxGainOn&quot; checked&gt;增益限制 maxGain&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;maxGain&quot; style=&quot;width:70px&quot; value=&quot;6&quot; placeholder=&quot;默认 6&quot;&gt; dB
       &lt;span class=&quot;pill&quot; id=&quot;divPill&quot; style=&quot;display:none&quot;&gt;&lt;/span&gt;
@@ -5253,8 +5426,9 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
 
   &lt;!-- ⑦ 结果最小相位 --&gt;
   &lt;div class=&quot;card&quot;&gt;
-    &lt;h2&gt;&lt;span class=&quot;stepno&quot;&gt;7&lt;/span&gt;对运算结果生成最小相位副本 &lt;span class=&quot;badge&quot; id=&quot;b7&quot;&gt;未生成&lt;/span&gt;&lt;/h2&gt;
+    &lt;h2&gt;对运算结果生成最小相位副本 &lt;span class=&quot;badge&quot; id=&quot;b7&quot;&gt;未生成&lt;/span&gt;&lt;/h2&gt;
     &lt;div class=&quot;row&quot;&gt;
+      &lt;button class=&quot;ghost&quot; id=&quot;btnClearData&quot; title=&quot;删除本次运算过程产生的全部 CAL_ 测量并重置结果&quot;&gt;清空过程数据&lt;/button&gt;
       &lt;button id=&quot;btnMinPhase2&quot;&gt;生成结果-MP&lt;/button&gt;
       &lt;span class=&quot;pill&quot; id=&quot;mp2Pill&quot; style=&quot;display:none&quot;&gt;&lt;/span&gt;
       &lt;button class=&quot;ghost&quot; id=&quot;btnExport2&quot; style=&quot;display:none&quot;&gt;导出单声道 L+R…&lt;/button&gt;
@@ -5305,6 +5479,7 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
       &lt;div class=&quot;warnbox&quot; id=&quot;clipWarn&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;download-dialog-actions&quot;&gt;
+      &lt;button id=&quot;dlClearData&quot; title=&quot;删除本次运算过程产生的全部 CAL_ 测量并重置结果&quot;&gt;清空过程数据&lt;/button&gt;
       &lt;button id=&quot;dlCancel&quot;&gt;取消&lt;/button&gt;
       &lt;button id=&quot;dlConfirm&quot; class=&quot;primary&quot;&gt;导出并下载&lt;/button&gt;
     &lt;/div&gt;
@@ -5336,6 +5511,18 @@ body.theme-light .stereo-card.open{border-color:#2f7fd0;box-shadow:0 0 0 1px rgb
       &lt;div class=&quot;download-dialog-actions&quot;&gt;
         &lt;button id=&quot;chanAskOk&quot; class=&quot;primary&quot;&gt;确定&lt;/button&gt;
         &lt;button id=&quot;chanAskCancel&quot;&gt;重新选取&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;download-modal&quot; id=&quot;calAskModal&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;download-dialog&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot; aria-labelledby=&quot;calAskText&quot;&gt;
+    &lt;div class=&quot;download-dialog-body&quot;&gt;
+      &lt;div class=&quot;download-dialog-preview&quot; id=&quot;calAskText&quot; style=&quot;font-size:15px;line-height:1.7;color:var(--text)&quot;&gt;这个不是测量结果哦，确定要选择吗？&lt;/div&gt;
+      &lt;div class=&quot;download-dialog-actions&quot;&gt;
+        &lt;button id=&quot;calAskOk&quot; class=&quot;primary&quot;&gt;确定&lt;/button&gt;
+        &lt;button id=&quot;calAskReselect&quot;&gt;重新选择&lt;/button&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
@@ -5390,7 +5577,7 @@ const S = { A:null, L:null, R:null, target:null, am:null, div:null, mp2:null,
             avg:null, targetLR:null, Lm:null, Rm:null, divL:null, divR:null, mpL:null, mpR:null,
             fullL:null, fullR:null, mpFullL:null, mpFullR:null };
 let LAST_LIST = [];
-let stereoOpen = true;                // 立体声模式卡片:true=开启(蓝框并显示 L/R 下拉)
+let stereoOpen = false;               // 立体声模式卡片:默认收起(蓝框并显示 L/R 下拉需点击展开)
 const chanLast = { L:&#x27;&#x27;, R:&#x27;&#x27; };      // L/R 声道最近一次已接受的选择(「重新选取」回退基准)
 let chanFillKey = &#x27;&#x27;;                 // 最近一次 L/R 自动填入所依据的 L+R 测量 uuid
 const isStereo = ()=&gt; stereoOpen &amp;&amp; !!(S.L &amp;&amp; S.R);
@@ -5634,7 +5821,7 @@ async function loadMeasurements(){
   // 默认值:名称含 L+R 且序号最大的测量。注意 innerHTML 重建后 select 会自动选中首项,
   // 因此必须以重建前的 prev 判断“用户是否尚未选择”;手动选择永远优先保留。
   if(!prev || !list.some(m=&gt;m.uuid===sel.value)){
-    const lrCands = list.filter(m=&gt;(m.title||&#x27;&#x27;).includes(&#x27;L+R&#x27;));
+    const lrCands = list.filter(m=&gt;{ const t=(m.title||&#x27;&#x27;); return t.includes(&#x27;L+R&#x27;) &amp;&amp; !t.includes(&#x27;CAL_&#x27;) &amp;&amp; !t.includes(&#x27;-MP&#x27;); });   // 自动选择忽略 CAL_/-MP 数据
     if(lrCands.length){
       const best = lrCands.reduce((a,b)=&gt; (b.idx&gt;a.idx? b:a));
       sel.value = best.uuid;
@@ -5658,11 +5845,17 @@ function updateStereoMode(){
   const st = isStereo();
   const lr = document.getElementById(&#x27;lrSmoothCtl&#x27;);
   if(lr) lr.style.display = st? &#x27;contents&#x27; : &#x27;none&#x27;;
+  updateXoverVisibility();   // 「分频点」仅在立体声模式(卡片开启)时显示
 }
-$(&#x27;measSel&#x27;).onchange = ()=&gt;{
+let aLast = &#x27;&#x27;;   // L+R 测量最近一次已接受的选择(「重新选择」回退基准)
+// 标题判定:自动选择需跳过 CAL_/-MP;手动选择仅对“CAL_ 且非 -MP”弹确认
+function isAutoSkipTitle(t){ return t.includes(&#x27;CAL_&#x27;) || t.includes(&#x27;-MP&#x27;); }
+function needsCalConfirmTitle(t){ return t.includes(&#x27;CAL_&#x27;) &amp;&amp; !t.includes(&#x27;-MP&#x27;); }
+function applySelectA(){
   const u = $(&#x27;measSel&#x27;).value;
   const m = findMeas(u);
   S.A = m;
+  aLast = u;
   if(m){
     $(&#x27;measInfo&#x27;).textContent = `UUID: ${m.uuid} | 采样率: ${Math.round(m.sampleRate)} Hz | 范围: ${m.startFreq.toFixed(1)}–${Math.round(m.endFreq)} Hz | 来自: ${m.containingFileName||&#x27;—&#x27;}`;
     badge(&#x27;b1&#x27;, m.title,&#x27;ok&#x27;);
@@ -5672,6 +5865,13 @@ $(&#x27;measSel&#x27;).onchange = ()=&gt;{
   }
   // L+R 测量变化后:立体声开启时以新选择为起点自动填入 L/R
   if(stereoOpen &amp;&amp; u) autoFillStereoChannels();
+}
+$(&#x27;measSel&#x27;).onchange = ()=&gt;{
+  const u = $(&#x27;measSel&#x27;).value;
+  const m = findMeas(u);
+  const title = m ? String(m.title||&#x27;&#x27;) : &#x27;&#x27;;
+  if(u &amp;&amp; title &amp;&amp; needsCalConfirmTitle(title)){ askCalConfirm(&#x27;A&#x27;, u); return; }   // 自动选择已忽略 CAL_/-MP;此处为手动选择 CAL_ 数据
+  applySelectA();
 };
 function esc(s){ return String(s).replace(/[&amp;&lt;&gt;&quot;]/g, c=&gt;({&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;}[c])); }
 $(&#x27;measSelL&#x27;).addEventListener(&#x27;change&#x27;, ()=&gt; onChanChange(&#x27;L&#x27;));
@@ -5705,9 +5905,10 @@ function autoFillStereoChannels(){
   if(chanFillKey === baseUuid) return;   // L+R 依据未变:保留用户手动选择
   const after = LAST_LIST.filter(m=&gt;m.idx&gt;base.idx).sort((a,b)=&gt;a.idx-b.idx);
   const t = m =&gt; String(m.title||&#x27;&#x27;);
-  const lCand = after.find(m=&gt; t(m).includes(&#x27;L&#x27;) &amp;&amp; !t(m).includes(&#x27;+R&#x27;));
+  const notProc = m =&gt; !t(m).includes(&#x27;CAL_&#x27;) &amp;&amp; !t(m).includes(&#x27;-MP&#x27;);
+  const lCand = after.find(m=&gt; notProc(m) &amp;&amp; t(m).includes(&#x27;L&#x27;) &amp;&amp; !t(m).includes(&#x27;+R&#x27;));
   const rPool = lCand? after.filter(m=&gt;m.uuid!==lCand.uuid) : after;
-  const rCand = rPool.find(m=&gt; t(m).includes(&#x27;R&#x27;) &amp;&amp; !t(m).includes(&#x27;L+&#x27;));
+  const rCand = rPool.find(m=&gt; notProc(m) &amp;&amp; t(m).includes(&#x27;R&#x27;) &amp;&amp; !t(m).includes(&#x27;L+&#x27;));
   if(lCand) setChanAuto(&#x27;L&#x27;, lCand.uuid);
   if(rCand) setChanAuto(&#x27;R&#x27;, rCand.uuid);
   if(lCand || rCand){ chanFillKey = baseUuid; updateStereoMode(); }
@@ -5723,6 +5924,7 @@ function setCardState(open){
 function onChanChange(ch){
   const sel = ch===&#x27;L&#x27;? $(&#x27;measSelL&#x27;) : $(&#x27;measSelR&#x27;);
   const title = chanTitle(sel.value);
+  if(sel.value &amp;&amp; title &amp;&amp; needsCalConfirmTitle(title)){ askCalConfirm(ch, sel.value); return; }   // 仅 CAL_ 且非 -MP 才弹确认;-MP 直接接受
   const warn = chanWarn(ch, title);
   if(warn){ askChan(warn, ch); return; }   // 弹窗确认:确定=接受,重新选取=回退
   chanLast[ch] = sel.value;
@@ -5756,6 +5958,39 @@ $(&#x27;chanAskCancel&#x27;).addEventListener(&#x27;click&#x27;, ()=&gt;{
   closeChanAsk();
   updateStereoMode();
 });
+
+/* ---- 选择到 CAL_ 运算数据时的确认弹窗(自动选择已忽略;手动选择需确认) ---- */
+let calAskPending = null;
+function askCalConfirm(kind, value){
+  calAskPending = {kind, value};
+  const modal = $(&#x27;calAskModal&#x27;);
+  modal.classList.add(&#x27;show&#x27;);
+  modal.setAttribute(&#x27;aria-hidden&#x27;,&#x27;false&#x27;);
+}
+function closeCalAsk(){
+  calAskPending = null;
+  const modal = $(&#x27;calAskModal&#x27;);
+  modal.classList.remove(&#x27;show&#x27;);
+  modal.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);
+}
+function commitCalChoice(){
+  if(!calAskPending) return;
+  const p = calAskPending;
+  closeCalAsk();
+  if(p.kind===&#x27;A&#x27;){ applySelectA(); }               // 「确定」:接受本次选择
+  else { const sel = p.kind===&#x27;L&#x27;? $(&#x27;measSelL&#x27;) : $(&#x27;measSelR&#x27;); chanLast[p.kind] = sel.value; updateStereoMode(); }
+}
+function reselectCalChoice(){
+  if(!calAskPending) return;
+  const p = calAskPending;
+  const sel = p.kind===&#x27;A&#x27;? $(&#x27;measSel&#x27;) : (p.kind===&#x27;L&#x27;? $(&#x27;measSelL&#x27;) : $(&#x27;measSelR&#x27;));
+  sel.value = (p.kind===&#x27;A&#x27; ? aLast : chanLast[p.kind]);   // 「重新选择」:恢复为之前的值
+  closeCalAsk();
+  if(p.kind===&#x27;A&#x27;) applySelectA();
+  else updateStereoMode();
+}
+$(&#x27;calAskOk&#x27;).addEventListener(&#x27;click&#x27;, commitCalChoice);
+$(&#x27;calAskReselect&#x27;).addEventListener(&#x27;click&#x27;, reselectCalChoice);
 $(&#x27;stereoHead&#x27;).addEventListener(&#x27;click&#x27;, ()=&gt; setCardState(!stereoOpen));
 
 function needA(){ if(!S.A) throw new Error(&#x27;没有可处理的测量数据&gt;&lt;&#x27;); return S.A.uuid; }
@@ -5819,6 +6054,11 @@ async function rmsAverage(uuidL, uuidR){
 }
 function maxGainParam(){ return $(&#x27;maxGainOn&#x27;).checked? {maxGain: $(&#x27;maxGain&#x27;).value.trim() || &#x27;6&#x27;} : {}; }
 function xoverHz(){ return ($(&#x27;divXover&#x27;).value||&#x27;&#x27;).trim() || &#x27;200&#x27;; }   // 立体声分频点(默认 200 Hz,留空按 200)
+/* 曲线运算卡片的「分频点」:仅在用户打开立体声模式时显示,关闭/未启用时隐藏 */
+function updateXoverVisibility(){
+  const ctl = $(&#x27;xoverCtl&#x27;);
+  if(ctl) ctl.style.display = stereoOpen? &#x27;&#x27; : &#x27;none&#x27;;
+}
 async function runStereoBranch(mergeIR=true){
   if(!S.L || !S.R) throw new Error(&#x27;请先选择 L 和 R 测量&#x27;);
   stereoMerged = !!mergeIR;
@@ -6162,20 +6402,11 @@ function closeDownloadModal(){
 }
 $(&#x27;btnExport2&#x27;).onclick = guard(()=&gt;openExportModal(&#x27;mono&#x27;));
 $(&#x27;btnExportStereo&#x27;).onclick = guard(()=&gt;openExportModal($(&#x27;btnExportStereo&#x27;).dataset.exportMode || &#x27;stereo&#x27;));
-/* 取消:自动删除本次过程数据(不询问) */
-async function autoCleanup(reason){
-  const uuids = CREATED.splice(0);
-  if(!uuids.length) return;
-  let ok=0;
-  for(const u of uuids){ try{ await api(`/measurements/${u}`,{method:&#x27;DELETE&#x27;}); ok++; }catch(e){} }
-  log(`${reason} 已自动删除 ${ok} 个 CAL_ 运算测量`,&#x27;ok&#x27;);
-  await loadMeasurements();
-}
-$(&#x27;dlCancel&#x27;).onclick = guard(async ()=&gt;{ closeDownloadModal(); await autoCleanup(&#x27;已取消导出,&#x27;); });
-/* 其他任何方式关闭下载弹窗 → 询问是否清理 */
-$(&#x27;dlCancelX&#x27;).onclick = ()=&gt;{ closeDownloadModal(); askCleanup(); };
-$(&#x27;downloadModal&#x27;).addEventListener(&#x27;click&#x27;, e=&gt;{ if(e.target===e.currentTarget){ closeDownloadModal(); askCleanup(); } });
-document.addEventListener(&#x27;keydown&#x27;, e=&gt;{ if(e.key===&#x27;Escape&#x27; &amp;&amp; $(&#x27;downloadModal&#x27;).classList.contains(&#x27;show&#x27;)){ closeDownloadModal(); askCleanup(); } });
+/* 下载弹窗任何关闭方式:统一按当前导出分支定向询问清理(合并/普通流程则整批询问) */
+$(&#x27;dlCancel&#x27;).onclick = ()=&gt;{ closeDownloadModal(); askCleanupForClose(); };
+$(&#x27;dlCancelX&#x27;).onclick = ()=&gt;{ closeDownloadModal(); askCleanupForClose(); };
+$(&#x27;downloadModal&#x27;).addEventListener(&#x27;click&#x27;, e=&gt;{ if(e.target===e.currentTarget){ closeDownloadModal(); askCleanupForClose(); } });
+document.addEventListener(&#x27;keydown&#x27;, e=&gt;{ if(e.key===&#x27;Escape&#x27; &amp;&amp; $(&#x27;downloadModal&#x27;).classList.contains(&#x27;show&#x27;)){ closeDownloadModal(); askCleanupForClose(); } });
 document.addEventListener(&#x27;keydown&#x27;, e=&gt;{ if(e.key===&#x27;Escape&#x27; &amp;&amp; $(&#x27;connFailModal&#x27;).classList.contains(&#x27;show&#x27;)) closeConnFailModal(); });
 $(&#x27;dlFileName&#x27;).addEventListener(&#x27;keydown&#x27;, e=&gt;{ if(e.key===&#x27;Enter&#x27;){ e.preventDefault(); $(&#x27;dlConfirm&#x27;).click(); } });
 [&#x27;sr&#x27;,&#x27;applyWin&#x27;].forEach(id=&gt; $(id).addEventListener(&#x27;change&#x27;, ()=&gt;{ if($(&#x27;downloadModal&#x27;).classList.contains(&#x27;show&#x27;) &amp;&amp; irCache) fetchIRForModal().catch(e=&gt;log(&#x27;✗ &#x27;+e.message,&#x27;err&#x27;)); }));
@@ -6220,47 +6451,151 @@ async function doExport(){
     await exportTxtCurves(base);
   }
 
-  // 未合并立体声模式需要保留另一组结果，避免导出第一组后清理导致第二组无法导出。
+  // 合并/单声道流程:导出完成后询问整批清理。
+  // 未合并立体声:每次只按当前导出分支(单声道 L+R / 立体声 L/R)定向询问,仅清除该分支,保留另一分支供后续导出。
   if(stereoMerged){
-    askCleanup();
+    askCleanupFull();
   }else{
-    if(EXPORT.mode===&#x27;stereoUnmerged&#x27;) unmergedExported.stereo=true;
-    else if(EXPORT.mode===&#x27;mono&#x27;) unmergedExported.mono=true;
-    if(unmergedExported.mono &amp;&amp; unmergedExported.stereo) askCleanup();
-    else log(&#x27;未合并模式：另一组 IR 尚未导出，暂不清理本次运算数据&#x27;,&#x27;cmd&#x27;);
+    if(EXPORT.mode===&#x27;stereoUnmerged&#x27;){ log(&#x27;已导出立体声 L/R 中高频修正&#x27;,&#x27;ok&#x27;); askCleanupBranch(&#x27;lr&#x27;); }
+    else if(EXPORT.mode===&#x27;mono&#x27;){ log(&#x27;已导出单声道 L+R 低音修正&#x27;,&#x27;ok&#x27;); askCleanupBranch(&#x27;mono&#x27;); }
+    else askCleanupFull();
   }
 }
 
-/* ---- 下载完成后:询问是否删除本次运算产生的 CAL_ 测量 ---- */
-function askCleanup(){
-  if(!CREATED.length) return;
-  const names = CREATED.map(u=&gt;{ const m=(LAST_LIST||[]).find(x=&gt;x.uuid===u); return m? m.title : null; }).filter(Boolean);
-  $(&#x27;cuText&#x27;).textContent = `本次流程共产生 ${CREATED.length} 个 CAL_ 前缀的运算测量` +
-    (names.length? `:${names.slice(0,4).map(esc).join(&#x27;、&#x27;)}${names.length&gt;4? &#x27; 等&#x27;:&#x27;&#x27;}`:&#x27;&#x27;) +
-    &#x27;。是否删除这些额外数据?原始测量不会受影响。&#x27;;
+/* ---- 下载/导出完成后:按分支询问是否清理运算产生的 CAL_ 测量 ---- */
+let cleanupTargets = [];
+let cleanupFull = false;   // 整批清理(合并 IR / 非立体声未合并场景)
+let cleanupChain = null;   // 未合并立体声:&#x27;mono&#x27;=仅 L+R 单声道分支 | &#x27;lr&#x27;=仅 L/R 立体声分支
+function cuTitles(uuids){ return uuids.map(u=&gt;{ const m=(LAST_LIST||[]).find(x=&gt;x.uuid===u); return m? m.title : null; }).filter(Boolean); }
+function chainUuids(chain){
+  const keys = chain===&#x27;mono&#x27;
+    ? [&#x27;target&#x27;,&#x27;am&#x27;,&#x27;div&#x27;,&#x27;mp2&#x27;]
+    : [&#x27;avg&#x27;,&#x27;targetLR&#x27;,&#x27;Lm&#x27;,&#x27;Rm&#x27;,&#x27;divL&#x27;,&#x27;divR&#x27;,&#x27;mpL&#x27;,&#x27;mpR&#x27;,&#x27;fullL&#x27;,&#x27;fullR&#x27;,&#x27;mpFullL&#x27;,&#x27;mpFullR&#x27;];
+  return keys.map(k=&gt;{ const o=S[k]; return o &amp;&amp; o.uuid ? o.uuid : null; }).filter(u=&gt;u &amp;&amp; CREATED.includes(u));
+}
+function showCleanupModal(){
   $(&#x27;cleanupModal&#x27;).classList.add(&#x27;show&#x27;);
   $(&#x27;cleanupModal&#x27;).setAttribute(&#x27;aria-hidden&#x27;,&#x27;false&#x27;);
+}
+/* 整批询问(合并 IR / 单声道流程等) */
+function askCleanupFull(){
+  if(!CREATED.length) return;
+  cleanupTargets = CREATED.slice();
+  cleanupFull = true; cleanupChain = null;
+  const names = cuTitles(cleanupTargets);
+  $(&#x27;cuText&#x27;).textContent = `本次流程共产生 ${cleanupTargets.length} 个 CAL_ 前缀的运算测量` +
+    (names.length? `:${names.slice(0,4).map(esc).join(&#x27;、&#x27;)}${names.length&gt;4? &#x27; 等&#x27;:&#x27;&#x27;}`:&#x27;&#x27;) +
+    &#x27;。是否删除这些额外数据?原始测量不会受影响。&#x27;;
+  showCleanupModal();
+}
+/* 未合并立体声:按导出分支定向询问 */
+function askCleanupBranch(chain){
+  const targets = chainUuids(chain);
+  if(!targets.length){ log(chain===&#x27;mono&#x27;?&#x27;L+R 单声道分支暂无可清理的 CAL_ 测量&#x27;:&#x27;L/R 立体声分支暂无可清理的 CAL_ 测量&#x27;,&#x27;cmd&#x27;); return; }
+  cleanupTargets = targets.slice();
+  cleanupFull = false; cleanupChain = chain;
+  const mono = chain===&#x27;mono&#x27;;
+  const names = cuTitles(cleanupTargets);
+  $(&#x27;cuText&#x27;).textContent = (mono?&#x27;本次导出的「单声道 L+R 低音修正」运算流程&#x27;:&#x27;本次导出的「立体声 L/R 中高频修正」运算流程&#x27;) +
+    `共产生 ${cleanupTargets.length} 个 CAL_ 测量` +
+    (names.length? `(${names.slice(0,4).map(esc).join(&#x27;、&#x27;)}${names.length&gt;4? &#x27; 等&#x27;:&#x27;&#x27;})`:&#x27;&#x27;) +
+    `。是否仅清除与${mono?&#x27;L+R 单声道运算&#x27;:&#x27;L/R 立体声运算&#x27;}相关的这些数据?另一分支的运算数据与原始测量将保留。`;
+  showCleanupModal();
+}
+/* 下载弹窗关闭时的统一入口(取消/×/点击外部/Esc 视同正常完成) */
+function askCleanupForClose(){
+  if(stereoMerged === false &amp;&amp; (EXPORT.mode===&#x27;mono&#x27; || EXPORT.mode===&#x27;stereoUnmerged&#x27;)){
+    askCleanupBranch(EXPORT.mode===&#x27;mono&#x27; ? &#x27;mono&#x27; : &#x27;lr&#x27;);
+    return;
+  }
+  askCleanupFull();
 }
 function closeCleanupModal(){
   $(&#x27;cleanupModal&#x27;).classList.remove(&#x27;show&#x27;);
   $(&#x27;cleanupModal&#x27;).setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);
-  CREATED.length = 0;
+  if(cleanupFull){ CREATED.length = 0; }   // 整批询问选择保留后不再反复提醒;分支询问保留后仍保留全部数据
+  cleanupTargets = [];
+  cleanupFull = false;
+  cleanupChain = null;
+}
+/* 定向重置某一分支的结果状态与导出按钮(保留另一分支) */
+function resetChainUI(chain){
+  const hide = ids =&gt; ids.forEach(id=&gt;{ const el=$(id); if(el) el.style.display=&#x27;none&#x27;; });
+  if(chain===&#x27;mono&#x27;){
+    Object.assign(S,{target:null, am:null, div:null, mp2:null});
+    hide([&#x27;targetPill&#x27;,&#x27;amPill&#x27;,&#x27;divPill&#x27;,&#x27;mp2Pill&#x27;]);
+    [[&#x27;b2&#x27;,&#x27;未应用&#x27;],[&#x27;b4&#x27;,&#x27;未生成&#x27;],[&#x27;b5&#x27;,&#x27;未生成&#x27;],[&#x27;b6&#x27;,&#x27;未执行&#x27;],[&#x27;b7&#x27;,&#x27;未生成&#x27;]].forEach(p=&gt;{ const el=$(p[0]); if(el){ el.textContent=p[1]; el.className=&#x27;badge&#x27;; } });
+    if($(&#x27;btnExport2&#x27;)) $(&#x27;btnExport2&#x27;).style.display=&#x27;none&#x27;;        // 仅隐藏 L+R 导出,保留 L/R 导出
+  }else{
+    Object.assign(S,{avg:null,targetLR:null,Lm:null,Rm:null,divL:null,divR:null,mpL:null,mpR:null,fullL:null,fullR:null,mpFullL:null,mpFullR:null});
+    if($(&#x27;btnExportStereo&#x27;)) $(&#x27;btnExportStereo&#x27;).style.display=&#x27;none&#x27;;  // 仅隐藏 L/R 导出,保留 L+R 导出
+  }
 }
 $(&#x27;cuConfirm&#x27;).onclick = guard(async ()=&gt;{
-  const uuids = CREATED.splice(0);
+  const uuids = cleanupTargets.slice();
+  const full = cleanupFull;
+  const chain = cleanupChain;
   closeCleanupModal();
   let ok=0;
   for(const u of uuids){
     try{ await api(`/measurements/${u}`,{method:&#x27;DELETE&#x27;}); ok++; }
     catch(e){ log(`删除失败 ${u.slice(0,8)}…: ${e.message}`,&#x27;err&#x27;); }
   }
-  log(`已删除 ${ok} 个 CAL_ 运算测量,原始测量保留`,&#x27;ok&#x27;);
+  for(const u of uuids){ const i=CREATED.indexOf(u); if(i&gt;=0) CREATED.splice(i,1); }
+  log(`已删除 ${ok} 个 CAL_ 运算测量`+(chain? (chain===&#x27;mono&#x27;?&#x27;(仅 L+R 单声道分支)&#x27;:&#x27;(仅 L/R 立体声分支)&#x27;) : &#x27;,原始测量保留&#x27;)+(full?&#x27;&#x27;:&#x27;，另一分支数据保留可继续导出&#x27;),&#x27;ok&#x27;);
+  if(!full &amp;&amp; chain) resetChainUI(chain);
   await loadMeasurements();
 });
 $(&#x27;cuCancel&#x27;).onclick = closeCleanupModal;
 $(&#x27;cuCancelX&#x27;).onclick = closeCleanupModal;
 $(&#x27;cleanupModal&#x27;).addEventListener(&#x27;click&#x27;, e=&gt;{ if(e.target===e.currentTarget) closeCleanupModal(); });
 document.addEventListener(&#x27;keydown&#x27;, e=&gt;{ if(e.key===&#x27;Escape&#x27; &amp;&amp; $(&#x27;cleanupModal&#x27;).classList.contains(&#x27;show&#x27;)) closeCleanupModal(); });
+
+/* ---- 清空过程数据:删除运算产生的 CAL_ 测量并重置流程结果 ---- */
+async function clearProcessDataCore(){
+  const uuids = CREATED.splice(0);
+  let ok = 0;
+  for(const u of uuids){
+    try{ await api(`/measurements/${u}`,{method:&#x27;DELETE&#x27;}); ok++; }
+    catch(e){ log(&#x27;删除失败 &#x27;+u.slice(0,8)+&#x27;…: &#x27;+e.message,&#x27;err&#x27;); }
+  }
+  log(uuids.length ? `已清空过程数据:删除 ${ok} 个 CAL_ 运算测量(原始测量保留)` : &#x27;清空过程数据:当前没有待清理的 CAL_ 测量&#x27;,&#x27;ok&#x27;);
+  Object.assign(S, {target:null, am:null, div:null, mp2:null, avg:null, targetLR:null, Lm:null, Rm:null, divL:null, divR:null, mpL:null, mpR:null, fullL:null, fullR:null, mpFullL:null, mpFullR:null});
+  [&#x27;targetPill&#x27;,&#x27;amPill&#x27;,&#x27;divPill&#x27;,&#x27;mp2Pill&#x27;,&#x27;wavPill&#x27;].forEach(id=&gt;{ const el=$(id); if(el) el.style.display=&#x27;none&#x27;; });
+  [[&#x27;b2&#x27;,&#x27;未应用&#x27;],[&#x27;b3&#x27;,&#x27;未计算&#x27;],[&#x27;b4&#x27;,&#x27;未生成&#x27;],[&#x27;b5&#x27;,&#x27;未生成&#x27;],[&#x27;b6&#x27;,&#x27;未执行&#x27;],[&#x27;b7&#x27;,&#x27;未生成&#x27;]].forEach(pair=&gt;{
+    const el=$(pair[0]); if(el){ el.textContent=pair[1]; el.className=&#x27;badge&#x27;; }
+  });
+  const e2=$(&#x27;btnExport2&#x27;), es=$(&#x27;btnExportStereo&#x27;);
+  if(e2) e2.style.display=&#x27;none&#x27;;
+  if(es) es.style.display=&#x27;none&#x27;;
+  irCache = null;
+  try{ await loadMeasurements(); }catch(e){}
+}
+/* 仅清除指定分支(mono=L+R 单声道 / lr=L/R 立体声)的过程数据,保留另一分支 */
+async function clearChainData(chain){
+  const uuids = chainUuids(chain).slice();
+  if(!uuids.length){ log((chain===&#x27;mono&#x27;?&#x27;L+R 单声道&#x27;:&#x27;L/R 立体声&#x27;)+&#x27;分支暂无 CAL_ 运算测量可清除&#x27;,&#x27;cmd&#x27;); return; }
+  let ok=0;
+  for(const u of uuids){
+    try{ await api(`/measurements/${u}`,{method:&#x27;DELETE&#x27;}); ok++; }
+    catch(e){ log(&#x27;删除失败 &#x27;+u.slice(0,8)+&#x27;…: &#x27;+e.message,&#x27;err&#x27;); }
+  }
+  for(const u of uuids){ const i=CREATED.indexOf(u); if(i&gt;=0) CREATED.splice(i,1); }
+  log(`已清除${chain===&#x27;mono&#x27;?&#x27; L+R 单声道分支&#x27;:&#x27; L/R 立体声分支&#x27;}过程数据(删除 ${ok} 个 CAL_ 测量),另一分支与原始测量保留`,&#x27;ok&#x27;);
+  resetChainUI(chain);
+  try{ await loadMeasurements(); }catch(e){}
+}
+$(&#x27;btnClearData&#x27;).onclick = guard(async ()=&gt;{ await clearProcessDataCore(); });
+/* 下载窗内“清空过程数据”:按当前导出窗口对应的分支清除;合并/单声道流程则整批清除 */
+$(&#x27;dlClearData&#x27;).onclick = guard(async ()=&gt;{
+  const mode = EXPORT.mode;
+  closeDownloadModal();
+  if(stereoMerged === false &amp;&amp; (mode===&#x27;mono&#x27; || mode===&#x27;stereoUnmerged&#x27;)){
+    await clearChainData(mode===&#x27;mono&#x27; ? &#x27;mono&#x27; : &#x27;lr&#x27;);
+  } else {
+    await clearProcessDataCore();
+  }
+});
 
 /* ---- txt 修正曲线导出(REW 文本格式:频率/声压级/相位) ---- */
 async function fetchFR(uuid){
@@ -6344,14 +6679,12 @@ function askMergeChoice(){
       yes.onclick=null; no.onclick=null;
       resolve(value);
       if(value===false){
-        // 选择“不合并 IR”后，将 REW 自动化处理页面滚动到最底部，
-        // 方便用户直接看到步骤 7 的两个独立导出按钮。
-        requestAnimationFrame(()=&gt;{
-          requestAnimationFrame(()=&gt;{
-            window.scrollTo({top:document.documentElement.scrollHeight,behavior:&#x27;smooth&#x27;});
-            document.body.scrollTo({top:document.body.scrollHeight,behavior:&#x27;smooth&#x27;});
-          });
-        });
+        // 选择“不合并 IR”后，将页面滚动到最底部(便于看到步骤 7 导出按钮);兼容无 scrollTo 的环境
+        const scrollBottom = ()=&gt;{
+          try{ window.scrollTo({top:document.documentElement.scrollHeight,behavior:&#x27;smooth&#x27;}); }catch(e){}
+          try{ if(document.body &amp;&amp; document.body.scrollTo) document.body.scrollTo({top:document.body.scrollHeight,behavior:&#x27;smooth&#x27;}); }catch(e){}
+        };
+        requestAnimationFrame(()=&gt;{ requestAnimationFrame(scrollBottom); });
       }
     };
     yes.onclick=()=&gt;finish(true);
@@ -6376,6 +6709,9 @@ $(&#x27;btnRunAll&#x27;).onclick = guard(async ()=&gt;{
     log(mergeIR ? &#x27;已选择:合并 IR，将按原立体声流程执行&#x27; : &#x27;已选择:不合并 IR，将分别生成 L+R 与 L/R 修正&#x27;,&#x27;cmd&#x27;);
   }
 
+  // 引导模式钩子:完成合并选择后先显示&quot;处理中&quot;
+  if(typeof kGuideHookAfterMerge === &#x27;function&#x27;){ await kGuideHookAfterMerge(mergeIR); }
+
   let origInhibit = false;
   try{ const v = await api(&#x27;/application/inhibit-graph-updates&#x27;); if(typeof v===&#x27;boolean&#x27;) origInhibit = v; }catch{}
   try{
@@ -6398,20 +6734,26 @@ $(&#x27;btnRunAll&#x27;).onclick = guard(async ()=&gt;{
 
     await loadMeasurements();
 
-    if(stereoMode &amp;&amp; mergeIR){
-      log(&#x27;完整流程(含立体声合并)执行完毕,自动弹出立体声导出窗口&#x27;,&#x27;ok&#x27;);
-      openExportModal(&#x27;stereo&#x27;);
-    }else if(stereoMode){
-      log(&#x27;完整流程(未合并 IR)执行完毕,请在步骤 7 分别导出单声道 L+R 与立体声 L/R&#x27;,&#x27;ok&#x27;);
-    }else{
-      log(&#x27;完整流程执行完毕,自动弹出导出窗口&#x27;,&#x27;ok&#x27;);
-      openExportModal(&#x27;mono&#x27;);
+    // 引导模式钩子:拦截结束行为(未合并时给出完成弹窗)
+    let guideHandledFinal = false;
+    if(typeof kGuideHookBeforeFinal === &#x27;function&#x27;){ guideHandledFinal = (await kGuideHookBeforeFinal(stereoMode, mergeIR)) === true; }
+    if(!guideHandledFinal){
+      if(stereoMode &amp;&amp; mergeIR){
+        log(&#x27;完整流程(含立体声合并)执行完毕,自动弹出立体声导出窗口&#x27;,&#x27;ok&#x27;);
+        openExportModal(&#x27;stereo&#x27;);
+      }else if(stereoMode){
+        log(&#x27;完整流程(未合并 IR)执行完毕,请在步骤 7 分别导出单声道 L+R 与立体声 L/R&#x27;,&#x27;ok&#x27;);
+      }else{
+        log(&#x27;完整流程执行完毕,自动弹出导出窗口&#x27;,&#x27;ok&#x27;);
+        openExportModal(&#x27;mono&#x27;);
+      }
     }
   } finally {
     try{ await api(&#x27;/application/inhibit-graph-updates&#x27;,{method:&#x27;POST&#x27;,body:origInhibit}); }catch{}
     if(!$(&#x27;blocking&#x27;).checked){ try{ await setBlocking(false); }catch{} }
     $(&#x27;btnRunAll&#x27;).disabled = false;
     flowRunning = false;
+    try{ if(typeof kGuideHookFinished === &#x27;function&#x27;){ await kGuideHookFinished(); } }catch(e){}
     if(window.parent !== window){ try{ window.parent.postMessage({type:&#x27;koyaka-flow&#x27;, running:false}, &#x27;*&#x27;); }catch(e){} }
   }
 });
@@ -6446,6 +6788,184 @@ async function pollOnce(){
   }
 }
 setInterval(pollOnce, 3000);
+
+
+
+/* ==============================================================
+   运行方式选择 + 引导模式(4 步向导)
+   - 复用主面板原始卡片(移动挂载/还原)
+   - 步骤 4 下一步 = 一键执行完整流程;通过 runAll 钩子插入
+     “处理中”提示与未合并完成弹窗
+   ============================================================== */
+let guideStep = 1;
+let kGuideHookAfterMerge = null;    // (mergeIR)=&gt;Promise
+let kGuideHookBeforeFinal = null;   // (stereo,mergeIR)=&gt;Promise&lt;handled&gt;
+let kGuideHookFinished = null;      // ()=&gt;Promise(在 finally 中执行)
+const g = id =&gt; document.getElementById(id);
+
+/* ---- 卡片移动挂载辅助 ---- */
+const gkMoves = [];
+function moveToSlot(el, slot){
+  if(!el || !slot) return;
+  gkMoves.push({ el, parent: el.parentNode, next: el.nextSibling });
+  slot.appendChild(el);
+}
+function restoreMoves(){
+  while(gkMoves.length){
+    const m = gkMoves.pop();
+    if(m.el &amp;&amp; m.parent) m.parent.insertBefore(m.el, m.next);
+  }
+}
+function cardOf(childId){
+  const el = g(childId);
+  return el ? el.closest(&#x27;.card&#x27;) : null;
+}
+
+/* ---- 弹窗控制 ---- */
+function showGd(id){ const m = g(id); if(m){ m.classList.add(&#x27;show&#x27;); m.setAttribute(&#x27;aria-hidden&#x27;,&#x27;false&#x27;); } }
+function hideGd(id){ const m = g(id); if(m){ m.classList.remove(&#x27;show&#x27;); m.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;); } }
+
+/* ---- 模式切换 / 返回 ---- */
+function clearGuideHooks(){
+  kGuideHookAfterMerge = null;
+  kGuideHookBeforeFinal = null;
+  kGuideHookFinished = null;
+}
+function stopGuideState(){
+  clearGuideHooks();
+  hideGd(&#x27;gdModifyModal&#x27;); hideGd(&#x27;gdProcModal&#x27;); hideGd(&#x27;gdFinishModal&#x27;);
+  restoreMoves();
+}
+function backToModeSelect(){
+  stopGuideState();
+  g(&#x27;guideScreen&#x27;).classList.add(&#x27;hidden&#x27;);
+  g(&#x27;modeScreen&#x27;).classList.remove(&#x27;hidden&#x27;);
+  g(&#x27;btnBackSemi&#x27;).style.display = &#x27;none&#x27;;
+  log(&#x27;已返回运行方式选择&#x27;,&#x27;ok&#x27;);
+}
+function enterSemi(){
+  stopGuideState();
+  g(&#x27;guideScreen&#x27;).classList.add(&#x27;hidden&#x27;);
+  g(&#x27;modeScreen&#x27;).classList.add(&#x27;hidden&#x27;);
+  g(&#x27;btnBackSemi&#x27;).style.display = &#x27;&#x27;;
+  log(&#x27;已进入半自动模式&#x27;,&#x27;ok&#x27;);
+}
+function enterGuide(){
+  stopGuideState();
+  g(&#x27;modeScreen&#x27;).classList.add(&#x27;hidden&#x27;);
+  g(&#x27;guideScreen&#x27;).classList.remove(&#x27;hidden&#x27;);
+  g(&#x27;btnBackSemi&#x27;).style.display = &#x27;none&#x27;;
+  showGuideStep(1);
+}
+$(&#x27;btnModeSemi&#x27;).onclick = enterSemi;
+$(&#x27;btnModeGuide&#x27;).onclick = enterGuide;
+$(&#x27;btnGuideBack&#x27;).onclick = backToModeSelect;
+$(&#x27;btnBackSemi&#x27;).onclick = backToModeSelect;
+
+/* ---- 页面状态提示(第 1 页) ---- */
+const qApi = async (p, o) =&gt; { try { return {ok:true, data: await api(p, Object.assign({quiet:true}, o||{}))}; } catch(e){ return {ok:false, msg:e.message}; } };
+async function refreshP1Status(){
+  const el = g(&#x27;p1RwStatus&#x27;);
+  el.classList.remove(&#x27;err&#x27;);
+  const v = await qApi(&#x27;/version&#x27;);
+  const a = await qApi(&#x27;/audio&#x27;);
+  if(!v.ok){ el.textContent = &#x27;REW 未连接：请确认 REW 已打开并启用了 API 服务(localhost:4735)。&#x27;; el.classList.add(&#x27;err&#x27;); return; }
+  const ver = (v.data &amp;&amp; (v.data.message || v.data.version)) || JSON.stringify(v.data);
+  let audioTxt = &#x27;&#x27;;
+  if(a.ok &amp;&amp; a.data &amp;&amp; typeof a.data===&#x27;object&#x27;){
+    audioTxt = ` | 音频: ${a.data.enabled===false?&#x27;未启用&#x27;:&#x27;已启用&#x27;}${a.data.ready? &#x27;·就绪&#x27; : (a.data.ready===false?&#x27;·未就绪&#x27;:&#x27;&#x27;)}`;
+  }
+  el.textContent = &#x27;REW: &#x27; + ver + audioTxt;
+}
+
+/* ---- 步骤切换 ---- */
+function showGuideStep(n){
+  guideStep = n;
+  for(let i=1;i&lt;=4;i++) g(&#x27;guideP&#x27;+i).classList.toggle(&#x27;hidden&#x27;, i!==n);
+  g(&#x27;guideStepLabel&#x27;).textContent = &#x27;第 &#x27;+n+&#x27;/4 步&#x27;;
+  if(n===1){ restoreMoves(); refreshP1Status(); }
+  else if(n===2){ restoreMoves(); }
+  else if(n===3){
+    restoreMoves();
+    moveToSlot(cardOf(&#x27;btnLoad&#x27;), g(&#x27;g3slot&#x27;));   // 载入&quot;选择测量结果&quot;卡片
+  }
+  else if(n===4){
+    restoreMoves();
+    guideEnterP4();
+  }
+}
+$(&#x27;btnG1Next&#x27;).onclick = ()=&gt; showGuideStep(2);
+$(&#x27;btnG2Prev&#x27;).onclick = ()=&gt; showGuideStep(1);
+$(&#x27;btnG2Next&#x27;).onclick = ()=&gt; showGuideStep(3);
+$(&#x27;btnG3Prev&#x27;).onclick = ()=&gt; showGuideStep(2);
+$(&#x27;btnG3Next&#x27;).onclick = ()=&gt;{
+  if(!S.A){ guideAlert(&#x27;没有可处理的测量数据&#x27;); return; }
+  showGuideStep(4);
+};
+$(&#x27;btnG4Prev&#x27;).onclick = ()=&gt; showGuideStep(3);
+$(&#x27;btnG4Next&#x27;).onclick = guideStartFlow;
+
+/* 第 4 页进入:自动计算合适的低频截止/斜率 */
+async function guideEnterP4(){
+  const st = g(&#x27;p4Status&#x27;);
+  st.classList.remove(&#x27;err&#x27;);
+  if(!S.A){ st.textContent = &#x27;尚未选择 L+R 测量，请返回第 3 步确认测量结果。&#x27;; return; }
+  st.textContent = &#x27;正在自动分析低频截止与斜率…&#x27;;
+  try{
+    const r = await autoAnalyzeLF();
+    st.textContent = r ? &#x27;已自动计算合适的低频截止与斜率（结果已填入步骤 2/6，可点“点击修改”查看调整）。&#x27; : &#x27;自动分析未返回结果，可点“点击修改”手动设置。&#x27;;
+  }catch(e){
+    st.textContent = &#x27;自动分析失败：&#x27; + e.message + &#x27;。可点“点击修改”手动设置。&#x27;;
+    st.classList.add(&#x27;err&#x27;);
+    log(&#x27;引导-低频自动分析失败: &#x27;+e.message,&#x27;err&#x27;);
+  }
+}
+
+/* ---- 点击修改:弹窗载入 EQ 目标曲线设置 + 曲线运算 卡片 ---- */
+$(&#x27;btnG4Mod&#x27;).onclick = ()=&gt;{
+  restoreMoves();
+  const body = g(&#x27;gdModifyBody&#x27;);
+  moveToSlot(cardOf(&#x27;btnApplyTarget&#x27;), body);
+  moveToSlot(cardOf(&#x27;btnArith&#x27;), body);
+  showGd(&#x27;gdModifyModal&#x27;);
+};
+$(&#x27;btnGdModOk&#x27;).onclick = ()=&gt;{
+  restoreMoves();
+  hideGd(&#x27;gdModifyModal&#x27;);
+};
+
+/* ---- 第 4 页“下一步”:一键执行完整流程 ---- */
+async function guideStartFlow(){
+  if(!S.A){ guideAlert(&#x27;没有可处理的测量数据&#x27;); return; }
+  clearGuideHooks();
+  kGuideHookAfterMerge  = async ()=&gt;{ showGd(&#x27;gdProcModal&#x27;); };
+  kGuideHookBeforeFinal = async (stereoMode, mergeIR)=&gt;{
+    hideGd(&#x27;gdProcModal&#x27;);
+    if(mergeIR === false){
+      // 未合并:弹出带两个下载按钮与返回按钮的完成弹窗
+      showGd(&#x27;gdFinishModal&#x27;);
+      return true;
+    }
+    return false;   // 合并/单声道:走与半自动一致的导出流程
+  };
+  kGuideHookFinished = async ()=&gt;{ hideGd(&#x27;gdProcModal&#x27;); };
+  const btn = $(&#x27;btnRunAll&#x27;);
+  if(!btn){ log(&#x27;未找到一键流程按钮&#x27;,&#x27;err&#x27;); return; }
+  log(&#x27;引导模式:开始一键执行完整流程…&#x27;,&#x27;cmd&#x27;);
+  btn.click();   // 复用半自动完整流程(含合并 IR 选择、导出/清理逻辑)
+}
+
+/* ---- 完成弹窗:两个下载按钮(代理原步骤 7 按钮)+ 返回 ---- */
+$(&#x27;gdFinMono&#x27;).onclick = ()=&gt;{ const b = $(&#x27;btnExport2&#x27;); if(b) b.click(); };
+$(&#x27;gdFinStereo&#x27;).onclick = ()=&gt;{ const b = $(&#x27;btnExportStereo&#x27;); if(b) b.click(); };
+$(&#x27;gdFinishBack&#x27;).onclick = backToModeSelect;
+/* 未合并完成弹窗内:分别只清除对应分支(L+R 单声道 / L/R 立体声),另一分支可继续导出 */
+$(&#x27;gdFinClearMono&#x27;).onclick = guard(async ()=&gt;{ await clearChainData(&#x27;mono&#x27;); const b=$(&#x27;gdFinMono&#x27;); if(b) b.style.display=&#x27;none&#x27;; });
+$(&#x27;gdFinClearLr&#x27;).onclick = guard(async ()=&gt;{ await clearChainData(&#x27;lr&#x27;); const b=$(&#x27;gdFinStereo&#x27;); if(b) b.style.display=&#x27;none&#x27;; });
+
+/* 引导模式提示弹窗 */
+function guideAlert(msg){ g(&#x27;gdAlertText&#x27;).textContent = msg; showGd(&#x27;gdAlertModal&#x27;); }
+$(&#x27;gdAlertOk&#x27;).onclick = ()=&gt; hideGd(&#x27;gdAlertModal&#x27;);
 
 /* 页面加载即尝试连接 */
 connect();
@@ -6646,3 +7166,4 @@ connect();
 </script>
 </body>
 </html>
+
